@@ -28,9 +28,21 @@ class html5player {
     private function arrayToOrganisedArrays($matches) {
         $videourl = $matches[0];
         $videourl = explode("|", $videourl);
-        if(isset($matches[1]) && isset($matches[2])) {
-            $videooption["width"] = $matches[1];
-            $videooption["height"] = $matches[2];
+        $ifScore = 1;
+        
+        //Check for poster url.
+        if(isset($matches[$ifScore]) && !is_numeric($matches[$ifScore])) {
+            $videooption["poster"] = $matches[$ifScore];
+            $ifScore++;
+        } else {
+            $videooption["poster"] = "";
+        }
+        if(isset($matches[$ifScore]) && isset($matches[$ifScore+1])) {
+            if(is_numeric($matches[$ifScore]) && is_numeric($matches[$ifScore+1])) {
+                $videooption["width"] = $matches[$ifScore];
+                $videooption["height"] = $matches[$ifScore+1];
+                $ifScore+2;
+            } 
         }
         if(!isset($videooption)) {
             $videooption = "notset";
@@ -41,11 +53,14 @@ class html5player {
     private function videoCodeGenerator($videourl, $videooption) {
         $width = $videooption["width"];
         $height = $videooption["height"];
-
-        $output = '<video controls="true">';
+        $poster = $videooption["poster"];
+        if($poster != ""){
+            $parms = ' poster="'.$poster.'"';
+        }
+        $output = '<video controls="true" '.$parms.' >';
         foreach($videourl as $value) {
-            $this->flowPlayerVideoCompatible($value, $width, $height);
-            $output .='<source src="'.$value.'" />';
+            $this->flowPlayerVideoCompatible($value, $width, $height, $poster);
+            $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $output .= $this->flowplayer;
         $output .= '</video>';
@@ -71,10 +86,16 @@ class html5player {
         return $output;
     }
 
-    private function flowPlayerVideoCompatible($url, $width, $height) {
-        if($width == "n"){
+    private function flowPlayerVideoCompatible($url, $width, $height, $poster) {
+        if(!(is_numeric($width) && is_numeric($height))) {
             $width = 480;
             $height = 320;
+        }
+        $flashvars = "";
+        if($poster != ""){
+            $flashvars = '<param name="flashvars" value=\'config={"playlist":[{"url":"'.$poster.'"},{"url":"'.$url.'","autoPlay":false}]}\' />';
+        } else {
+            $flashvars = '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />';
         }
         if(preg_match("#(mp4|m4v)$#i",$url)) {
             $flowplayer = array(
@@ -82,7 +103,7 @@ class html5player {
                     'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
-                    '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />',
+                    $flashvars,
                     '</object>'
             );
             $this->flowplayer = implode("",$flowplayer);
@@ -105,6 +126,20 @@ class html5player {
             $this->flowplayer = implode("",$flowplayer);
             $this->flowplayercount++;
         }
+    }
+
+    private function videoType($url) {
+        if(preg_match("#(mp4|m4v)$#i", $url)){
+            return "type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'";
+        }
+        if(preg_match("#(ogg|ogv)$#i",$url)) {
+            return "type='video/ogg; codecs=\"theora, vorbis\"'";
+        }
+        if(preg_match("#(webm)$#i",$url)) {
+            return "type='video/webm; codecs=\"vp8, vorbis\"'";
+        }
+
+        return "";
     }
 }
 ?>
