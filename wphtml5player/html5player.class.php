@@ -93,7 +93,7 @@ class html5player {
     private function flowPlayerAudioCompatible($url) {
         if(preg_match("#(mp3)$#i",$url)) {
             $flowplayer = array(
-                    '<object id="flowplayer-'.$this->flowplayercount.'" width="100%" height="30" ',
+                    '<object id="flowplayer-'.$this->flowplayercount.'" width="300" height="30" ',
                     'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
