@@ -9,11 +9,13 @@ class html5player {
     private $url;
     private $root;
     private $flowplayer;
+    private $flowplayercount;
 
     public function  __construct($url, $root) {
         $this->url = $url;
         $this->root = $root;
         $this->flowplayer = "";
+        $this->flowplayercount = 1;
     }
 
     public function videoreplace($data) {
@@ -38,21 +40,15 @@ class html5player {
     private function videoCodeGenerator($videourl, $videooption) {
         $width = $videooption["width"];
         $height = $videooption["height"];
-        if($videooption != "notset") {
-            $videooption["width"] = 'width="'.$videooption["width"].'"';
-            $videooption["height"] = 'height="'.$videooption["height"].'"';
-            $videooption = implode(" ",$videooption);
-        } else {
-            $videooption = "";
-        }
 
-        $output = '<video '.$videooption.' controls="true">';
+        $output = '<video controls="true">';
         foreach($videourl as $value) {
-            $this->flowPlayerCompatible($value, $width, $height);
+            $this->flowPlayerVideoCompatible($value, $width, $height);
             $output .='<source src="'.$value.'" />';
         }
         $output .= $this->flowplayer;
         $output .= '</video>';
+        $this->flowplayer = "";
         return $output;
     }
 
@@ -63,22 +59,25 @@ class html5player {
     }
 
     private function audioCodeGenerator($audiourl) {
-        $output = '<audio>';
+        $output = '<audio controls="true">';
         foreach($audiourl as $value) {
-            $output .='<source src="'.$value.' />';
+            $this->flowPlayerAudioCompatible($value);
+            $output .='<source src="'.$value.'" />';
         }
+        $output .= $this->flowplayer;
         $output .= '</audio>';
+        $this->flowplayer = "";
         return $output;
     }
 
-    private function flowPlayerCompatible($url, $width, $height) {
+    private function flowPlayerVideoCompatible($url, $width, $height) {
         if($width == "n"){
             $width = 480;
             $height = 320;
         }
         if(preg_match("#(mp4|m4v)$#i",$url)) {
             $flowplayer = array(
-                    '<object id="flowplayer" width="'.$width.'" height="'.$height.'" ',
+                    '<object id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
                     'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
@@ -86,6 +85,24 @@ class html5player {
                     '</object>'
             );
             $this->flowplayer = implode("",$flowplayer);
+            $this->flowplayercount++;
+        }
+    }
+
+    private function flowPlayerAudioCompatible($url) {
+        if(preg_match("#(mp3)$#i",$url)) {
+            $flowplayer = array(
+                    '<object id="flowplayer-'.$this->flowplayercount.'" width="100%" height="30" ',
+                    'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
+                    '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
+                    '<param name="allowfullscreen" value="false" />',
+                    '<param name="cachebusting" value="true">',
+                    '<param name="bgcolor" value="#000000">',
+                    '<param name="flashvars" value=\'config={"plugins":{"controls":{"fullscreen":false,"height":30,"autoHide":false}},"clip":{"autoPlay":false,"url":"'.$url.'"},"playerId":"audio","playlist":[{"autoPlay":false,"url":"'.$url.'"}]}\' />',
+                    '</object>'
+            );
+            $this->flowplayer = implode("",$flowplayer);
+            $this->flowplayercount++;
         }
     }
 }
