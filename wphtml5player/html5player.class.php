@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Description of html5playerclass
+ * Embed Videos and Audios into respective HTML5 tags, on fail it falls back to
+ * FlowPlayer
  *
  * @author cjackson
  */
