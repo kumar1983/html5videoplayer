@@ -29,6 +29,7 @@ Author URI: http://cj-jackson.com/
 $wphtml5playerclass;
 
 add_action('init', 'html5player_call');
+add_action('wp_head', 'html5player_head');
 add_filter('the_content', 'html5player_parse');
 add_filter('the_excerpt', 'html5player_excerpt');
 
@@ -40,12 +41,19 @@ function html5player_call() {
     $wphtml5playerclass = new html5player($scriptUrl, $scriptRoot);
 }
 
+function html5player_head() {
+    global $wphtml5playerclass;
+    echo $wphtml5playerclass->httpHead();
+}
+
 function html5player_parse($content) {
     global $wphtml5playerclass;
     $content = preg_replace("#\[video:(.+?) demo\]#i", "&#91;video:$1 &#93;", $content);
     $content = preg_replace("#\[audio:(.+?) demo\]#i", "&#91;audio:$1 &#93;", $content);
     $content = preg_replace_callback("#\[video:(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
     $content = preg_replace_callback("#\[audio:(.+?)\]#i", array(&$wphtml5playerclass,"audioreplace"), $content);
+    $content = preg_replace("#\<p><div class=\"video-js-box\">#i","<div class=\"video-js-box\">",$content);
+    $content = preg_replace("#\</div></p>#i","</div>",$content);
     return $content;
 }
 

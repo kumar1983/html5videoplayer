@@ -75,13 +75,13 @@ class html5player {
         if($poster != ""){
             $parms = ' poster="'.$poster.'"';
         }
-        $output = '<video '.$parms.' controls>';
+        $output = '<div class="video-js-box"><video class="video-js" '.$parms.' controls>';
         foreach($videourl as $value) {
             $this->flowPlayerVideoCompatible($value, $width, $height, $poster);
             $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $output .= $this->flowplayer;
-        $output .= '</video>';
+        $output .= '</video></div>';
         $this->flowplayer = "";
         return $output;
     }
@@ -117,7 +117,7 @@ class html5player {
         }
         if(preg_match("#(mp4|m4v)$#i",$url)) {
             $flowplayer = array(
-                    '<object id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
+                    '<object class="vjs-flash-fallback" id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
                     'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
@@ -175,6 +175,14 @@ class html5player {
         }
 
         return "";
+    }
+
+    public function httpHead() {
+        $output = '<script src="'.$this->url.'/inc/video.js" type="text/javascript"></script>'.
+                '<script type="text/javascript">window.onload = function(){ VideoJS.setup(); }</script>'.
+                '<link rel="stylesheet" href="'.$this->url.'/inc/video-js.css" type="text/css" media="screen" title="Video JS">';
+
+        return $output;
     }
 }
 ?>
