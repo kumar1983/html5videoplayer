@@ -35,9 +35,9 @@ add_filter('the_excerpt', 'html5player_excerpt');
 function html5player_call() {
     global $wphtml5playerclass;
     $scriptRoot = ABSPATH."/wp-content/plugins/wphtml5player";
-    $scriptUrl = get_settings('siteurl')."/wp-content/plugins/wphtml5player";
+    $scriptUrl = get_bloginfo('wpurl')."/wp-content/plugins/wphtml5player";
     require_once 'html5player.class.php';
-    $wphtml5playerclass = new html5player($scriptUrl, $scriptUrl);
+    $wphtml5playerclass = new html5player($scriptUrl, $scriptRoot);
 }
 
 function html5player_parse($content) {

@@ -57,7 +57,7 @@ class html5player {
         if($poster != ""){
             $parms = ' poster="'.$poster.'"';
         }
-        $output = '<video controls="true" '.$parms.' >';
+        $output = '<video '.$parms.' controls>';
         foreach($videourl as $value) {
             $this->flowPlayerVideoCompatible($value, $width, $height, $poster);
             $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
@@ -75,10 +75,10 @@ class html5player {
     }
 
     private function audioCodeGenerator($audiourl) {
-        $output = '<audio controls="true">';
+        $output = '<audio controls>';
         foreach($audiourl as $value) {
             $this->flowPlayerAudioCompatible($value);
-            $output .='<source src="'.$value.'" />';
+            $output .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $output .= $this->flowplayer;
         $output .= '</audio>';
@@ -129,7 +129,7 @@ class html5player {
     }
 
     private function videoType($url) {
-        if(preg_match("#(mp4|m4v)$#i", $url)){
+        if(preg_match("#(mp4|m4v)$#i", $url)) {
             return "type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'";
         }
         if(preg_match("#(ogg|ogv)$#i",$url)) {
@@ -137,6 +137,23 @@ class html5player {
         }
         if(preg_match("#(webm)$#i",$url)) {
             return "type='video/webm; codecs=\"vp8, vorbis\"'";
+        }
+
+        return "";
+    }
+
+    private function audioType($url) {
+        if(preg_match("#(ogg|oga)$#i",$url)) {
+            return 'type="audio/ogg"';
+        }
+        if(preg_match("#(mp4|m4a|aac)$#i",$url)) {
+            return 'type="audio/aac"';
+        }
+        if(preg_match("#(mp3)$#i",$url)) {
+            return 'type="audio/mpeg"';
+        }
+        if(preg_match("#(wav)$#i", $url)) {
+            return 'type="audio/x-wav"';
         }
 
         return "";
