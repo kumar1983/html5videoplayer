@@ -42,6 +42,8 @@ function html5player_call() {
 
 function html5player_parse($content) {
     global $wphtml5playerclass;
+    $content = preg_replace("#\[video:(.+?) demo\]#i", "&#91;video:$1 &#93;", $content);
+    $content = preg_replace("#\[audio:(.+?) demo\]#i", "&#91;audio:$1 &#93;", $content);
     $content = preg_replace_callback("#\[video:(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
     $content = preg_replace_callback("#\[audio:(.+?)\]#i", array(&$wphtml5playerclass,"audioreplace"), $content);
     return $content;
@@ -49,8 +51,8 @@ function html5player_parse($content) {
 
 function html5player_excerpt($content) {
     global $wphtml5playerclass;
-    $content = preg_replace("#\[video:(.+?)\]#", "", $content);
-    $content = preg_replace("#\[audio:(.+?)\]#", "", $content);
+    $content = preg_replace("#\[video:(.+?)\]#i", "", $content);
+    $content = preg_replace("#\[audio:(.+?)\]#i", "", $content);
     return $content;
 }
 
