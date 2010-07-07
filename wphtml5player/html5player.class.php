@@ -32,8 +32,9 @@ class html5player {
     private $flowplayercount;
     private $downloadLinks;
 
-    public function  __construct($url, $root) {
-        $this->url = $url;
+    public function  __construct($url, $siteurl, $root) {
+        $this->url['script'] = $url;
+        $this->url['site'] = $siteurl;
         $this->root = $root;
         $this->flowplayer = "";
         $this->flowplayercount = 1;
@@ -48,6 +49,7 @@ class html5player {
     private function arrayToOrganisedArrays($matches) {
         $videourl = $matches[0];
         $videourl = explode("|", $videourl);
+        $videourl = $this->urlsCheck($videourl);
         $ifScore = 1;
 
         //Check for poster url.
@@ -101,7 +103,22 @@ class html5player {
     public function audioreplace($data) {
         $audiourl = $data[1];
         $audiourl = explode("|", $audiourl);
+        $audiourl = $this->urlsCheck($audiourl);
         return $this->audioCodeGenerator($audiourl);
+    }
+
+    private function urlsCheck($urls) {
+        $arrayCount = 0;
+        foreach($urls as $value) {
+            if(!preg_match("#^(http|https)://#i", $value)) {
+                $data = $this->url['site']."/".$value;
+                $array[$arrayCount] = $data;
+            } else {
+                $array[$arrayCount] = $value;
+            }
+            $arrayCount++;
+        }
+        return $array;
     }
 
     private function audioCodeGenerator($audiourl) {
@@ -141,8 +158,8 @@ class html5player {
         if(preg_match("#(mp4|m4v)$#i",$url)) {
             $flowplayer = array(
                     '<object class="vjs-flash-fallback" id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
-                    'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
-                    '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
+                    'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
+                    '<param name="movie" value="'.$this->url['script'].'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
                     $flashvars,
                     '</object>'
@@ -156,8 +173,8 @@ class html5player {
         if(preg_match("#(mp3)$#i",$url)) {
             $flowplayer = array(
                     '<object id="flowplayer-'.$this->flowplayercount.'" width="300" height="30" ',
-                    'data="'.$this->url.'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
-                    '<param name="movie" value="'.$this->url.'/inc/flowplayer.swf" />',
+                    'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
+                    '<param name="movie" value="'.$this->url['script'].'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
                     '<param name="cachebusting" value="true">',
                     '<param name="bgcolor" value="#000000">',
@@ -208,9 +225,9 @@ class html5player {
     }
 
     public function httpHead() {
-        $output = '<script src="'.$this->url.'/inc/video.js" type="text/javascript"></script>'.
+        $output = '<script src="'.$this->url['script'].'/inc/video.js" type="text/javascript"></script>'.
                 '<script type="text/javascript">window.onload = function(){ VideoJS.setup(); }</script>'.
-                '<link rel="stylesheet" href="'.$this->url.'/inc/video-js.css" type="text/css" media="screen" title="Video JS">';
+                '<link rel="stylesheet" href="'.$this->url['script'].'/inc/video-js.css" type="text/css" media="screen" title="Video JS">';
 
         return $output;
     }

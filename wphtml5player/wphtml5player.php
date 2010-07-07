@@ -39,7 +39,7 @@ function html5player_call() {
     $scriptRoot = ABSPATH."/wp-content/plugins/wphtml5player";
     $scriptUrl = get_bloginfo('wpurl')."/wp-content/plugins/wphtml5player";
     require_once 'html5player.class.php';
-    $wphtml5playerclass = new html5player($scriptUrl, $scriptRoot);
+    $wphtml5playerclass = new html5player($scriptUrl, get_bloginfo('wpurl'), $scriptRoot);
 }
 
 function html5player_head() {
