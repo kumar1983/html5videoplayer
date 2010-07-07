@@ -149,13 +149,13 @@ class html5player {
             $width = 480;
             $height = 320;
         }
-        $flashvars = "";
-        if($poster != "") {
-            $flashvars = '<param name="flashvars" value=\'config={"playlist":[{"url":"'.$poster.'"},{"url":"'.$url.'","autoPlay":false}]}\' />';
-        } else {
-            $flashvars = '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />';
-        }
         if(preg_match("#(mp4|m4v)$#i",$url)) {
+            $flashvars = "";
+            if($poster != "") {
+                $flashvars = '<param name="flashvars" value=\'config={"playlist":[{"url":"'.$poster.'"},{"url":"'.$url.'","autoPlay":false}]}\' />';
+            } else {
+                $flashvars = '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />';
+            }
             $flowplayer = array(
                     '<object class="vjs-flash-fallback" id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
                     'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
