@@ -30,6 +30,7 @@ class html5player {
     private $root;
     private $flowplayer;
     private $flowplayercount;
+    private $downloadLinks;
 
     public function  __construct($url, $root) {
         $this->url = $url;
@@ -48,7 +49,7 @@ class html5player {
         $videourl = $matches[0];
         $videourl = explode("|", $videourl);
         $ifScore = 1;
-        
+
         //Check for poster url.
         if(isset($matches[$ifScore]) && !is_numeric($matches[$ifScore])) {
             $videooption["poster"] = $matches[$ifScore];
@@ -61,7 +62,7 @@ class html5player {
                 $videooption["width"] = $matches[$ifScore];
                 $videooption["height"] = $matches[$ifScore+1];
                 $ifScore+2;
-            } 
+            }
         }
         if(!isset($videooption)) {
             $videooption = "notset";
@@ -73,17 +74,27 @@ class html5player {
         $width = $videooption["width"];
         $height = $videooption["height"];
         $poster = $videooption["poster"];
-        if($poster != ""){
-            $parms = ' poster="'.$poster.'"';
-        }
-        $output = '<div class="video-js-box"><video class="video-js" '.$parms.' controls>';
+        $output = '<div class="video-js-box"><video class="video-js" controls>';
         foreach($videourl as $value) {
             $this->flowPlayerVideoCompatible($value, $width, $height, $poster);
             $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $output .= $this->flowplayer;
-        $output .= '</video></div>';
+        $output .= '</video>';
+        if(isset($this->downloadLinks)) {
+            $downloadLinks = "No video playback capabilities, please download the video below";
+            $downloadLinks .= '<strong>Download Video: </strong>';
+            if(isset($this->downloadLinks['closed'])) {
+                $downloadLinks .= 'Closed Format: '.$this->downloadLinks['closed'];
+            }
+            if(isset($this->downloadLinks['open'])) {
+                $downloadLinks .= 'Open Format: '.$this->downloadLinks['open'];
+            }
+            $output = str_replace("</object>", $downloadLinks."</object>", $output);
+        }
+        $output .= '</div>';
         $this->flowplayer = "";
+        unset($this->downloadLinks);
         return $output;
     }
 
@@ -101,7 +112,18 @@ class html5player {
         }
         $output .= $this->flowplayer;
         $output .= '</audio>';
+        if(isset($this->downloadLinks)) {
+            $downloadLinks = "No audio playback capabilities, please download the audio below\n <strong>Download Audio: </strong>";
+            if(isset($this->downloadLinks['closed'])) {
+                $downloadLinks .= 'Closed Format: '.$this->downloadLinks['closed'];
+            }
+            if(isset($this->downloadLinks['open'])) {
+                $downloadLinks .= 'Open Format: '.$this->downloadLinks['open'];
+            }
+            $output = str_replace("</object>", $downloadLinks."</object>", $output);
+        }
         $this->flowplayer = "";
+        unset($this->downloadLinks);
         return $output;
     }
 
@@ -111,7 +133,7 @@ class html5player {
             $height = 320;
         }
         $flashvars = "";
-        if($poster != ""){
+        if($poster != "") {
             $flashvars = '<param name="flashvars" value=\'config={"playlist":[{"url":"'.$poster.'"},{"url":"'.$url.'","autoPlay":false}]}\' />';
         } else {
             $flashvars = '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />';
@@ -149,12 +171,15 @@ class html5player {
 
     private function videoType($url) {
         if(preg_match("#(mp4|m4v)$#i", $url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4</a> ';
             return "type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'";
         }
         if(preg_match("#(ogg|ogv)$#i",$url)) {
+            $this->downloadLinks['open'] .= '<a href="'.$url.'">OGG</a> ';
             return "type='video/ogg; codecs=\"theora, vorbis\"'";
         }
         if(preg_match("#(webm)$#i",$url)) {
+            $this->downloadLinks['open'] .= '<a href="'.$url.'">WebM</a> ';
             return "type='video/webm; codecs=\"vp8, vorbis\"'";
         }
 
@@ -163,15 +188,19 @@ class html5player {
 
     private function audioType($url) {
         if(preg_match("#(ogg|oga)$#i",$url)) {
+            $this->downloadLinks['open'] .= '<a href="'.$url.'">OGG</a> ';
             return 'type="audio/ogg"';
         }
         if(preg_match("#(mp4|m4a|aac)$#i",$url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">AAC</a> ';
             return 'type="audio/aac"';
         }
         if(preg_match("#(mp3)$#i",$url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP3</a> ';
             return 'type="audio/mpeg"';
         }
         if(preg_match("#(wav)$#i", $url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">WAV</a> ';
             return 'type="audio/x-wav"';
         }
 
