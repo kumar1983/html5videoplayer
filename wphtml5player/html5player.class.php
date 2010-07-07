@@ -225,6 +225,9 @@ class html5player {
     }
 
     public function httpHead() {
+        if(preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
+            return "";
+        }
         $output = '<script src="'.$this->url['script'].'/inc/video.js" type="text/javascript"></script>'.
                 '<script type="text/javascript">window.onload = function(){ VideoJS.setup(); }</script>'.
                 '<link rel="stylesheet" href="'.$this->url['script'].'/inc/video-js.css" type="text/css" media="screen" title="Video JS">';
