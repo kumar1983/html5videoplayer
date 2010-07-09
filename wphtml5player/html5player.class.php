@@ -100,10 +100,14 @@ class html5player {
             $this->flowPlayerVideoCompatible($value, $width, $height, $poster);
             $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
-        $output .= $this->flowplayer;
+        if($this->flowplayer != "") {
+            $output .= $this->flowplayer;
+            $output = str_replace("</object>",
+                    $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo'])."</object>", $output);
+        } else {
+            $output .= $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
+        }
         $output .= '</video>';
-        $output = str_replace("</object>",
-                $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo'])."</object>", $output);
         $output .= '</div>';
         $this->flowplayer = "";
         return $output;
@@ -151,10 +155,14 @@ class html5player {
             $this->flowPlayerAudioCompatible($value);
             $output .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
-        $output .= $this->flowplayer;
+        if($this->flowplayer != "") {
+            $output .= $this->flowplayer;
+            $output = str_replace("</object>",
+                    $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio'])."</object>", $output);
+        } else {
+            $output .= $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio']);
+        }
         $output .= '</audio>';
-        $output = str_replace("</object>",
-                $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio'])."</object>", $output);
         $this->flowplayer = "";
         return $output;
     }
@@ -172,6 +180,8 @@ class html5player {
                 $flashvars = '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />';
             }
             $flowplayer = array(
+                    '<script type="text/javascript">',
+                    'swfobject.registerObject("flowplayer-'.$this->flowplayercount.'", "9.0.115")</script>',
                     '<object class="vjs-flash-fallback" id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
                     'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url['script'].'/inc/flowplayer.swf" />',
@@ -187,6 +197,8 @@ class html5player {
     private function flowPlayerAudioCompatible($url) {
         if(preg_match("#(mp3)$#i",$url)) {
             $flowplayer = array(
+                    '<script type="text/javascript">',
+                    'swfobject.registerObject("flowplayer-'.$this->flowplayercount.'", "9.0.115")</script>',
                     '<object id="flowplayer-'.$this->flowplayercount.'" width="300" height="30" ',
                     'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url['script'].'/inc/flowplayer.swf" />',
