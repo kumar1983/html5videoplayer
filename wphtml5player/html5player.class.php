@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 0.1.0
+ * HTML5 Player Class 0.9.0
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -31,6 +31,7 @@ class html5player {
     private $flowplayer;
     private $flowplayercount;
     private $downloadLinks;
+    private $language;
 
     public function  __construct($url, $siteurl, $root) {
         $this->url['script'] = $url;
@@ -38,6 +39,22 @@ class html5player {
         $this->root = $root;
         $this->flowplayer = "";
         $this->flowplayercount = 1;
+        $this->defaultLanguage();
+    }
+
+    private function defaultLanguage() {
+        $this->language = array(
+                'noVideo' => "No video playback capabilities, please download the video below\n",
+                'noAudio' => "No audio playback capabilities, please download the audio below\n",
+                'downloadVideo' => '<strong>Download Video: </strong>',
+                'downloadAudio' => '<strong>Download Audio: </strong>',
+                'closedFormat' => 'Closed Format: ',
+                'openFormat' => 'Open Format: '
+        );
+    }
+
+    public function setLanguage($param, $value) {
+        $this->language[$param] = $value;
     }
 
     public function videoreplace($data) {
@@ -59,6 +76,8 @@ class html5player {
         } else {
             $videooption["poster"] = "";
         }
+
+        //Check for resolution
         if(isset($matches[$ifScore]) && isset($matches[$ifScore+1])) {
             if(is_numeric($matches[$ifScore]) && is_numeric($matches[$ifScore+1])) {
                 $videooption["width"] = $matches[$ifScore];
@@ -83,21 +102,26 @@ class html5player {
         }
         $output .= $this->flowplayer;
         $output .= '</video>';
-        if(isset($this->downloadLinks)) {
-            $downloadLinks = "No video playback capabilities, please download the video below";
-            $downloadLinks .= '<strong>Download Video: </strong>';
-            if(isset($this->downloadLinks['closed'])) {
-                $downloadLinks .= 'Closed Format: '.$this->downloadLinks['closed'];
-            }
-            if(isset($this->downloadLinks['open'])) {
-                $downloadLinks .= 'Open Format: '.$this->downloadLinks['open'];
-            }
-            $output = str_replace("</object>", $downloadLinks."</object>", $output);
-        }
+        $output = str_replace("</object>",
+                $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo'])."</object>", $output);
         $output .= '</div>';
         $this->flowplayer = "";
-        unset($this->downloadLinks);
         return $output;
+    }
+
+    private function linkGenerator($message) {
+        if(isset($this->downloadLinks)) {
+            $links = $message;
+            if(isset($this->downloadLinks['closed'])) {
+                $links .= $this->language['closedFormat'].$this->downloadLinks['closed'];
+            }
+            if(isset($this->downloadLinks['open'])) {
+                $links .= $this->language['openFormat'].$this->downloadLinks['open'];
+            }
+            unset($this->downloadLinks);
+            return $links;
+        }
+        return "";
     }
 
     public function audioreplace($data) {
@@ -129,18 +153,9 @@ class html5player {
         }
         $output .= $this->flowplayer;
         $output .= '</audio>';
-        if(isset($this->downloadLinks)) {
-            $downloadLinks = "No audio playback capabilities, please download the audio below\n <strong>Download Audio: </strong>";
-            if(isset($this->downloadLinks['closed'])) {
-                $downloadLinks .= 'Closed Format: '.$this->downloadLinks['closed'];
-            }
-            if(isset($this->downloadLinks['open'])) {
-                $downloadLinks .= 'Open Format: '.$this->downloadLinks['open'];
-            }
-            $output = str_replace("</object>", $downloadLinks."</object>", $output);
-        }
+        $output = str_replace("</object>",
+                $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio'])."</object>", $output);
         $this->flowplayer = "";
-        unset($this->downloadLinks);
         return $output;
     }
 

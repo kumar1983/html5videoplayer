@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Player for Wordpress
 Plugin URI: http://cj-jackson.com
 Description: Embed video using shortcodes, using flowplayer as fallback.
-Version: 0.1.0
+Version: 0.9.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Player for Wordpress 0.1.0
+ * HTML5 Player for Wordpress 0.9.0
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
