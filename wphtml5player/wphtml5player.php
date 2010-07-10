@@ -37,15 +37,21 @@ add_filter('the_excerpt', 'html5player_excerpt');
 function html5player_call() {
     global $wphtml5playerclass;
     wp_enqueue_script('swfobject');
-    $scriptRoot = ABSPATH."/wp-content/plugins/wphtml5player";
-    $scriptUrl = get_bloginfo('wpurl')."/wp-content/plugins/wphtml5player";
+    $scriptRoot = WP_PLUGIN_DIR."/wphtml5player";
+    $scriptUrl = WP_PLUGIN_URL."/wphtml5player";
     require_once 'html5player.class.php';
     $wphtml5playerclass = new html5player($scriptUrl, get_bloginfo('url'), $scriptRoot);
+    if(!preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
+        wp_enqueue_script('videojs', $wphtml5playerclass->script('videojs'));
+        wp_enqueue_style('videojs', $wphtml5playerclass->script('videojscss'));
+    }
 }
 
 function html5player_head() {
     global $wphtml5playerclass;
-    echo $wphtml5playerclass->httpHead();
+    if(!preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
+        echo $wphtml5playerclass->httpHead();
+    }
 }
 
 function html5player_parse($content) {
