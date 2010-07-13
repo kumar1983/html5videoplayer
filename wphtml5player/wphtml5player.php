@@ -46,6 +46,11 @@ function html5player_call() {
         wp_enqueue_style('videojs', $wphtml5playerclass->script('videojscss'));
     }
 
+    html5player_localise($scriptRoot);
+}
+
+function html5player_localise($scriptRoot) {
+    global $wphtml5playerclass;
     $lang = '';
     if(WPLANG == '') {
         $lang = 'default';
@@ -53,7 +58,9 @@ function html5player_call() {
         $lang = WPLANG;
     }
 
-    if(file_exists($scriptRoot.'/lang/'.$lang.'.php')){
+    $lang = str_replace("_", "-", $lang);
+
+    if(file_exists($scriptRoot.'/lang/'.$lang.'.php')) {
         include_once $scriptRoot.'/lang/'.$lang.'.php';
     } else {
         include_once $scriptRoot.'/lang/default.php';
