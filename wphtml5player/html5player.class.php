@@ -32,6 +32,7 @@ class html5player {
     private $flowplayercount;
     private $downloadLinks;
     private $language;
+    private $option;
 
     public function  __construct($url, $siteurl, $root) {
         $this->url['script'] = $url;
@@ -39,6 +40,7 @@ class html5player {
         $this->root = $root;
         $this->flowplayer = "";
         $this->flowplayercount = 1;
+        $this->option['swfobject'] = false;
         $this->defaultLanguage();
     }
 
@@ -55,6 +57,10 @@ class html5player {
 
     public function setLanguage($param, $value) {
         $this->language[$param] = $value;
+    }
+
+    public function setOption($param, $value) {
+        $this->option[$param] = $value;
     }
 
     public function videoreplace($data) {
@@ -175,18 +181,33 @@ class html5player {
         if(preg_match("#(mp4|m4v)$#i",$url)) {
             $flashvars = "";
             if($poster != "") {
-                $flashvars = '<param name="flashvars" value=\'config={"playlist":[{"url":"'.$poster.'"},{"url":"'.$url.'","autoPlay":false}]}\' />';
+                $flashvars = array(
+                        "playlist" => array(
+                                array(
+                                        "url" => $poster
+                                ),
+                                array(
+                                        "url" => $url,
+                                        "autoPlay" => false
+                                )
+                        )
+                );
             } else {
-                $flashvars = '<param name="flashvars" value=\'config={"clip":{"url":"'.$url.'", "autoPlay":false}}\' />';
+                $flashvars = array(
+                        "clip" => array(
+                                "url" => $url,
+                                "autoPlay" => false
+                        )
+                );
             }
+            $flashvars = 'config='.json_encode($flashvars);
             $flowplayer = array(
-                    '<script type="text/javascript">',
-                    'swfobject.registerObject("flowplayer-'.$this->flowplayercount.'", "9.0.115")</script>',
+                    $this->swfobject(),
                     '<object class="vjs-flash-fallback" id="flowplayer-'.$this->flowplayercount.'" width="'.$width.'" height="'.$height.'" ',
                     'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url['script'].'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
-                    $flashvars,
+                    '<param name="flashvars" value=\''.$flashvars.'\' />',
                     '</object>'
             );
             $this->flowplayer = implode("",$flowplayer);
@@ -196,20 +217,49 @@ class html5player {
 
     private function flowPlayerAudioCompatible($url) {
         if(preg_match("#(mp3)$#i",$url)) {
+            $flashvars = array(
+                    "plugins" => array(
+                            "controls" => array(
+                                    "fullscreen" => false,
+                                    "height" => 30,
+                                    "autoHide" => false
+                            )
+                    ),
+                    "clip" => array(
+                            "autoPlay" => false,
+                            "url" => $url
+                    ),
+                    "playerId" => "audio",
+                    "playlist" => array(
+                            array(
+                                    "autoPlay" => false,
+                                    "url" => $url
+                            )
+                    )
+            );
+            $flashvars = 'config='.json_encode($flashvars);
             $flowplayer = array(
-                    '<script type="text/javascript">',
-                    'swfobject.registerObject("flowplayer-'.$this->flowplayercount.'", "9.0.115")</script>',
+                    $this->swfobject(),
                     '<object id="flowplayer-'.$this->flowplayercount.'" width="300" height="30" ',
                     'data="'.$this->url['script'].'/inc/flowplayer.swf" type="application/x-shockwave-flash">',
                     '<param name="movie" value="'.$this->url['script'].'/inc/flowplayer.swf" />',
                     '<param name="allowfullscreen" value="false" />',
                     '<param name="cachebusting" value="true">',
                     '<param name="bgcolor" value="#000000">',
-                    '<param name="flashvars" value=\'config={"plugins":{"controls":{"fullscreen":false,"height":30,"autoHide":false}},"clip":{"autoPlay":false,"url":"'.$url.'"},"playerId":"audio","playlist":[{"autoPlay":false,"url":"'.$url.'"}]}\' />',
+                    '<param name="flashvars" value=\''.$flashvars.'\' />',
                     '</object>'
             );
             $this->flowplayer = implode("",$flowplayer);
             $this->flowplayercount++;
+        }
+    }
+
+    private function swfobject() {
+        if($this->option['swfobject']) {
+            return '<script type="text/javascript">'.
+                    'swfobject.registerObject("flowplayer-'.$this->flowplayercount.'", "9.0.115")</script>';
+        } else {
+            return "";
         }
     }
 

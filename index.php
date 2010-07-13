@@ -6,7 +6,22 @@
     </head>
     <body>
         <?php
-        // put your code here
+        $flashvars = array(
+            "playlist" => array(
+                array(
+                    "url" => "test"
+                ),
+                array(
+                    "url" => "test",
+                    "autoPlay" => false
+                ),
+            ),
+        );
+
+        //print_r($flashvars);
+
+        $flashvars = json_encode($flashvars);
+        echo $flashvars;
         ?>
     </body>
 </html>

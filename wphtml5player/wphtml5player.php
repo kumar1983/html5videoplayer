@@ -41,6 +41,7 @@ function html5player_call() {
     $scriptUrl = WP_PLUGIN_URL."/wphtml5player";
     require_once 'html5player.class.php';
     $wphtml5playerclass = new html5player($scriptUrl, get_bloginfo('url'), $scriptRoot);
+    $wphtml5playerclass->setOption('swfobject', true);
     if(!preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
         wp_enqueue_script('videojs', $wphtml5playerclass->script('videojs'));
         wp_enqueue_style('videojs', $wphtml5playerclass->script('videojscss'));
