@@ -76,7 +76,9 @@ class html5player {
 
         //Check for poster url.
         if(isset($matches[$ifScore]) && !is_numeric($matches[$ifScore])) {
-            $videooption["poster"] = $matches[$ifScore];
+            $url[0] = $matches[$ifScore];
+            $url = $this->urlsCheck($url);
+            $videooption["poster"] = $url[0];
             $ifScore++;
         } else {
             $videooption["poster"] = "";
