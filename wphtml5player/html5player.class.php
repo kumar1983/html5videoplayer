@@ -39,7 +39,7 @@ class html5player {
         $this->downloadLinks['open'] = false;
         $this->downloadLinks['closed'] = false;
         require_once 'inc/flowplayer.class.php';
-        $this->flowplayer = new buildflashobject();
+        $this->flowplayer = new flowplayer();
         $this->defaultLanguage();
     }
 

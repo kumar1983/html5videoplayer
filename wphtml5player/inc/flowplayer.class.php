@@ -1,6 +1,6 @@
 <?php
 
-class buildflashobject {
+class flowplayer {
 
     const THEID = "flowplayer-";
 
