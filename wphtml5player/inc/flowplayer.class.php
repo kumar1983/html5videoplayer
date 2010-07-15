@@ -66,7 +66,7 @@ class buildflashobject {
     }
 
     public function flowPlayerVideoCompatible($url, $width, $height, $poster, $root) {
-        if(preg_match("#(mp4|m4v)$#i",$url)) {
+        if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup']) {
             if(!(is_numeric($width) && is_numeric($height))) {
                 $width = 480;
                 $height = 320;
@@ -112,7 +112,7 @@ class buildflashobject {
     }
 
     public function flowPlayerAudioCompatible($url, $root) {
-        if(preg_match("#(mp3)$#i",$url)) {
+        if(preg_match("#(mp3)$#i",$url) && !$this->option['flashIsSetup']) {
             $flashvars = array(
                     "plugins" => array(
                             "controls" => array(

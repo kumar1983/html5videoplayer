@@ -36,6 +36,8 @@ class html5player {
         $this->url['script'] = $url;
         $this->url['site'] = $siteurl;
         $this->root = $root;
+        $this->downloadLinks['open'] = false;
+        $this->downloadLinks['closed'] = false;
         require_once 'inc/flowplayer.class.php';
         $this->flowplayer = new buildflashobject();
         $this->defaultLanguage();
@@ -67,9 +69,9 @@ class html5player {
     }
 
     private function arrayToOrganisedArrays($matches) {
-        $videourl = $matches[0];
-        $videourl = explode("|", $videourl);
-        $videourl = $this->urlsCheck($videourl);
+        $videourls = $matches[0];
+        $videourls = explode("|", $videourls);
+        $videourls = $this->urlsCheck($videourls);
         $ifScore = 1;
 
         //Check for poster url.
@@ -91,44 +93,45 @@ class html5player {
         if(!isset($videooption)) {
             $videooption = "notset";
         }
-        return $this->videoCodeGenerator($videourl, $videooption);
+        return $this->videoCodeGenerator($videourls, $videooption);
     }
 
-    private function videoCodeGenerator($videourl, $videooption) {
+    private function videoCodeGenerator($videourls, $videooption) {
         $width = $videooption["width"];
         $height = $videooption["height"];
         $poster = $videooption["poster"];
-        $output = '<div class="video-js-box"><video class="video-js" controls>';
-        foreach($videourl as $value) {
+        $source = '';
+        foreach($videourls as $value) {
             $this->flowplayer->flowPlayerVideoCompatible($value, $width, $height, $poster, $this->url['script']);
-            $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
+            $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
-        $output .= $this->getFallback($links);
-        $output .= '</video></div>';
-        return $output;
+        $header = '<div class="video-js-box"><video class="video-js" controls>';
+        $footer = '</video></div>';
+        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($links), $footer);
     }
 
     private function linkGenerator($message) {
         if(isset($this->downloadLinks)) {
             $links = $message;
-            if(isset($this->downloadLinks['closed'])) {
+            if($this->downloadLinks['closed']) {
                 $links .= $this->language['closedFormat'].$this->downloadLinks['closed'];
             }
-            if(isset($this->downloadLinks['open'])) {
+            if($this->downloadLinks['open']) {
                 $links .= $this->language['openFormat'].$this->downloadLinks['open'];
             }
-            unset($this->downloadLinks);
+            $this->downloadLinks['open'] = false;
+            $this->downloadLinks['closed'] = false;
             return $links;
         }
         return "";
     }
 
     public function audioreplace($data) {
-        $audiourl = $data[1];
-        $audiourl = explode("|", $audiourl);
-        $audiourl = $this->urlsCheck($audiourl);
-        return $this->audioCodeGenerator($audiourl);
+        $audiourls = $data[1];
+        $audiourls = explode("|", $audiourls);
+        $audiourls = $this->urlsCheck($audiourls);
+        return $this->audioCodeGenerator($audiourls);
     }
 
     private function urlsCheck($urls) {
@@ -145,16 +148,16 @@ class html5player {
         return $array;
     }
 
-    private function audioCodeGenerator($audiourl) {
-        $output = '<audio controls>';
-        foreach($audiourl as $value) {
+    private function audioCodeGenerator($audiourls) {
+        $source = '';
+        foreach($audiourls as $value) {
             $this->flowplayer->flowPlayerAudioCompatible($value, $this->url['script']);
-            $output .='<source src="'.$value.'" '.$this->audioType($value).' />';
+            $source .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio']);
-        $output .= $this->getFallback($links);
-        $output .= '</audio>';
-        return $output;
+        $header = '<audio controls>';
+        $footer = '</audio>';
+        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($links), $footer);
     }
 
     private function getFallback($links) {
