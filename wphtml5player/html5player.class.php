@@ -29,20 +29,15 @@ class html5player {
     private $url;
     private $root;
     private $flashbuilder;
-    private $count;
     private $downloadLinks;
     private $language;
-    private $option;
 
     public function  __construct($url, $siteurl, $root) {
         $this->url['script'] = $url;
         $this->url['site'] = $siteurl;
         $this->root = $root;
-        $this->flashobject = false;
         require_once 'inc/buildflashobject.class.php';
         $this->flashbuilder = new buildflashobject();
-        $this->count = 1;
-        $this->option['swfobject'] = false;
         $this->defaultLanguage();
     }
 
@@ -61,8 +56,8 @@ class html5player {
         $this->language[$param] = $value;
     }
 
-    public function setOption($param, $value) {
-        $this->option[$param] = $value;
+    public function setSWFObject($bool) {
+        $this->flashbuilder->setOptions('swfobject', $bool);
     }
 
     public function videoreplace($data) {
@@ -109,14 +104,8 @@ class html5player {
             $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
-        if($this->flashbuilder->getFlashIsSetup()) {
-            $this->flashbuilder->setFallback($links);
-            $output .= $this->flashbuilder->getFlashObject();
-        } else {
-            $output .= $links;
-        }
-        $output .= '</video>';
-        $output .= '</div>';
+        $output .= $this->getFlashObject($links);
+        $output .= '</video></div>';
         return $output;
     }
 
@@ -163,22 +152,26 @@ class html5player {
             $output .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio']);
-        if($this->flashbuilder->getFlashIsSetup()) {
-            $this->flashbuilder->setFallback($links);
-            $output .= $this->flashbuilder->getFlashObject();
-        } else {
-            $output .= $links;
-        }
+        $output .= $this->getFlashObject($links);
         $output .= '</audio>';
         return $output;
     }
 
-    private function flowPlayerVideoCompatible($url, $width, $height, $poster) {
-        if(!(is_numeric($width) && is_numeric($height))) {
-            $width = 480;
-            $height = 320;
+    private function getFlashObject($links) {
+        if($this->flashbuilder->getFlashIsSetup()) {
+            $this->flashbuilder->setFallback($links);
+            return $this->flashbuilder->getFlashObject();
+        } else {
+            return $links;
         }
+    }
+
+    private function flowPlayerVideoCompatible($url, $width, $height, $poster) {
         if(preg_match("#(mp4|m4v)$#i",$url)) {
+            if(!(is_numeric($width) && is_numeric($height))) {
+                $width = 480;
+                $height = 320;
+            }
             $flashvars = "";
             if($poster != "") {
                 $flashvars = array(
@@ -201,11 +194,9 @@ class html5player {
                 );
             }
             $flashvars = 'config='.json_encode($flashvars);
-            $flashobject['before'] = $this->swfobject();
             $movie = $this->url['script']."/inc/flowplayer.swf";
             $flashobject['attribs'] = array(
                     "class" => "vjs-flash-fallback",
-                    "id" => "flowplayer-".$this->count,
                     "width" => $width,
                     "height" => $height,
                     "data" => $movie,
@@ -217,7 +208,6 @@ class html5player {
                     "flashvars" => $flashvars
             );
             $this->flashbuilder->setUpFlash($flashobject);
-            $this->count++;
         }
     }
 
@@ -244,10 +234,8 @@ class html5player {
                     )
             );
             $flashvars = 'config='.json_encode($flashvars);
-            $flashobject['before'] = $this->swfobject();
             $movie = $this->url['script']."/inc/flowplayer.swf";
             $flashobject['attribs'] = array(
-                    "id" => "flowplayer-".$this->count,
                     "width" => "300",
                     "height" => "30",
                     "data" => $movie,
@@ -261,16 +249,6 @@ class html5player {
                     "flashvars" => $flashvars
             );
             $this->flashbuilder->setUpFlash($flashobject);
-            $this->count++;
-        }
-    }
-
-    private function swfobject() {
-        if($this->option['swfobject']) {
-            return '<script type="text/javascript">'.
-                    'swfobject.registerObject("flowplayer-'.$this->count.'", "9.0.115")</script>';
-        } else {
-            return "";
         }
     }
 
