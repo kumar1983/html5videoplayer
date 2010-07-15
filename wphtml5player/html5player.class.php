@@ -28,7 +28,7 @@
 class html5player {
     private $url;
     private $root;
-    private $flashbuilder;
+    private $flowplayer;
     private $downloadLinks;
     private $language;
 
@@ -36,8 +36,8 @@ class html5player {
         $this->url['script'] = $url;
         $this->url['site'] = $siteurl;
         $this->root = $root;
-        require_once 'inc/buildflashobject.class.php';
-        $this->flashbuilder = new buildflashobject();
+        require_once 'inc/flowplayer.class.php';
+        $this->flowplayer = new buildflashobject();
         $this->defaultLanguage();
     }
 
@@ -57,7 +57,7 @@ class html5player {
     }
 
     public function setSWFObject($bool) {
-        $this->flashbuilder->setOptions('swfobject', $bool);
+        $this->flowplayer->setOptions('swfobject', $bool);
     }
 
     public function videoreplace($data) {
@@ -100,11 +100,11 @@ class html5player {
         $poster = $videooption["poster"];
         $output = '<div class="video-js-box"><video class="video-js" controls>';
         foreach($videourl as $value) {
-            $this->flowPlayerVideoCompatible($value, $width, $height, $poster);
+            $this->flowplayer->flowPlayerVideoCompatible($value, $width, $height, $poster, $this->url['script']);
             $output .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
-        $output .= $this->getFlashObject($links);
+        $output .= $this->getFallback($links);
         $output .= '</video></div>';
         return $output;
     }
@@ -148,107 +148,21 @@ class html5player {
     private function audioCodeGenerator($audiourl) {
         $output = '<audio controls>';
         foreach($audiourl as $value) {
-            $this->flowPlayerAudioCompatible($value);
+            $this->flowplayer->flowPlayerAudioCompatible($value, $this->url['script']);
             $output .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio']);
-        $output .= $this->getFlashObject($links);
+        $output .= $this->getFallback($links);
         $output .= '</audio>';
         return $output;
     }
 
-    private function getFlashObject($links) {
-        if($this->flashbuilder->getFlashIsSetup()) {
-            $this->flashbuilder->setFallback($links);
-            return $this->flashbuilder->getFlashObject();
+    private function getFallback($links) {
+        if($this->flowplayer->getFlashIsSetup()) {
+            $this->flowplayer->setFallback($links);
+            return $this->flowplayer->getFlashObject();
         } else {
             return $links;
-        }
-    }
-
-    private function flowPlayerVideoCompatible($url, $width, $height, $poster) {
-        if(preg_match("#(mp4|m4v)$#i",$url)) {
-            if(!(is_numeric($width) && is_numeric($height))) {
-                $width = 480;
-                $height = 320;
-            }
-            $flashvars = "";
-            if($poster != "") {
-                $flashvars = array(
-                        "playlist" => array(
-                                array(
-                                        "url" => $poster
-                                ),
-                                array(
-                                        "url" => $url,
-                                        "autoPlay" => false
-                                )
-                        )
-                );
-            } else {
-                $flashvars = array(
-                        "clip" => array(
-                                "url" => $url,
-                                "autoPlay" => false
-                        )
-                );
-            }
-            $flashvars = 'config='.json_encode($flashvars);
-            $movie = $this->url['script']."/inc/flowplayer.swf";
-            $flashobject['attribs'] = array(
-                    "class" => "vjs-flash-fallback",
-                    "width" => $width,
-                    "height" => $height,
-                    "data" => $movie,
-                    "type" => "application/x-shockwave-flash"
-            );
-            $flashobject['params'] = array(
-                    "movie" => $movie,
-                    "allowfullscreen" => "false",
-                    "flashvars" => $flashvars
-            );
-            $this->flashbuilder->setUpFlash($flashobject);
-        }
-    }
-
-    private function flowPlayerAudioCompatible($url) {
-        if(preg_match("#(mp3)$#i",$url)) {
-            $flashvars = array(
-                    "plugins" => array(
-                            "controls" => array(
-                                    "fullscreen" => false,
-                                    "height" => 30,
-                                    "autoHide" => false
-                            )
-                    ),
-                    "clip" => array(
-                            "autoPlay" => false,
-                            "url" => $url
-                    ),
-                    "playerId" => "audio",
-                    "playlist" => array(
-                            array(
-                                    "autoPlay" => false,
-                                    "url" => $url
-                            )
-                    )
-            );
-            $flashvars = 'config='.json_encode($flashvars);
-            $movie = $this->url['script']."/inc/flowplayer.swf";
-            $flashobject['attribs'] = array(
-                    "width" => "300",
-                    "height" => "30",
-                    "data" => $movie,
-                    "type" => "application/x-shockwave-flash"
-            );
-            $flashobject['params'] = array(
-                    "movie" => $movie,
-                    "allowfullscreen" => "false",
-                    "cachebusting" => "true",
-                    "bgcolor" => "#000000",
-                    "flashvars" => $flashvars
-            );
-            $this->flashbuilder->setUpFlash($flashobject);
         }
     }
 
