@@ -81,20 +81,25 @@ class html5player {
             $videooption["poster"] = $url[0];
             $ifScore++;
         } else {
-            $videooption["poster"] = "";
+            $videooption["poster"] = false;
         }
 
+        $resolutionset = false;
         //Check for resolution
         if(isset($matches[$ifScore]) && isset($matches[$ifScore+1])) {
             if(is_numeric($matches[$ifScore]) && is_numeric($matches[$ifScore+1])) {
                 $videooption["width"] = $matches[$ifScore];
                 $videooption["height"] = $matches[$ifScore+1];
                 $ifScore+2;
+                $resolutionset = true;
             }
         }
-        if(!isset($videooption)) {
-            $videooption = "notset";
+        if(!$resolutionset){
+            $videooption["width"] = false;
+            $videooption["height"] = false;
         }
+
+        
         return $this->videoCodeGenerator($videourls, $videooption);
     }
 
@@ -108,9 +113,17 @@ class html5player {
             $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
-        $header = '<div class="video-js-box"><video class="video-js" controls>';
-        $footer = '</video></div>';
-        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($links), $footer);
+        $header = '<video class="video-js" controls>';
+        $footer = '</video>';
+        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($this->checkPoster($poster).$links), $footer);
+    }
+
+    private function checkPoster($poster) {
+        if($poster) {
+            return '<img src="'.$poster.'" />';
+        } else {
+            return "";
+        }
     }
 
     private function linkGenerator($message) {
@@ -162,12 +175,12 @@ class html5player {
         return sprintf('%s %s %s %s', $header, $source, $this->getFallback($links), $footer);
     }
 
-    private function getFallback($links) {
+    private function getFallback($fallback) {
         if($this->flowplayer->getFlashIsSetup()) {
-            $this->flowplayer->setFallback($links);
+            $this->flowplayer->setFallback($fallback);
             return $this->flowplayer->getFlashObject();
         } else {
-            return $links;
+            return $fallback;
         }
     }
 

@@ -67,12 +67,12 @@ class flowplayer {
 
     public function flowPlayerVideoCompatible($url, $width, $height, $poster, $root) {
         if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup']) {
-            if(!(is_numeric($width) && is_numeric($height))) {
+            if(!($width && $height)) {
                 $width = 480;
                 $height = 320;
             }
             $flashvars = "";
-            if($poster != "") {
+            if($poster) {
                 $flashvars = array(
                         "playlist" => array(
                                 array(
@@ -103,8 +103,7 @@ class flowplayer {
                     "type" => "application/x-shockwave-flash",
                     "data" => $movie,
                     "width" => $width,
-                    "height" => $height,
-                    "class" => "vjs-flash-fallback"
+                    "height" => $height
 
             );
             $flashobject['params'] = array(
