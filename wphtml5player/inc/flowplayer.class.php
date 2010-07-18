@@ -65,7 +65,7 @@ class flowplayer {
         }
     }
 
-    public function flowPlayerVideoCompatible($url, $width, $height, $poster, $root) {
+    public function videoCompatible($url, $width, $height, $poster, $root) {
         if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup']) {
             if(!($width && $height)) {
                 $width = 480;
@@ -115,7 +115,7 @@ class flowplayer {
         }
     }
 
-    public function flowPlayerAudioCompatible($url, $root) {
+    public function audioCompatible($url, $root) {
         if(preg_match("#(mp3)$#i",$url) && !$this->option['flashIsSetup']) {
             $flashvars = array(
                     "plugins" => array(

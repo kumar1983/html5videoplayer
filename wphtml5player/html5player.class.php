@@ -109,7 +109,7 @@ class html5player {
         $poster = $videooption["poster"];
         $source = '';
         foreach($videourls as $value) {
-            $this->flowplayer->flowPlayerVideoCompatible($value, $width, $height, $poster, $this->url['script']);
+            $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
             $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
@@ -120,7 +120,7 @@ class html5player {
 
     private function checkPoster($poster) {
         if($poster) {
-            return '<img src="'.$poster.'" />';
+            return '<img src="'.$poster.'" /><br />';
         } else {
             return "";
         }
@@ -166,7 +166,7 @@ class html5player {
     private function audioCodeGenerator($audiourls) {
         $source = '';
         foreach($audiourls as $value) {
-            $this->flowplayer->flowPlayerAudioCompatible($value, $this->url['script']);
+            $this->flowplayer->audioCompatible($value, $this->url['script']);
             $source .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio']);
