@@ -208,19 +208,5 @@ class html5player {
 
         return "";
     }
-
-    public function script($name) {
-        $script = array(
-                'videojs' => $this->url['script'].'/inc/video.js',
-                'videojscss' => $this->url['script'].'/inc/video-js.css'
-        );
-
-        return $script[$name];
-    }
-
-    public function httpHead() {
-        $output = '<script type="text/javascript">window.onload = function(){ VideoJS.setup(); }</script>';
-        return $output;
-    }
 }
 ?>

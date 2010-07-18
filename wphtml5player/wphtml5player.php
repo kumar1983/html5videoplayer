@@ -30,7 +30,6 @@ Author URI: http://cj-jackson.com/
 $wphtml5playerclass;
 
 add_action('init', 'html5player_call');
-add_action('wp_head', 'html5player_head');
 add_filter('the_content', 'html5player_parse');
 add_filter('the_excerpt', 'html5player_excerpt');
 
@@ -42,10 +41,6 @@ function html5player_call() {
     require_once 'html5player.class.php';
     $wphtml5playerclass = new html5player($scriptUrl, get_bloginfo('url'), $scriptRoot);
     $wphtml5playerclass->setSWFObject(true);
-    if(!preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
-        wp_enqueue_script('videojs', $wphtml5playerclass->script('videojs'));
-        wp_enqueue_style('videojs', $wphtml5playerclass->script('videojscss'));
-    }
 
     html5player_localise($scriptRoot);
 }
@@ -71,13 +66,6 @@ function html5player_localise($scriptRoot) {
 
     foreach($lang as $param => $value) {
         $wphtml5playerclass->setLanguage($param, $value);
-    }
-}
-
-function html5player_head() {
-    global $wphtml5playerclass;
-    if(!preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
-        echo $wphtml5playerclass->httpHead();
     }
 }
 
