@@ -92,6 +92,11 @@ class flowplayer {
                         )
                 );
             }
+            $flashvars['plugins'] = array(
+                    "controls" => array(
+                            "fullscreen" => false
+                    ),
+            );
             $flashvars = 'config='.json_encode($flashvars);
             $movie = $root."/inc/flowplayer.swf";
             $flashobject['attribs'] = array(
