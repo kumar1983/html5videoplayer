@@ -113,17 +113,30 @@ class html5player {
             $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
-        $header = '<video class="video-js" controls>';
+        $header = '<video '.$this->getPoster($poster).' controls preload="none" >';
         $footer = '</video>';
-        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($this->checkPoster($poster).$links), $footer);
+        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($this->getPosterForFallback($poster).$links), $footer);
     }
 
-    private function checkPoster($poster) {
+    private function getPosterForFallback($poster) {
         if($poster) {
             return '<img src="'.$poster.'" /><br />';
         } else {
             return "";
         }
+    }
+
+    private function getPoster($poster) {
+        $return = ' poster="'.$poster.'" ';
+        if(preg_match('#(iPod|iPhone|iPad)#',$_SERVER['HTTP_USER_AGENT'])) {
+            preg_match("#AppleWebKit/([0-9]+)(\.|\+)#", $_SERVER['HTTP_USER_AGENT'],
+                    $matches);
+            $WebKitVersion = (int)$matches[1];
+            if($WebKitVersion < 532){
+                $return = "";
+            }
+        }
+        return $return;
     }
 
     private function linkGenerator($message) {
