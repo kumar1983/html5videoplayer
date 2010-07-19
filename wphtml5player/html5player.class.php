@@ -115,9 +115,9 @@ class html5player {
         $noVideo = $this->language['noVideo'].$this->language['downloadVideo'];
         $links = ""; $outside = "";
         if($this->operaMobileCheck()) {
-            $outside = $this->linkGenerator();
+            $outside = '<br />'.$this->linkGenerator();
         } else {
-            $links = $this->linkGenerator();
+            $links = '<br />'.$this->linkGenerator();
         }
         $header = '<video '.$this->getPoster($poster).' controls preload="none" >';
         $footer = '</video>';
@@ -195,9 +195,9 @@ class html5player {
         $noAudio = $this->language['noAudio'].$this->language['downloadAudio'];
         $links = ""; $outside = "";
         if($this->operaMobileCheck()) {
-            $outside = $this->linkGenerator();
+            $outside = '<br />'.$this->linkGenerator();
         } else {
-            $links = $this->linkGenerator();
+            $links = '<br />'.$this->linkGenerator();
         };
         $header = '<audio controls>';
         $footer = '</audio>';
