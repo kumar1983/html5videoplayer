@@ -113,13 +113,15 @@ class html5player {
             $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
         $noVideo = $this->language['noVideo'].$this->language['downloadVideo'];
-        $links = ""; $outside = "";
+        $links = "";
+        $outside = "";
         if($this->operaMobileCheck()) {
             $outside = '<br />'.$this->linkGenerator();
         } else {
             $links = '<br />'.$this->linkGenerator();
         }
-        $header = '<video '.$this->getPoster($poster).' controls preload="none" >';
+        $header = '<video '.$this->getResolutionCode($width, $height).' '.
+                $this->getPoster($poster).' controls preload="none">';
         $footer = '</video>';
         return sprintf('%s %s %s %s %s', $header, $source,
                 $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), $footer, $outside);
@@ -150,8 +152,19 @@ class html5player {
         return $return;
     }
 
+    private function getResolutionCode($width, $height) {
+        if(preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
+            return 'width="270"';
+        }
+        if(!($width && $height)) {
+            return "";
+        }
+        return 'width="'.$width.'" height="'.$height.'"';
+    }
+
     private function linkGenerator() {
         if(isset($this->downloadLinks)) {
+            $links = "";
             if($this->downloadLinks['closed']) {
                 $links .= $this->language['closedFormat'].$this->downloadLinks['closed'];
             }
@@ -193,7 +206,8 @@ class html5player {
             $source .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $noAudio = $this->language['noAudio'].$this->language['downloadAudio'];
-        $links = ""; $outside = "";
+        $links = "";
+        $outside = "";
         if($this->operaMobileCheck()) {
             $outside = '<br />'.$this->linkGenerator();
         } else {
