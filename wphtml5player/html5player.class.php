@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 0.9.0
+ * HTML5 Player Class 0.9.1
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -94,12 +94,12 @@ class html5player {
                 $resolutionset = true;
             }
         }
-        if(!$resolutionset){
+        if(!$resolutionset) {
             $videooption["width"] = false;
             $videooption["height"] = false;
         }
 
-        
+
         return $this->videoCodeGenerator($videourls, $videooption);
     }
 
@@ -112,10 +112,17 @@ class html5player {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
             $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
         }
-        $links = $this->linkGenerator($this->language['noVideo'].$this->language['downloadVideo']);
+        $noVideo = $this->language['noVideo'].$this->language['downloadVideo'];
+        $links = ""; $outside = "";
+        if($this->operaMobileCheck()) {
+            $outside = $this->linkGenerator();
+        } else {
+            $links = $this->linkGenerator();
+        }
         $header = '<video '.$this->getPoster($poster).' controls preload="none" >';
         $footer = '</video>';
-        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($this->getPosterForFallback($poster).$links), $footer);
+        return sprintf('%s %s %s %s %s', $header, $source,
+                $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), $footer, $outside);
     }
 
     private function getPosterForFallback($poster) {
@@ -127,21 +134,24 @@ class html5player {
     }
 
     private function getPoster($poster) {
-        $return = ' poster="'.$poster.'" ';
+        if(!$poster) {
+            return "";
+        }
+        $return = 'poster="'.$poster.'"';
         if(preg_match('#(iPod|iPhone|iPad)#',$_SERVER['HTTP_USER_AGENT'])) {
-            preg_match("#AppleWebKit/([0-9]+)(\.|\+)#", $_SERVER['HTTP_USER_AGENT'],
-                    $matches);
-            $WebKitVersion = (int)$matches[1];
-            if($WebKitVersion < 532){
-                $return = "";
+            if(preg_match("#AppleWebKit/([0-9]+)(\.|\+|:space:)#", $_SERVER['HTTP_USER_AGENT'],
+            $matches)) {
+                $WebKitVersion = (int)$matches[1];
+                if($WebKitVersion >= 420 && $WebKitVersion < 532) {
+                    $return = "";
+                }
             }
         }
         return $return;
     }
 
-    private function linkGenerator($message) {
+    private function linkGenerator() {
         if(isset($this->downloadLinks)) {
-            $links = $message;
             if($this->downloadLinks['closed']) {
                 $links .= $this->language['closedFormat'].$this->downloadLinks['closed'];
             }
@@ -182,10 +192,16 @@ class html5player {
             $this->flowplayer->audioCompatible($value, $this->url['script']);
             $source .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
-        $links = $this->linkGenerator($this->language['noAudio'].$this->language['downloadAudio']);
+        $noAudio = $this->language['noAudio'].$this->language['downloadAudio'];
+        $links = ""; $outside = "";
+        if($this->operaMobileCheck()) {
+            $outside = $this->linkGenerator();
+        } else {
+            $links = $this->linkGenerator();
+        };
         $header = '<audio controls>';
         $footer = '</audio>';
-        return sprintf('%s %s %s %s', $header, $source, $this->getFallback($links), $footer);
+        return sprintf('%s %s %s %s %s', $header, $source, $this->getFallback($noAudio.$links), $footer, $outside);
     }
 
     private function getFallback($fallback) {
@@ -233,6 +249,14 @@ class html5player {
         }
 
         return "";
+    }
+
+    private function operaMobileCheck() {
+        if(preg_match("#(Opera Mini|Opera Mobi)#",$_SERVER['HTTP_USER_AGENT'])) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 ?>
