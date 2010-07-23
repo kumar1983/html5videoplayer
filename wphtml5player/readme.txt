@@ -15,7 +15,7 @@ A WordPress plugin that allows blogger to embed video and audio using the respec
 html 5 tags with Flowplayer as fallback, for example if a web browser doesn't support
 HTML 5 video or audio, then it will use Flowplayer for unsupported browsers.
 
-The plugin is based on [http://camendesign.com/code/video_for_everybody Video for Everybody],
+The plugin is based on [Video for Everybody](http://camendesign.com/code/video_for_everybody),
 except that this plugin takes full advantage of the PHP scripting language, while
 Video for Everybody is pure HTML. For example version 0.9.1 can detect the iPad or
 any iPhone below 4.0, if detected it will not include the poster attribute and if
@@ -29,7 +29,7 @@ The syntax is easy to remember, the syntax is either
 but if width is defined then height becomes mandatory.  It is recommended that you
 include theora and vorbis, as firefox won't fallback to flowplayer.
 
-See [http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/ Demostration]
+See [Demostration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
 detail, but keep the code on one line, otherwise it won't work.
 
 == Installation ==
