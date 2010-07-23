@@ -50,7 +50,7 @@ Easy, just add the below to `header.php` template of your selected theme.
 Note: As of 0.9.3, SWFobject is disabled by default as it was found to causes issues
 with some setup, e.g. flowplayer shows up, 5 seconds after it disappears.
 
-= Why Firefox won't fallback to Flowplayer(or Flash) when non-supported format is not detected? =
+= Why Firefox won't fallback to Flowplayer(or Flash) when non-supported format is detected? =
 This is a problem with Firefox itself, to work round this problem include theora
 and vorbis format within video and audio tag. e.g.
 
