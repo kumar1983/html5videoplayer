@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 0.9.3
+Stable tag: 0.9.4
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -40,7 +40,7 @@ detail, but keep the code on one line, otherwise it won't work.
 
 == Frequently Asked Questions ==
 = How to enable use with SWFObject? =
-Easy, just add the below to `header.php` template of your selected theme.
+Easy, just add the below to the top of `header.php` template of your selected theme.
 
 `<?php if(function_exists("html5player_enableSWFObject")) {
 	html5player_enableSWFObject();
@@ -70,10 +70,38 @@ AddType video/webm .webm`
 
 After doing this, perform a hard refresh with Firefox (Ctrl+F5).
 
+= Any plans for the setting panel? =
+It better to have the settings theme specific rather then global, never know what settings
+will break the theme or won't, so sorry no plans!
+
+= What the default attributes for video and audio? =
+The default for video is `controls preload="none"`.
+The default for audio is `controls`.
+
+= Is there a way to override the default attributes for video and audio? =
+Yes, the following examples below will override the default attributes.
+
+`<?php if(function_exists("html5player_videoParam")) {
+	html5player_videoParam('controls preload="none"');
+}
+if(function_exists("html5player_audioParam")) {
+	html5player_audioParam('controls');
+}
+?>`
+
+Place the code on top of `header.php` template of your selected theme.
+
+Note: The attribtues `src`, `poster`, `width` and `height` are already covered by the syntax,
+therefore no need to add them, there also no need to add `type` neither as that covered
+as well.
+
 == Screenshots ==
 None
 
 == Changelog ==
+
+= 0.9.4 =
+* Added ability to override default attributes of video or audio.
 
 = 0.9.3 =
 * Disabled SWFObject by default, as it was found to causes issues with some

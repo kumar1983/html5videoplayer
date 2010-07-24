@@ -31,6 +31,7 @@ class html5player {
     private $flowplayer;
     private $downloadLinks;
     private $language;
+    private $option;
 
     public function  __construct($url, $siteurl, $root) {
         $this->url['script'] = $url;
@@ -41,6 +42,12 @@ class html5player {
         require_once 'inc/flowplayer.class.php';
         $this->flowplayer = new flowplayer();
         $this->defaultLanguage();
+        $this->defaultOption();
+    }
+
+    private function defaultOption() {
+        $this->option['videoParam'] = 'controls preload="none"';
+        $this->option['audioParam'] = 'controls';
     }
 
     private function defaultLanguage() {
@@ -56,6 +63,10 @@ class html5player {
 
     public function setLanguage($param, $value) {
         $this->language[$param] = $value;
+    }
+
+    public function setOption($param, $value) {
+        $this->option[$param] = $value;
     }
 
     public function setSWFObject($bool) {
@@ -121,7 +132,7 @@ class html5player {
             $links = '<br />'.$this->linkGenerator();
         }
         $header = '<video '.$this->getResolutionCode($width, $height).' '.
-                $this->getPoster($poster).' controls preload="none">';
+                $this->getPoster($poster).' '.$this->option['videoParam'].' >';
         $footer = '</video>';
         return sprintf('%s %s %s %s %s', $header, $source,
                 $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), $footer, $outside);
@@ -213,7 +224,7 @@ class html5player {
         } else {
             $links = '<br />'.$this->linkGenerator();
         };
-        $header = '<audio controls>';
+        $header = '<audio '.$this->option['audioParam'].' >';
         $footer = '</audio>';
         return sprintf('%s %s %s %s %s', $header, $source, $this->getFallback($noAudio.$links), $footer, $outside);
     }

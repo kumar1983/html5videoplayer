@@ -39,7 +39,6 @@ function html5player_call() {
     $scriptUrl = WP_PLUGIN_URL."/wphtml5player";
     require_once 'html5player.class.php';
     $wphtml5playerclass = new html5player($scriptUrl, get_bloginfo('url'), $scriptRoot);
-
     html5player_localise($scriptRoot);
 }
 
@@ -89,6 +88,16 @@ function html5player_excerpt($content) {
     $content = preg_replace("#\[video:(.+?)\]#i", "", $content);
     $content = preg_replace("#\[audio:(.+?)\]#i", "", $content);
     return $content;
+}
+
+function html5player_videoParam($param) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("videoParam", $param);
+}
+
+function html5player_audioParam($param) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("audioParam", $param);
 }
 
 ?>
