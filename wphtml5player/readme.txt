@@ -70,6 +70,29 @@ AddType video/webm .webm`
 
 After doing this, perform a hard refresh with Firefox (Ctrl+F5).
 
+= Opera hangs on large ogg containers? =
+Opera does not seems to like ogg containers that contain text streams, some encoders such
+as Miro Video Converter add text streams to the container.  Windows, Mac and Linux users can
+use [MediaInfo](http://mediainfo.sourceforge.net) to check if the containers has text streams.
+
+Note: This was tested with Opera 10.6 and may not apply to later versions.
+
+= What the recommended encoder for Windows or Mac Users? =
+[HandBrake](http://handbrake.fr), has it has good support for h.264, AAC, Theora and Vorbis,
+the supported containers are Mastroska (MKV, For any format) and MP4 (h.264 and AAC only),
+Ogg container support has been dropped from the 0.9.4 release of HandBrake, therefore you
+will need a muxer that streams from MKV to Ogg, such as [FFMpeg](http://www.ffmpeg.org)
+or [Media Coder](http://www.mediacoderhq.org)
+
+Note: The HandBrake team were aware of HTML5 when dropping Ogg support.
+
+= What the recommended encoder for Linux Users? =
+Probably [Arista](http://www.transcoder.org), they seem to support h.264, AAC, Theora, Vorbis
+and also VP8, plus they also support MP4, Ogg and WebM containers.  [HandBrake](http://handbrake.fr)
+is also avaliable on Linux, but it not as focus on as the Windows and Mac version.
+
+Note: VP8 and WebM are still in early stage of development, so it probably best to avoid for now.
+
 = Any plans for the setting panel? =
 It better to have the settings theme specific rather then global, never know what settings
 will break the theme or won't, so sorry no plans!

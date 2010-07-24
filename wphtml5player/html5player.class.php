@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 0.9.3
+ * HTML5 Player Class 0.9.4
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
