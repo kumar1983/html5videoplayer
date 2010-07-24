@@ -30,7 +30,7 @@ but if width is defined then height becomes mandatory.  It is recommended that y
 include theora and vorbis, as firefox won't fallback to flowplayer.
 
 See [Demostration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
-detail, but keep the code on one line, otherwise it won't work.
+for detail, but keep the code on one line, otherwise it won't work.
 
 == Installation ==
 
