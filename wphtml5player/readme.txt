@@ -143,7 +143,7 @@ if(function_exists("html5player_setAudioWrap")) {
 ?>`
 
 If you need to register your id's with a JavaScript library, use the examples below,
-there no need for `<script>` tag that done automatically, place `%s` where id's go.
+there no need for `<script>` tag that done automatically, place `%s` where id's goes.
 Make sure you set the id's first.
 
 `<?php
@@ -170,7 +170,30 @@ Note: Place the codes on top of `header.php` template of your selected theme.
 
 = Any future plans to include Video and Audio JS Library? =
 Sorry No, but the advanced option should allow you to add your own JS library or
-the other librarys.
+the other librarys.  The example below will let you use it with [VideoJS](http://videojs.com/)
+which is placed on top of `header.php` of your selected theme.
+
+`<?php
+wp_enqueue_script('video', get_bloginfo('url').'/script/video.js');
+wp_enqueue_style('video', get_bloginfo('url').'/script/video-js.css');
+if(function_exists("html5player_setVideoWrap")) {
+    html5player_setVideoWrap('<div class="video-js-box">','</div>');
+}
+if(function_exists("html5player_videoParam")) {
+    html5player_videoParam('controls preload="none" class="video-js"');
+}
+if(function_exists("html5player_setFlowplayerVideoClass")) {
+    html5player_setFlowplayerVideoClass('vjs-flash-fallback');
+}
+?>`
+
+Also place the below within html `<head>`
+
+`<script type="text/javascript">
+  window.onload = function(){
+    VideoJS.setup();
+  }
+</script>`
 
 == Screenshots ==
 None
