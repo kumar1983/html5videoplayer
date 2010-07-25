@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 0.9.4
+Stable tag: 1.0.0
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -118,16 +118,62 @@ Note: The attribtues `src`, `poster`, `width` and `height` are already covered b
 therefore no need to add them, there also no need to add `type` neither as that covered
 as well.
 
+= Any other advanced options? =
+The examples below allow you to set videos and audios ID, plus it will automatically
+append a counter to the ID (e.g. video-1, video-2) so it does not fail w3c validation.
+
+`<?php
+if(function_exists("html5player_setVideoID")) {
+    html5player_setVideoID('video');
+}
+if(function_exists("html5player_setAudioID")) {
+    html5player_setAudioID('audio');
+}
+?>`
+
+The examples below allow you to place html code, before and after video and audio tags.
+
+`<?php
+if(function_exists("html5player_setVideoWrap")) {
+    html5player_setVideoWrap('<!-- before -->','<!-- after -->');
+}
+if(function_exists("html5player_setAudioWrap")) {
+    html5player_setAudioWrap('<!-- before -->','<!-- after -->');
+}
+?>`
+
+If you need to register your id's with a JavaScript library, use the examples below,
+there no need for `<script>` tag that done automatically, place `%s` where id's go.
+Make sure you set the id's first.
+
+`<?php
+if(function_exists("html5player_setVideoJSCall")) {
+    html5player_setVideoJSCall('test("%s")');
+}
+if(function_exists("html5player_setAudioJSCall")) {
+    html5player_setAudioJSCall('test("%s")');
+}
+?>`
+
+Note: Place the codes on top of `header.php` template of your selected theme.
+
+= Any future plans to include Video and Audio JS Library? =
+Sorry No, but the advanced option should allow you to add your own JS library or
+the other librarys.
+
 == Screenshots ==
 None
 
 == Changelog ==
 
+= 1.0.0 =
+* Added more advanced options.
+
 = 0.9.4 =
 * Added ability to override default attributes of video or audio.
 
 = 0.9.3 =
-* Disabled SWFObject by default, as it was found to causes issues with some
+* Disabled SWFObject by default, as it was found to cause issues with some
 installation.
 * Added FAQ and Updated Description.
 

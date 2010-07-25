@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Player for Wordpress
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Embed video using shortcodes, using flowplayer as fallback.
-Version: 0.9.4
+Version: 1.0.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Player for Wordpress 0.9.4
+ * HTML5 Player for Wordpress 1.0.0
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -98,6 +98,38 @@ function html5player_videoParam($param) {
 function html5player_audioParam($param) {
     global $wphtml5playerclass;
     $wphtml5playerclass->setOption("audioParam", $param);
+}
+
+function html5player_setVideoID($id) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("videoID", $id);
+}
+
+function html5player_setAudioID($id) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("audioID", $id);
+}
+
+function html5player_setVideoWrap($before, $after) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("beforeVideo", $before);
+    $wphtml5playerclass->setOption("afterVideo", $after);
+}
+
+function html5player_setAudioWrap($before, $after) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("beforeAudio", $before);
+    $wphtml5playerclass->setOption("afterAudio", $after);
+}
+
+function html5player_setVideoJSCall($script) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("videoScript", $script);
+}
+
+function html5player_setAudioJSCall($script) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("audioScript", $script);
 }
 
 ?>
