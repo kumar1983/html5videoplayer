@@ -52,7 +52,8 @@ with some setup, some setup use older versions of SWFObject then others.
 
 = Why Firefox or Safari won't fallback to Flowplayer(or Flash) when non-supported format is detected? =
 This bahaviour is part of the HTML5 specification itself, to work round this include theora
-and vorbis format (for Firefox) or h.264 and aac (for Safari) within video and audio tag. e.g.
+and vorbis format (for Firefox) or h.264 and aac (for Safari) or MP3 (for Safari Audio) within
+video and audio tag. e.g.
 
 `[video:file.mp4|file.ogv]
 
