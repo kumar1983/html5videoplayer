@@ -50,9 +50,9 @@ Easy, just add the below to the top of `header.php` template of your selected th
 Note: As of 0.9.3, SWFObject is disabled by default as it was found to cause issues
 with some setup, some setup use older versions of SWFObject then others.
 
-= Why Firefox won't fallback to Flowplayer(or Flash) when non-supported format is detected? =
-This is a problem with Firefox itself, to work round this problem include theora
-and vorbis format within video and audio tag. e.g.
+= Why Firefox or Safari won't fallback to Flowplayer(or Flash) when non-supported format is detected? =
+This bahaviour is part of the HTML5 specification itself, to work round this include theora
+and vorbis format (for Firefox) or h.264 and aac (for Safari) within video and audio tag. e.g.
 
 `[video:file.mp4|file.ogv]
 
