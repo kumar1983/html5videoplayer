@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Player for Wordpress
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Embed video using shortcodes, using flowplayer as fallback.
-Version: 1.0.0
+Version: 1.0.1
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Player for Wordpress 1.0.0
+ * HTML5 Player for Wordpress 1.0.1
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -45,7 +45,7 @@ function html5player_call() {
 function html5player_enableSWFObject() {
     global $wphtml5playerclass;
     wp_enqueue_script('swfobject');
-    $wphtml5playerclass->setSWFObject(true);
+    $wphtml5playerclass->setFlowPlayerOption("swfobject", true);
 }
 
 function html5player_localise($scriptRoot) {
@@ -130,6 +130,16 @@ function html5player_setVideoJSCall($script) {
 function html5player_setAudioJSCall($script) {
     global $wphtml5playerclass;
     $wphtml5playerclass->setOption("audioScript", $script);
+}
+
+function html5player_setFlowplayerVideoClass($name) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setFlowPlayerOption("videoClassName", $name);
+}
+
+function html5player_setFlowplayerAudioClass($name) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setFlowPlayerOption("audioClassName", $name);
 }
 
 ?>

@@ -11,9 +11,17 @@ class flowplayer {
     private $count;
 
     public function __construct() {
-        $this->option['flashIsSetup'] = false;
-        $this->option['swfobject'] = false;
+        $this->defaultOption();
         $this->count = 1;
+    }
+
+    private function defaultOption() {
+        $this->option = array(
+            'flashIsSetup' => false,
+            'swfobject' => false,
+            'videoClassName' => false,
+            'audioClassName' => false
+        );
     }
 
     public function setUpFlash($object) {
@@ -111,6 +119,9 @@ class flowplayer {
                     "allowFullScreen" => "false",
                     "flashvars" => $flashvars
             );
+            if($this->option['videoClassName']) {
+                $flashobject['attribs']['class'] = $this->option['videoClassName'];
+            }
             $this->setUpFlash($flashobject);
         }
     }
@@ -152,6 +163,9 @@ class flowplayer {
                     "bgcolor" => "#000000",
                     "flashvars" => $flashvars
             );
+            if($this->option['audioClassName']) {
+                $flashobject['attribs']['class'] = $this->option['audioClassName'];
+            }
             $this->setUpFlash($flashobject);
         }
     }

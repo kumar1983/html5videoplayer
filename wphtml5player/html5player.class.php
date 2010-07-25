@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.0.0
+ * HTML5 Player Class 1.0.1
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -83,8 +83,8 @@ class html5player {
         $this->option[$param] = $value;
     }
 
-    public function setSWFObject($bool) {
-        $this->flowplayer->setOptions('swfobject', $bool);
+    public function setFlowPlayerOption($param, $value) {
+        $this->flowplayer->setOptions($param, $value);
     }
 
     public function videoreplace($data) {

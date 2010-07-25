@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -155,6 +155,17 @@ if(function_exists("html5player_setAudioJSCall")) {
 }
 ?>`
 
+The examples below allows you to set class name of FlowPlayers object.
+
+`<?php
+if(function_exists("html5player_setFlowplayerVideoClass")) {
+    html5player_setFlowplayerVideoClass('media');
+}
+if(function_exists("html5player_setFlowplayerAudioClass")) {
+    html5player_setFlowplayerAudioClass('media');
+}
+?>`
+
 Note: Place the codes on top of `header.php` template of your selected theme.
 
 = Any future plans to include Video and Audio JS Library? =
@@ -165,6 +176,9 @@ the other librarys.
 None
 
 == Changelog ==
+
+= 1.0.1 =
+* Added ability to define class name for FlowPlayers object.
 
 = 1.0.0 =
 * Added more advanced options.
