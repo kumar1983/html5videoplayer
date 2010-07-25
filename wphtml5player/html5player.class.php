@@ -147,9 +147,10 @@ class html5player {
         $header = sprintf("%s<video %s %s %s %s>", $this->option['beforeVideo'],
                 $this->getID($this->option['videoID'], "video"), $this->option['videoParam'],
                 $this->getPoster($poster), $this->getResolutionCode($width, $height));
-        $footer = sprintf("</video>%s", $this->option['afterVideo']);
-        return sprintf('%s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $source,
-                $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), self::HTML5_TAG, $footer, $outside);
+        $footer = "</video>";
+        return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $source,
+                $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), self::HTML5_TAG, $footer, $outside,
+                $this->option['afterVideo']);
     }
 
     private function getID($name, $type) {
@@ -257,9 +258,10 @@ class html5player {
         };
         $header = sprintf("%s<audio %s %s>", $this->option['beforeAudio'],
                 $this->getID($this->option['audioID'], "audio"), $this->option['audioParam']);
-        $footer = sprintf("</audio>%s", $this->option['afterAudio']);
-        return sprintf('%s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
-                $header, $source, $this->getFallback($noAudio.$links), self::HTML5_TAG, $footer, $outside);
+        $footer = "</audio>";
+        return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
+                $header, $source, $this->getFallback($noAudio.$links), self::HTML5_TAG, $footer, $outside,
+                $this->option['afterAudio']);
     }
 
     private function getFallback($fallback) {
