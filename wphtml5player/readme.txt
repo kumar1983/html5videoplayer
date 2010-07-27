@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -200,6 +200,9 @@ Also place the below within html `<head>`
 None
 
 == Changelog ==
+
+= 1.0.2 =
+* Added type safety to video attribute "poster", to prevent errors with FlowPlayer.
 
 = 1.0.1 =
 * Added ability to define class name for FlowPlayers object.

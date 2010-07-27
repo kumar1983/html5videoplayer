@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.0.1
+ * HTML5 Player Class 1.0.2
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -99,32 +99,27 @@ class html5player {
         $videourls = $this->urlsCheck($videourls);
         $ifScore = 1;
 
+        $videooption["poster"] = false;
         //Check for poster url.
         if(isset($matches[$ifScore]) && !is_numeric($matches[$ifScore])) {
-            $url[0] = $matches[$ifScore];
-            $url = $this->urlsCheck($url);
-            $videooption["poster"] = $url[0];
+            if(preg_match("#.(jpg|jpeg|png|gif)$#i", $matches[$ifScore])) {
+                $url[0] = $matches[$ifScore];
+                $url = $this->urlsCheck($url);
+                $videooption["poster"] = $url[0];
+            }
             $ifScore++;
-        } else {
-            $videooption["poster"] = false;
         }
 
-        $resolutionset = false;
+        $videooption["width"] = false;
+        $videooption["height"] = false;
         //Check for resolution
         if(isset($matches[$ifScore]) && isset($matches[$ifScore+1])) {
             if(is_numeric($matches[$ifScore]) && is_numeric($matches[$ifScore+1])) {
-                $videooption["width"] = $matches[$ifScore];
-                $videooption["height"] = $matches[$ifScore+1];
+                $videooption["width"] = (int)$matches[$ifScore];
+                $videooption["height"] = (int)$matches[$ifScore+1];
                 $ifScore+2;
-                $resolutionset = true;
             }
         }
-        if(!$resolutionset) {
-            $videooption["width"] = false;
-            $videooption["height"] = false;
-        }
-
-
         return $this->videoCodeGenerator($videourls, $videooption);
     }
 
