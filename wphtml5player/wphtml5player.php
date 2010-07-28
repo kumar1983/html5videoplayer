@@ -74,12 +74,12 @@ function html5player_localise($scriptRoot) {
 
 function html5player_parse($content) {
     global $wphtml5playerclass;
+    $content = preg_replace("#<p>\[#i","[",$content);
+    $content = preg_replace("#\]</p>#i","]",$content);
     $content = preg_replace("#\[video:(.+?) demo\]#i", "&#91;video:$1&#93;", $content);
     $content = preg_replace("#\[audio:(.+?) demo\]#i", "&#91;audio:$1&#93;", $content);
     $content = preg_replace_callback("#\[video:(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
     $content = preg_replace_callback("#\[audio:(.+?)\]#i", array(&$wphtml5playerclass,"audioreplace"), $content);
-    $content = preg_replace("#\<p><div class=\"video-js-box\">#i","<div class=\"video-js-box\">",$content);
-    $content = preg_replace("#\</div></p>#i","</div>",$content);
     return $content;
 }
 
