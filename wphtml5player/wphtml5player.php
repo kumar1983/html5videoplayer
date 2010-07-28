@@ -30,6 +30,10 @@ Author URI: http://cj-jackson.com/
 $wphtml5playerclass;
 
 add_action('init', 'html5player_call');
+add_action('atom_head', 'html5player_VfE');
+add_action('rss_head', 'html5player_VfE');
+add_action('rss2_head', 'html5player_VfE');
+add_action('rdf_header', 'html5player_VfE');
 add_filter('the_content', 'html5player_parse');
 add_filter('the_excerpt', 'html5player_excerpt');
 
@@ -40,6 +44,11 @@ function html5player_call() {
     require_once 'html5player.class.php';
     $wphtml5playerclass = new html5player($scriptUrl, get_bloginfo('url'), $scriptRoot);
     html5player_localise($scriptRoot);
+}
+
+function html5player_VfE() {
+    html5player_setVideoWrap('<!-- Video for Everybody, Kroc Camen of Camen Design -->','');
+    html5player_setVideoLinkOutside();
 }
 
 function html5player_enableSWFObject() {

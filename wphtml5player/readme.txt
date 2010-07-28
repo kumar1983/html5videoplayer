@@ -48,7 +48,8 @@ None
 == Changelog ==
 
 = 1.0.4 =
-* Made minor improvement!
+* Added support for H.264 Extended, Main and High Profile using special extentions
+(.ext.m4v, .main.m4v and .high.m4v) as proof of concept.
 
 = 1.0.3 =
 * Added ability to force links outside the html video or audio tag.

@@ -133,10 +133,14 @@ class html5player {
         $width = $videooption["width"];
         $height = $videooption["height"];
         $poster = $videooption["poster"];
-        $source = '';
+        $sources = '';
         foreach($videourls as $value) {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
-            $source .='<source src="'.$value.'" '.$this->videoType($value).' />';
+            $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
+            if(preg_match("#.(ext|main|high).(mp4|m4v)$#i", $value) && $this->buggyiOS()) {
+                $source = '';
+            }
+            $sources .= $source;
         }
         $noVideo = $this->language['noVideo'].$this->language['downloadVideo'];
         $links = $outside = "";
@@ -150,7 +154,7 @@ class html5player {
                 $this->getID($this->option['videoID'], "video"), $this->option['videoParam'],
                 $this->getPoster($poster), $this->getResolutionCode($width, $height));
         $footer = "</video>";
-        return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $source,
+        return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
                 $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterVideo']);
     }
@@ -182,20 +186,23 @@ class html5player {
     }
 
     private function getPoster($poster) {
-        if(!$poster) {
+        if(!$poster || $this->buggyiOS()) {
             return "";
         }
-        $return = 'poster="'.$poster.'"';
+        return 'poster="'.$poster.'"';;
+    }
+
+    private function buggyiOS() {
         if(preg_match('#(iPod|iPhone|iPad)#',$_SERVER['HTTP_USER_AGENT'])) {
             if(preg_match("#AppleWebKit/([0-9]+)(\.|\+|:space:)#", $_SERVER['HTTP_USER_AGENT'],
             $matches)) {
                 $WebKitVersion = (int)$matches[1];
                 if($WebKitVersion >= 420 && $WebKitVersion < 532) {
-                    $return = "";
+                    return true;
                 }
             }
         }
-        return $return;
+        return false;
     }
 
     private function getResolutionCode($width, $height) {
@@ -278,15 +285,27 @@ class html5player {
     }
 
     private function videoType($url) {
-        if(preg_match("#(mp4|m4v)$#i", $url)) {
+        if(preg_match("#.ext.(mp4|m4v)$#i", $url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4 (Extended Baseline)</a> ';
+            return "type='video/mp4; codecs=\"avc1.58A01E, mp4a.40.2\"'";
+        }
+        if(preg_match("#.main.(mp4|m4v)$#i", $url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4 (Main)</a> ';
+            return "type='video/mp4; codecs=\"avc1.4D401E, mp4a.40.2\"'";
+        }
+        if(preg_match("#.high.(mp4|m4v)$#i", $url)) {
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4 (High)</a> ';
+            return "type='video/mp4; codecs=\"avc1.64001E, mp4a.40.2\"'";
+        }
+        if(preg_match("#.(mp4|m4v)$#i", $url)) {
             $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4</a> ';
             return "type='video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"'";
         }
-        if(preg_match("#(ogg|ogv)$#i",$url)) {
+        if(preg_match("#.(ogg|ogv)$#i",$url)) {
             $this->downloadLinks['open'] .= '<a href="'.$url.'">OGG</a> ';
             return "type='video/ogg; codecs=\"theora, vorbis\"'";
         }
-        if(preg_match("#(webm)$#i",$url)) {
+        if(preg_match("#.(webm)$#i",$url)) {
             $this->downloadLinks['open'] .= '<a href="'.$url.'">WebM</a> ';
             return "type='video/webm; codecs=\"vp8, vorbis\"'";
         }
@@ -295,19 +314,19 @@ class html5player {
     }
 
     private function audioType($url) {
-        if(preg_match("#(ogg|oga)$#i",$url)) {
+        if(preg_match("#.(ogg|oga)$#i",$url)) {
             $this->downloadLinks['open'] .= '<a href="'.$url.'">OGG</a> ';
             return 'type="audio/ogg"';
         }
-        if(preg_match("#(mp4|m4a|aac)$#i",$url)) {
+        if(preg_match("#.(mp4|m4a|aac)$#i",$url)) {
             $this->downloadLinks['closed'] .= '<a href="'.$url.'">AAC</a> ';
             return 'type="audio/aac"';
         }
-        if(preg_match("#(mp3)$#i",$url)) {
+        if(preg_match("#.(mp3)$#i",$url)) {
             $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP3</a> ';
             return 'type="audio/mpeg"';
         }
-        if(preg_match("#(wav)$#i", $url)) {
+        if(preg_match("#.(wav)$#i", $url)) {
             $this->downloadLinks['closed'] .= '<a href="'.$url.'">WAV</a> ';
             return 'type="audio/x-wav"';
         }
@@ -318,7 +337,7 @@ class html5player {
     private function mobileCheck() {
         if(preg_match("#(Opera Mini|Opera Mobi)#",$_SERVER['HTTP_USER_AGENT']) ||
                 (preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT']) &&
-                !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT']))) {
+                        !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT']))) {
             return true;
         } else {
             return false;
