@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.0.2
+ * HTML5 Player Class 1.0.3
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -60,7 +60,13 @@ class html5player {
                 'audioID' => false,
                 'beforeAudio' => '',
                 'afterAudio' => '',
-                'audioScript' => false
+                'audioScript' => false,
+                'videoLinkOutside' => false,
+                'audioLinkOutside' => false,
+                'videoLinkOutsideBefore' => '',
+                'videoLinkOutsideAfter' => '',
+                'audioLinkOutsideBefore' => '',
+                'audioLinkOutsideAfter' => ''
         );
     }
 
@@ -134,8 +140,9 @@ class html5player {
         }
         $noVideo = $this->language['noVideo'].$this->language['downloadVideo'];
         $links = $outside = "";
-        if($this->operaMobileCheck()) {
-            $outside = '<br />'.$this->linkGenerator();
+        if($this->operaMobileCheck() || $this->option['videoLinkOutside']) {
+            $outside = '<br />'.$this->option['videoLinkOutsideBefore'].$this->linkGenerator().
+                    $this->option['videoLinkOutsideAfter'];
         } else {
             $links = '<br />'.$this->linkGenerator();
         }
@@ -246,8 +253,9 @@ class html5player {
         }
         $noAudio = $this->language['noAudio'].$this->language['downloadAudio'];
         $links = $outside = "";
-        if($this->operaMobileCheck()) {
-            $outside = '<br />'.$this->linkGenerator();
+        if($this->operaMobileCheck() || $this->option['audioLinkOutside']) {
+            $outside = '<br />'.$this->option['audioLinkOutsideBefore'].$this->linkGenerator().
+                    $this->option['audioLinkOutsideAfter'];
         } else {
             $links = '<br />'.$this->linkGenerator();
         };

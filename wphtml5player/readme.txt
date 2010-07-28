@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -167,6 +167,28 @@ if(function_exists("html5player_setFlowplayerAudioClass")) {
 }
 ?>`
 
+The examples below will force links to go outside the video tag.
+
+`<?php
+if(function_exists("html5player_setVideoLinkOutside")) {
+	html5player_setVideoLinkOutside();
+}
+if(function_exists("html5player_setAudioLinkOutside")) {
+	html5player_setAudioLinkOutside();
+}
+?>`
+
+The examples below will set add html code before and after the link.
+
+`<?php
+if(function_exists("html5player_setVideoLinkOutsideWrap")) {
+    html5player_setVideoLinkOutsideWrap('<!-- before -->','<!-- after -->');
+}
+if(function_exists("html5player_setAudioLinkOutsideWrap")) {
+    html5player_setAudioLinkOutsideWrap('<!-- before -->','<!-- after -->');
+}
+?>`
+
 Note: Place the codes on top of `header.php` template of your selected theme.
 
 = Any future plans to include Video and Audio JS Library? =
@@ -175,6 +197,7 @@ the other librarys.  The example below will let you use it with [VideoJS](http:/
 which is placed on top of `header.php` of your selected theme.
 
 `<?php
+wp_enqueue_script('jquery');
 wp_enqueue_script('video', get_bloginfo('url').'/script/video.js');
 wp_enqueue_style('video', get_bloginfo('url').'/script/video-js.css');
 if(function_exists("html5player_setVideoWrap")) {
@@ -186,20 +209,29 @@ if(function_exists("html5player_videoParam")) {
 if(function_exists("html5player_setFlowplayerVideoClass")) {
     html5player_setFlowplayerVideoClass('vjs-flash-fallback');
 }
+if(function_exists("html5player_setVideoLinkOutside")) {
+    html5player_setVideoLinkOutside();
+}
+if(function_exists("html5player_setVideoLinkOutsideWrap")) {
+    html5player_setVideoLinkOutsideWrap('<p class="vjs-no-video">','</p>');
+}
 ?>`
 
 Also place the below within html `<head>`
 
 `<script type="text/javascript">
-  window.onload = function(){
+  jQuery(function(){
     VideoJS.setup();
-  }
+  })
 </script>`
 
 == Screenshots ==
 None
 
 == Changelog ==
+
+= 1.0.3 =
+* Added ability to force links outside the html video or audio tag.
 
 = 1.0.2 =
 * Added type safety to video attribute "poster", to prevent errors with FlowPlayer.
