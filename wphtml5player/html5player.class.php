@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.0.3
+ * HTML5 Player Class 1.0.4
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -63,8 +63,8 @@ class html5player {
                 'audioScript' => false,
                 'videoLinkOutside' => false,
                 'audioLinkOutside' => false,
-                'videoLinkOutsideBefore' => '',
-                'videoLinkOutsideAfter' => '',
+                'videoLinkOutsideBefore' => '<p>',
+                'videoLinkOutsideAfter' => '</p>',
                 'audioLinkOutsideBefore' => '',
                 'audioLinkOutsideAfter' => ''
         );
@@ -140,7 +140,7 @@ class html5player {
         }
         $noVideo = $this->language['noVideo'].$this->language['downloadVideo'];
         $links = $outside = "";
-        if($this->operaMobileCheck() || $this->option['videoLinkOutside']) {
+        if($this->mobileCheck() || $this->option['videoLinkOutside']) {
             $outside = '<br />'.$this->option['videoLinkOutsideBefore'].$this->linkGenerator().
                     $this->option['videoLinkOutsideAfter'];
         } else {
@@ -199,7 +199,8 @@ class html5player {
     }
 
     private function getResolutionCode($width, $height) {
-        if(preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT'])) {
+        if(preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT']) &&
+                !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) {
             return 'width="270"';
         }
         if(!($width && $height)) {
@@ -253,7 +254,7 @@ class html5player {
         }
         $noAudio = $this->language['noAudio'].$this->language['downloadAudio'];
         $links = $outside = "";
-        if($this->operaMobileCheck() || $this->option['audioLinkOutside']) {
+        if($this->mobileCheck() || $this->option['audioLinkOutside']) {
             $outside = '<br />'.$this->option['audioLinkOutsideBefore'].$this->linkGenerator().
                     $this->option['audioLinkOutsideAfter'];
         } else {
@@ -314,8 +315,10 @@ class html5player {
         return "";
     }
 
-    private function operaMobileCheck() {
-        if(preg_match("#(Opera Mini|Opera Mobi)#",$_SERVER['HTTP_USER_AGENT'])) {
+    private function mobileCheck() {
+        if(preg_match("#(Opera Mini|Opera Mobi)#",$_SERVER['HTTP_USER_AGENT']) ||
+                (preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT']) &&
+                !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT']))) {
             return true;
         } else {
             return false;

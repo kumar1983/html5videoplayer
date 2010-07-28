@@ -5,17 +5,17 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
 == Description ==
 
 A WordPress plugin that allows blogger to embed video and audio using the respective
-html 5 tags with Flowplayer as fallback, for example if a web browser doesn't support
-HTML 5 video or audio, then it will use Flowplayer for unsupported browsers.
+html 5 tags with Flowplayer as fallback, for example if a web browser doesn't render
+HTML 5 video or audio, it will use Flowplayer (Flash) for that web browsers.
 
-The plugin is based on [Video for Everybody](http://camendesign.com/code/video_for_everybody),
+The plugin is based on [Video for Everybody](http://camendesign.com/code/video_for_everybody) concept,
 except that this plugin takes full advantage of the PHP scripting language, while
 Video for Everybody is pure HTML. For example version 0.9.1 can detect the iPad or
 any iPhone below 4.0, if detected it will not include the poster attribute and if
@@ -30,7 +30,8 @@ but if width is defined then height becomes mandatory.  It is recommended that y
 include theora and vorbis, as firefox won't fallback to flowplayer.
 
 See [Demostration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
-for detail, but keep the code on one line, otherwise it won't work.
+and [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) for details, but keep
+the code on one line, otherwise it won't work.
 
 == Installation ==
 
@@ -39,196 +40,15 @@ for detail, but keep the code on one line, otherwise it won't work.
 1. And then follow the usage instructions on the Description page
 
 == Frequently Asked Questions ==
-= How to enable use with SWFObject? =
-Easy, just add the below to the top of `header.php` template of your selected theme.
-
-`<?php if(function_exists("html5player_enableSWFObject")) {
-	html5player_enableSWFObject();
-}
-?>`
-
-Note: As of 0.9.3, SWFObject is disabled by default as it was found to cause issues
-with some setup, some setup use older versions of SWFObject then others.
-
-= Why Firefox or Safari won't fallback to Flowplayer(or Flash) when non-supported format is detected? =
-This bahaviour is part of the HTML5 specification itself, to work round this include theora
-and vorbis format (for Firefox) or h.264 and aac (for Safari) or MP3 (for Safari Audio) within
-video and audio tag. e.g.
-
-`[video:file.mp4|file.ogv]
-
-[audio:file.mp3|file.ogg]`
-
-Note: Bare in mind, that HTML5 is currently a working draft.
-
-= Why Firefox won't play ogv although it's included? =
-This sound like a problem with the web server, sending the incorrect mime-type, try adding
-the following to `.htaccess`, if that does not work contact your server admin.
-
-`AddType video/ogg .ogv
-AddType video/mp4 .mp4
-AddType video/webm .webm`
-
-After doing this, perform a hard refresh with Firefox (Ctrl+F5).
-
-= Opera hangs on large ogg containers? =
-Opera does not seems to like ogg containers that contain text streams, some encoders such
-as Miro Video Converter add text streams to the container.  Windows, Mac and Linux users can
-use [MediaInfo](http://mediainfo.sourceforge.net) to check if the containers has text streams.
-
-Note: This was tested with Opera 10.6 and may not apply to later versions.
-
-= What the recommended encoder for Windows or Mac Users? =
-[HandBrake](http://handbrake.fr), has it has good support for h.264, AAC, Theora and Vorbis,
-the supported containers are Mastroska (MKV, For any format) and MP4 (h.264 and AAC only),
-Ogg container support has been dropped from the 0.9.4 release of HandBrake, therefore you
-will need a muxer that streams from MKV to Ogg, such as [FFMpeg](http://www.ffmpeg.org)
-or [Media Coder](http://www.mediacoderhq.org)
-
-Note: The HandBrake team were aware of HTML5 when dropping Ogg support.
-
-= What the recommended encoder for Linux Users? =
-Probably [Arista](http://www.transcoder.org), they seem to support h.264, AAC, Theora, Vorbis
-and also VP8, plus they also support MP4, Ogg and WebM containers.  [HandBrake](http://handbrake.fr)
-is also avaliable on Linux, but it not as focus on as the Windows and Mac version.
-
-Note: VP8 and WebM are still in early stage of development, so it probably best to avoid for now.
-
-= Any plans for the setting panel? =
-It better to have the settings theme specific rather then global, never know what settings
-will break the theme or won't, so sorry no plans!
-
-= What the default attributes for video and audio? =
-The default for video is `controls preload="none"`.
-The default for audio is `controls`.
-
-= Is there a way to override the default attributes for video and audio? =
-Yes, the following examples below will override the default attributes.
-
-`<?php if(function_exists("html5player_videoParam")) {
-	html5player_videoParam('controls preload="none"');
-}
-if(function_exists("html5player_audioParam")) {
-	html5player_audioParam('controls');
-}
-?>`
-
-Place the code on top of `header.php` template of your selected theme.
-
-Note: The attribtues `src`, `poster`, `width` and `height` are already covered by the syntax,
-therefore no need to add them, there also no need to add `type` neither as that covered
-as well.
-
-= Any other advanced options? =
-The examples below allow you to set videos and audios ID, plus it will automatically
-append a counter to the ID (e.g. video-1, video-2) so it does not fail w3c validation.
-
-`<?php
-if(function_exists("html5player_setVideoID")) {
-    html5player_setVideoID('video');
-}
-if(function_exists("html5player_setAudioID")) {
-    html5player_setAudioID('audio');
-}
-?>`
-
-The examples below allow you to place html code, before and after video and audio tags.
-
-`<?php
-if(function_exists("html5player_setVideoWrap")) {
-    html5player_setVideoWrap('<!-- before -->','<!-- after -->');
-}
-if(function_exists("html5player_setAudioWrap")) {
-    html5player_setAudioWrap('<!-- before -->','<!-- after -->');
-}
-?>`
-
-If you need to register your id's with a JavaScript library, use the examples below,
-there no need for `<script>` tag that done automatically, place `%s` where id's goes.
-Make sure you set the id's first.
-
-`<?php
-if(function_exists("html5player_setVideoJSCall")) {
-    html5player_setVideoJSCall('test("%s")');
-}
-if(function_exists("html5player_setAudioJSCall")) {
-    html5player_setAudioJSCall('test("%s")');
-}
-?>`
-
-The examples below allows you to set class name of FlowPlayers object.
-
-`<?php
-if(function_exists("html5player_setFlowplayerVideoClass")) {
-    html5player_setFlowplayerVideoClass('media');
-}
-if(function_exists("html5player_setFlowplayerAudioClass")) {
-    html5player_setFlowplayerAudioClass('media');
-}
-?>`
-
-The examples below will force links to go outside the video tag.
-
-`<?php
-if(function_exists("html5player_setVideoLinkOutside")) {
-	html5player_setVideoLinkOutside();
-}
-if(function_exists("html5player_setAudioLinkOutside")) {
-	html5player_setAudioLinkOutside();
-}
-?>`
-
-The examples below will set add html code before and after the link.
-
-`<?php
-if(function_exists("html5player_setVideoLinkOutsideWrap")) {
-    html5player_setVideoLinkOutsideWrap('<!-- before -->','<!-- after -->');
-}
-if(function_exists("html5player_setAudioLinkOutsideWrap")) {
-    html5player_setAudioLinkOutsideWrap('<!-- before -->','<!-- after -->');
-}
-?>`
-
-Note: Place the codes on top of `header.php` template of your selected theme.
-
-= Any future plans to include Video and Audio JS Library? =
-Sorry No, but the advanced option should allow you to add your own JS library or
-the other librarys.  The example below will let you use it with [VideoJS](http://videojs.com/)
-which is placed on top of `header.php` of your selected theme.
-
-`<?php
-wp_enqueue_script('jquery');
-wp_enqueue_script('video', get_bloginfo('url').'/script/video.js');
-wp_enqueue_style('video', get_bloginfo('url').'/script/video-js.css');
-if(function_exists("html5player_setVideoWrap")) {
-    html5player_setVideoWrap('<div class="video-js-box">','</div>');
-}
-if(function_exists("html5player_videoParam")) {
-    html5player_videoParam('controls preload="none" class="video-js"');
-}
-if(function_exists("html5player_setFlowplayerVideoClass")) {
-    html5player_setFlowplayerVideoClass('vjs-flash-fallback');
-}
-if(function_exists("html5player_setVideoLinkOutside")) {
-    html5player_setVideoLinkOutside();
-}
-if(function_exists("html5player_setVideoLinkOutsideWrap")) {
-    html5player_setVideoLinkOutsideWrap('<p class="vjs-no-video">','</p>');
-}
-?>`
-
-Also place the below within html `<head>`
-
-`<script type="text/javascript">
-  jQuery(function(){
-    VideoJS.setup();
-  })
-</script>`
+See http://code.google.com/p/html5videoplayer/wiki/FAQ
 
 == Screenshots ==
 None
 
 == Changelog ==
+
+= 1.0.4 =
+* Made minor improvement!
 
 = 1.0.3 =
 * Added ability to force links outside the html video or audio tag.
