@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -30,8 +30,7 @@ but if width is defined then height becomes mandatory.  It is recommended that y
 include theora and vorbis, as firefox won't fallback to flowplayer.
 
 See [Demostration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
-and [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) for details, but keep
-the code on one line, otherwise it won't work.
+and [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) for details about the plugin.
 
 == Installation ==
 
@@ -46,6 +45,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.0.5 =
+* Added options to disable FlowPlayer for either video, audio or both. Useful for
+some JavaScript Libraries.
 
 = 1.0.4 =
 * Added support for H.264 Extended, Main and High Profile using special extentions

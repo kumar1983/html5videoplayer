@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.0.4
+ * HTML5 Player Class 1.0.5
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -65,8 +65,8 @@ class html5player {
                 'audioLinkOutside' => false,
                 'videoLinkOutsideBefore' => '<p>',
                 'videoLinkOutsideAfter' => '</p>',
-                'audioLinkOutsideBefore' => '',
-                'audioLinkOutsideAfter' => ''
+                'audioLinkOutsideBefore' => '<p>',
+                'audioLinkOutsideAfter' => '</p>'
         );
     }
 

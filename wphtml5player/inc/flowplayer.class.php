@@ -20,7 +20,9 @@ class flowplayer {
             'flashIsSetup' => false,
             'swfobject' => false,
             'videoClassName' => false,
-            'audioClassName' => false
+            'audioClassName' => false,
+            'videoFlowPlayerEnabled' => true,
+            'audioFlowPlayerEnabled' => true
         );
     }
 
@@ -74,7 +76,8 @@ class flowplayer {
     }
 
     public function videoCompatible($url, $width, $height, $poster, $root) {
-        if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup']) {
+        if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup'] &&
+                $this->option['videoFlowPlayerEnabled']) {
             if(!($width && $height)) {
                 $width = 480;
                 $height = 320;
@@ -127,7 +130,8 @@ class flowplayer {
     }
 
     public function audioCompatible($url, $root) {
-        if(preg_match("#(mp3)$#i",$url) && !$this->option['flashIsSetup']) {
+        if(preg_match("#(mp3)$#i",$url) && !$this->option['flashIsSetup'] &&
+                $this->option['audioFlowPlayerEnabled']) {
             $flashvars = array(
                     "plugins" => array(
                             "controls" => array(
@@ -169,7 +173,6 @@ class flowplayer {
             $this->setUpFlash($flashobject);
         }
     }
-
 }
 
 ?>
