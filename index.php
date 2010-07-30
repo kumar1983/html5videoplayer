@@ -8,20 +8,17 @@
         <?php
         $flashvars = array(
             "playlist" => array(
-                array(
-                    "url" => "test"
-                ),
-                array(
-                    "url" => "test",
-                    "autoPlay" => false
-                ),
+                "hello",
+                "hello1"
             ),
         );
 
         //print_r($flashvars);
 
         $flashvars = json_encode($flashvars);
-        echo $flashvars;
+        //echo $flashvars;
+
+        print_r(json_decode('{"url":["http://cj-jackson.com/wp-content/uploads/2010/07/big_buck_bunny.m4v","http://cj-jackson.com/wp-content/uploads/2010/07/big_buck_bunny.ogv"],"poster":"http://cj-jackson.com/wp-content/uploads/2010/07/big_buck_bunny.jpg","width":640,"height":368}', true));
         ?>
     </body>
 </html>

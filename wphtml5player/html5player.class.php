@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.0.5
+ * HTML5 Player Class 1.1.0
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -99,6 +99,33 @@ class html5player {
         return $this->arrayToOrganisedArrays($data);
     }
 
+    public function videoreplaceJSON($data) {
+        $json = str_replace('&#8220;','"',$data[1]);
+        $json = str_replace('&#8221;','"',$json);
+        $json = str_replace('<br />','',$json);
+        $json = json_decode($json, true);
+        if(is_array($json)) {
+            if(!(isset($json["url"]))) {
+                return "";
+            }
+            if(!is_array($json["url"])) {
+                $array[0] = $json['url'];
+                $json['url'] = $array;
+            }
+            if(!(isset($json["width"]) && isset($json["height"]))) {
+                $json["width"] = $json["height"] = false;
+            }
+            if(!isset($json["poster"])) {
+                $json["poster"] = false;
+            }
+            if(!isset($json["title"])) {
+                $json["title"] = false;
+            }
+            return $this->videoCodeGenerator("", "", $json);
+        }
+        return "";
+    }
+
     private function arrayToOrganisedArrays($matches) {
         $videourls = $matches[0];
         $videourls = explode("|", $videourls);
@@ -126,13 +153,27 @@ class html5player {
                 $ifScore+2;
             }
         }
-        return $this->videoCodeGenerator($videourls, $videooption);
+        return $this->videoCodeGenerator($videourls, $videooption, false);
     }
 
-    private function videoCodeGenerator($videourls, $videooption) {
-        $width = $videooption["width"];
-        $height = $videooption["height"];
-        $poster = $videooption["poster"];
+    private function videoCodeGenerator($videourls, $videooption, $JSON) {
+        if($JSON) {
+            $videourls = $this->urlsCheck($JSON["url"]);
+            $width = $JSON["width"];
+            $height = $JSON["height"];
+            $poster = $JSON["poster"];
+            if($poster) {
+                $url[0] = $poster;
+                $url = $this->urlsCheck($url);
+                $poster = $url[0];
+            }
+            $title = $JSON["title"];
+        } else {
+            $width = $videooption["width"];
+            $height = $videooption["height"];
+            $poster = $videooption["poster"];
+            $title = false;
+        }
         $sources = '';
         foreach($videourls as $value) {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
@@ -150,9 +191,10 @@ class html5player {
         } else {
             $links = '<br />'.$this->linkGenerator();
         }
-        $header = sprintf("%s<video %s %s %s %s>", $this->option['beforeVideo'],
+        $header = sprintf("%s<video %s %s %s %s %s>", $this->option['beforeVideo'],
                 $this->getID($this->option['videoID'], "video"), $this->option['videoParam'],
-                $this->getPoster($poster), $this->getResolutionCode($width, $height));
+                $this->getPoster($poster), $this->getResolutionCode($width, $height),
+                $this->getTitle($title));
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
                 $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), self::HTML5_TAG, $footer, $outside,
@@ -189,7 +231,14 @@ class html5player {
         if(!$poster || $this->buggyiOS()) {
             return "";
         }
-        return 'poster="'.$poster.'"';;
+        return 'poster="'.$poster.'"';
+    }
+
+    private function getTitle($title) {
+        if($title) {
+            return 'title="'.$title.'"';
+        }
+        return "";
     }
 
     private function buggyiOS() {
@@ -236,7 +285,28 @@ class html5player {
         $audiourls = $data[1];
         $audiourls = explode("|", $audiourls);
         $audiourls = $this->urlsCheck($audiourls);
-        return $this->audioCodeGenerator($audiourls);
+        return $this->audioCodeGenerator($audiourls, false);
+    }
+
+    public function audioreplaceJSON($data) {
+        $json = str_replace('&#8220;','"',$data[1]);
+        $json = str_replace('&#8221;','"',$json);
+        $json = str_replace('<br />','',$json);
+        $json = json_decode($json, true);
+        if($json) {
+            if(!(isset($json["url"]))) {
+                return "";
+            }
+            if(!is_array($json["url"])) {
+                $array[0] = $json['url'];
+                $json['url'] = $array;
+            }
+            if(!isset($json["title"])) {
+                $json["title"] = false;
+            }
+            return $this->audioCodeGenerator("", $json["url"]);
+        }
+        return "";
     }
 
     private function urlsCheck($urls) {
@@ -253,7 +323,13 @@ class html5player {
         return $array;
     }
 
-    private function audioCodeGenerator($audiourls) {
+    private function audioCodeGenerator($audiourls, $JSON) {
+        if($JSON) {
+            $audiourls = $this->urlsCheck($JSON['url']);
+            $title = $JSON['title'];
+        } else {
+            $title = false;
+        }
         $source = '';
         foreach($audiourls as $value) {
             $this->flowplayer->audioCompatible($value, $this->url['script']);
@@ -267,8 +343,9 @@ class html5player {
         } else {
             $links = '<br />'.$this->linkGenerator();
         };
-        $header = sprintf("%s<audio %s %s>", $this->option['beforeAudio'],
-                $this->getID($this->option['audioID'], "audio"), $this->option['audioParam']);
+        $header = sprintf("%s<audio %s %s %s>", $this->option['beforeAudio'],
+                $this->getID($this->option['audioID'], "audio"), $this->option['audioParam'],
+                $this->getTitle($title));
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
                 $header, $source, $this->getFallback($noAudio.$links), self::HTML5_TAG, $footer, $outside,
@@ -309,7 +386,6 @@ class html5player {
             $this->downloadLinks['open'] .= '<a href="'.$url.'">WebM</a> ';
             return "type='video/webm; codecs=\"vp8, vorbis\"'";
         }
-
         return "";
     }
 
@@ -330,7 +406,6 @@ class html5player {
             $this->downloadLinks['closed'] .= '<a href="'.$url.'">WAV</a> ';
             return 'type="audio/x-wav"';
         }
-
         return "";
     }
 
