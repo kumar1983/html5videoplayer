@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Player for Wordpress
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Embed video using shortcodes, using flowplayer as fallback.
-Version: 1.1.0
+Version: 1.1.1
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Player for Wordpress 1.1.0
+ * HTML5 Player for Wordpress 1.1.1
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -85,10 +85,10 @@ function html5player_parse($content) {
     global $wphtml5playerclass;
     $content = preg_replace("#<p>\[#i","[",$content);
     $content = preg_replace("#\]</p>#i","]",$content);
-    $content = preg_replace("#\[video\]'{(.+?)}'\[/video demo\]#is", "&#91;video&#93;$1&#91;/video&#93;", $content);
-    $content = preg_replace("#\[audio\]'{(.+?)}'\[/audio demo\]#is", "&#91;audio$1&#93;$1&#91;/audio&#93;", $content);
+    //$content = preg_replace("#\[video\](.+?)\[/video demo\]#is", "&#91;video&#93;$1&#91;/video&#93;", $content);
+    //$content = preg_replace("#\[audio\](.+?)\[/audio demo\]#is", "&#91;audio$1&#93;$1&#91;/audio&#93;", $content);
     $content = preg_replace_callback("#\[video\](.+?)\[/video\]#is", array(&$wphtml5playerclass,"videoreplaceJSON"), $content);
-    $content = preg_replace_callback("#\[audio\](.+?)'\[/audio\]#is", array(&$wphtml5playerclass,"audioreplaceJSON"), $content);
+    $content = preg_replace_callback("#\[audio\](.+?)\[/audio\]#is", array(&$wphtml5playerclass,"audioreplaceJSON"), $content);
     $content = preg_replace("#\[video:(.+?) demo\]#i", "&#91;video:$1&#93;", $content);
     $content = preg_replace("#\[audio:(.+?) demo\]#i", "&#91;audio:$1&#93;", $content);
     $content = preg_replace_callback("#\[video:(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
