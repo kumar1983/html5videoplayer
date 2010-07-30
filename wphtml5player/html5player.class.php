@@ -294,7 +294,7 @@ class html5player {
         $json = str_replace('<br />','',$json);
         $json = json_decode($json, true);
         if($json) {
-            if(!(isset($json["url"]))) {
+            if(!isset($json["url"])) {
                 return "";
             }
             if(!is_array($json["url"])) {
@@ -304,7 +304,7 @@ class html5player {
             if(!isset($json["title"])) {
                 $json["title"] = false;
             }
-            return $this->audioCodeGenerator("", $json["url"]);
+            return $this->audioCodeGenerator("", $json);
         }
         return "";
     }
