@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.1.2
+ * HTML5 Player Class 1.1.3
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -200,7 +200,9 @@ class html5player {
         foreach($videourls as $value) {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
-            if(preg_match("#.(ext|main|high).(mp4|m4v)$#i", $value) && $this->buggyiOS()) {
+            if((preg_match("#.(ext|main|high).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
+                    !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
+                    (preg_match("#.(ogv|ogg|webm)$#i", $value) && $this->buggyiOS())) {
                 $source = '';
             }
             $sources .= $source;

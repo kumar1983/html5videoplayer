@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -41,6 +41,9 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.1.3 =
+* Improved iPad support.
 
 = 1.1.2 =
 * Escape special html characters form title, video and audio url, and poster url.
