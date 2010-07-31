@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.1.1
+ * HTML5 Player Class 1.1.2
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -113,17 +113,44 @@ class html5player {
                 $json['url'] = $array;
             }
             if(!(isset($json["width"]) && isset($json["height"]))) {
-                $json["width"] = $json["height"] = false;
+                $json["width"] = false;
+                $json["height"] = false;
+            } elseif (!(is_numeric($json["width"]) && is_numeric($json["height"]))) {
+                $json["width"] = false;
+                $json["height"] = false;
+            } else {
+                $json["width"] = (int)$json["width"];
+                $json["height"] = (int)$json["height"];
             }
             if(!isset($json["poster"])) {
                 $json["poster"] = false;
+            } elseif (!preg_match("#.(jpg|jpeg|png|gif)$#i", $json["poster"])) {
+                $json["poster"] = false;
+            }
+            if($json["poster"]) {
+                $url[0] = $json["poster"];
+                $url = $this->urlsCheck($url);
+                $json["poster"] = $url[0];
             }
             if(!isset($json["title"])) {
                 $json["title"] = false;
+            } else {
+                $json["title"] = htmlspecialchars($json["title"]);
             }
             return $this->videoCodeGenerator("", "", $json);
+        } else {
+            return $this->jsonError();
         }
-        return "";
+    }
+
+    private function jsonError() {
+        $json_errors = array(
+                JSON_ERROR_NONE => 'No error has occurred',
+                JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
+                JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
+                JSON_ERROR_SYNTAX => 'Syntax error',
+        );
+        return "JSON ERROR: ".$json_errors[json_last_error()];
     }
 
     private function arrayToOrganisedArrays($matches) {
@@ -162,11 +189,6 @@ class html5player {
             $width = $JSON["width"];
             $height = $JSON["height"];
             $poster = $JSON["poster"];
-            if($poster) {
-                $url[0] = $poster;
-                $url = $this->urlsCheck($url);
-                $poster = $url[0];
-            }
             $title = $JSON["title"];
         } else {
             $width = $videooption["width"];
@@ -303,10 +325,13 @@ class html5player {
             }
             if(!isset($json["title"])) {
                 $json["title"] = false;
+            } else {
+                $json["title"] = htmlspecialchars($json["title"]);
             }
             return $this->audioCodeGenerator("", $json);
+        } else {
+            return $this->jsonError();
         }
-        return "";
     }
 
     private function urlsCheck($urls) {
@@ -314,9 +339,9 @@ class html5player {
         foreach($urls as $value) {
             if(!preg_match("#^(http|https)://#i", $value)) {
                 $data = $this->url['site']."/".$value;
-                $array[$arrayCount] = $data;
+                $array[$arrayCount] = htmlspecialchars($data);
             } else {
-                $array[$arrayCount] = $value;
+                $array[$arrayCount] = htmlspecialchars($value);
             }
             $arrayCount++;
         }
