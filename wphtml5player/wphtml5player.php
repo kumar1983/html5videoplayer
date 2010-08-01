@@ -116,6 +116,7 @@ function wphtml5player_setFlowPlayerOptions($json) {
     global $wphtml5playerclass;
     $json = json_decode($json, true);
     if(is_array($json)) {
+        unset($json["flashIsSetup"]);
         foreach($json as $key => $value) {
             $wphtml5playerclass->setFlowPlayerOption($key, $value);
         }
