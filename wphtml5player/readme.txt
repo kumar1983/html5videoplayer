@@ -1,11 +1,11 @@
-=== HTML5 Player Plugin for Wordpress ===
+=== HTML5 Audio and Video Framework for Wordpress ===
 Contributors: CJ_Jackson
 Author URI: http://cj-jackson.com/
 Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.1.3
+Stable tag: 1.2.0
 
 Quickcode for HTML5 video and audio, fallback to flowplayer on fail
 
@@ -41,6 +41,12 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.2.0 =
+* Renamed from "HTML5 Player Plugin for Wordpress" to "HTML5 Audio and Video Framework 
+for Wordpress" because that what it is and it sound better.
+* Advanced options have been changed and replace with JSON Advanced Options and
+Wordpress hooks.  Older advanced options will no longer work.
 
 = 1.1.3 =
 * Improved iPad support.

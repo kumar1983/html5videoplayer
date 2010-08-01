@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Player Class 1.1.3
+ * HTML5 Audio and Video Framework Class 1.2.0
  * Embed video using shortcodes, using flowplayer as fallback.
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -35,6 +35,8 @@ class html5player {
     private $language;
     private $option;
     private $count;
+    private $htmlAttribute;
+    private $tag;
 
     public function  __construct($url, $siteurl, $root) {
         $this->url['script'] = $url;
@@ -46,13 +48,13 @@ class html5player {
         $this->flowplayer = new flowplayer();
         $this->defaultLanguage();
         $this->defaultOption();
+        $this->defaultHtmlAttribute();
         $this->count = array("video" => 0, "audio" => 0);
+        $this->tag = array("video" => "video", "audio" => "audio");
     }
 
     private function defaultOption() {
         $this->option = array(
-                'videoParam' => 'controls preload="none"',
-                'audioParam' => 'controls',
                 'videoID' => false,
                 'beforeVideo' => '',
                 'afterVideo' => '',
@@ -81,16 +83,44 @@ class html5player {
         );
     }
 
-    public function setLanguage($param, $value) {
-        $this->language[$param] = $value;
+    private function defaultHtmlAttribute() {
+        $this->htmlAttribute = array(
+            'video' => array(
+                'controls' => null,
+                'preload' => "none"
+            ),
+            'audio' => array(
+                'controls' => null
+            )
+        );
     }
 
-    public function setOption($param, $value) {
-        $this->option[$param] = $value;
+    public function setVideoAttribute($key, $value) {
+        $this->htmlAttribute["video"][strtolower($key)] = $value;
     }
 
-    public function setFlowPlayerOption($param, $value) {
-        $this->flowplayer->setOptions($param, $value);
+    public function setAudioAttribute($key, $value) {
+        $this->htmlAttribute["audio"][strtolower($key)] = $value;
+    }
+
+    public function setLanguage($key, $value) {
+        $this->language[$key] = $value;
+    }
+
+    public function setOption($key, $value) {
+        $this->option[$key] = $value;
+    }
+
+    public function setTag($key, $value) {
+        $this->tag[$key] = $value;
+    }
+
+    public function getTag($key) {
+        return $this->tag[$key];
+    }
+
+    public function setFlowPlayerOption($key, $value) {
+        $this->flowplayer->setOptions($key, $value);
     }
 
     public function videoreplace($data) {
@@ -137,13 +167,18 @@ class html5player {
             } else {
                 $json["title"] = htmlspecialchars($json["title"]);
             }
+            if(!isset($json["attribute"])) {
+                $json["attribute"] = false;
+            } elseif(!is_array($json["attribute"])) {
+                $json["attribute"] = false;
+            }
             return $this->videoCodeGenerator("", "", $json);
         } else {
             return $this->jsonError();
         }
     }
 
-    private function jsonError() {
+    public function jsonError() {
         $json_errors = array(
                 JSON_ERROR_NONE => 'No error has occurred',
                 JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
@@ -190,19 +225,21 @@ class html5player {
             $height = $JSON["height"];
             $poster = $JSON["poster"];
             $title = $JSON["title"];
+            $attribute = $JSON["attribute"];
         } else {
             $width = $videooption["width"];
             $height = $videooption["height"];
             $poster = $videooption["poster"];
             $title = false;
+            $attribute = false;
         }
         $sources = '';
         foreach($videourls as $value) {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
-            if((preg_match("#.(ext|main|high).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
+            if((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
                     !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
-                    (preg_match("#.(ogv|ogg|webm)$#i", $value) && $this->buggyiOS())) {
+                    (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS())) {
                 $source = '';
             }
             $sources .= $source;
@@ -216,9 +253,9 @@ class html5player {
             $links = '<br />'.$this->linkGenerator();
         }
         $header = sprintf("%s<video %s %s %s %s %s>", $this->option['beforeVideo'],
-                $this->getID($this->option['videoID'], "video"), $this->option['videoParam'],
+                $this->getID($this->option['videoID'], "video"),
                 $this->getPoster($poster), $this->getResolutionCode($width, $height),
-                $this->getTitle($title));
+                $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
                 $this->getFallback($this->getPosterForFallback($poster).$noVideo.$links), self::HTML5_TAG, $footer, $outside,
@@ -241,6 +278,34 @@ class html5player {
         } else {
             return "";
         }
+    }
+
+    private function getHtmlAttribute($attribute, $type) {
+        $htmlAtrribute = $this->htmlAttribute[$type];
+        if($attribute) {
+            foreach($attribute as $key => $value) {
+                unset($htmlAtrribute[strtolower($key)]);
+                $htmlAtrribute[strtolower($key)] = $value;
+            }
+        }
+        
+        // Unset banned Attribute Start
+        unset($htmlAtrribute['id']);
+        unset($htmlAtrribute['title']);
+        unset($htmlAtrribute['width']);
+        unset($htmlAtrribute['height']);
+        unset($htmlAtrribute['poster']);
+        // Unset banned Attrbute End
+        
+        $htmlAttri = "";
+        foreach($htmlAtrribute as $key => $value) {
+            if($value == null) {
+                $htmlAttri .= $key." ";
+            } else {
+                $htmlAttri .= $key.'="'.htmlspecialchars($value).'" ';
+            }
+        }
+        return $htmlAttri;
     }
 
     private function getPosterForFallback($poster) {
@@ -330,6 +395,11 @@ class html5player {
             } else {
                 $json["title"] = htmlspecialchars($json["title"]);
             }
+            if(!isset($json["attribute"])) {
+                $json["attribute"] = false;
+            } elseif(!is_array($json["attribute"])) {
+                $json["attribute"] = false;
+            }
             return $this->audioCodeGenerator("", $json);
         } else {
             return $this->jsonError();
@@ -354,8 +424,10 @@ class html5player {
         if($JSON) {
             $audiourls = $this->urlsCheck($JSON['url']);
             $title = $JSON['title'];
+            $attribute = $JSON["attribute"];
         } else {
             $title = false;
+            $attribute = false;
         }
         $source = '';
         foreach($audiourls as $value) {
@@ -371,8 +443,8 @@ class html5player {
             $links = '<br />'.$this->linkGenerator();
         };
         $header = sprintf("%s<audio %s %s %s>", $this->option['beforeAudio'],
-                $this->getID($this->option['audioID'], "audio"), $this->option['audioParam'],
-                $this->getTitle($title));
+                $this->getID($this->option['audioID'], "audio"),
+                $this->getTitle($title), $this->getHtmlAttribute($attribute, "audio"));
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
                 $header, $source, $this->getFallback($noAudio.$links), self::HTML5_TAG, $footer, $outside,
