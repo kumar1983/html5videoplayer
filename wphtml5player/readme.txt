@@ -24,7 +24,7 @@ detected or RSS feed are used the framework will not load any JavaScript and wil
 use the Video for Everybody principle, if iOS or iPhoneOS is detected and below 4.0
 the framework will also cancel out all incompatible format from video source list
 but leave the download links behind, so it will only show the extensions `mp4` or
-`m4v` (.ext.mp4 or .main.mp4 for iPad with iOS 3.2 or above).
+`m4v` (`.ext.mp4` or `.main.mp4` for iPad with iOS 3.2 or above).
 
 The framework is also designed to be compatible with browsers that do not render
 HTML5 Audio or Video such as Internet Explorer 8 or below, because the framework
@@ -33,8 +33,8 @@ will also include the fallback flash player, [FlowPlayer](http://flowplayer.org/
 for audio within the syntax, [FlowPlayer](http://flowplayer.org/) 3.2 and HTML5 video
 have both things in common, that would be the overlay video control bar, making
 [FlowPlayer](http://flowplayer.org/) 3.2 the perfect choice and that why it got
-included with the framework.  Adobe has already announced support for webm will
-included into the Flash Player.
+included with the framework.  Adobe has already announced support for webm will be
+included into the next version of Flash.
 
 The framework use two kinds of syntax, the simple syntax which is limited to URL?s,
 poster, width and height, and the advanced syntax which uses [JSON](http://www.json.org/)
