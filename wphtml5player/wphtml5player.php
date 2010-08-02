@@ -2,15 +2,15 @@
 /*
 Plugin Name: HTML5 Audio and Video Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
-Description: Embed video using shortcodes, using flowplayer as fallback.
-Version: 1.2.0
+Description: A Highly Customisable HTML5 Audio and Video Framework for Wordpress
+Version: 1.2.1
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Audio and Video Framework 1.2.0
- * Embed video using shortcodes, using flowplayer as fallback.
+ * HTML5 Audio and Video Framework 1.2.1
+ * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,10 +30,10 @@ Author URI: http://cj-jackson.com/
 $wphtml5playerclass;
 
 add_action('init', 'wphtml5player_call');
-add_action('atom_head', 'wphtml5player_VfE');
-add_action('rss_head', 'wphtml5player_VfE');
-add_action('rss2_head', 'wphtml5player_VfE');
-add_action('rdf_header', 'wphtml5player_VfE');
+add_action('atom_head', 'wphtml5player_XML');
+add_action('rss_head', 'wphtml5player_XML');
+add_action('rss2_head', 'wphtml5player_XML');
+add_action('rdf_header', 'wphtml5player_XML');
 add_filter('the_content', 'wphtml5player_parse');
 add_filter('the_excerpt', 'wphtml5player_excerpt');
 
@@ -97,11 +97,20 @@ function wphtml5player_VfE() {
     $wphtml5playerclass->setOption("afterVideo", '');
     $wphtml5playerclass->setOption("videoLinkOutside", true);
 }
+add_action("html5player_videoForEverybody", "wphtml5player_VfE",
+        10,0);
+
+function wphtml5player_XML() {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setOption("xmlMode", true);
+    wphtml5player_VfE();
+}
 
 function wphtml5player_setOptions($json) {
     global $wphtml5playerclass;
     $json = json_decode($json, true);
     if(is_array($json)) {
+        unset($json['xmlMode']);
         foreach($json as $key => $value) {
             $wphtml5playerclass->setOption($key, $value);
         }

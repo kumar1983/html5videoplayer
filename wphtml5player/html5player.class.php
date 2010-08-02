@@ -1,8 +1,8 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.2.0
- * Embed video using shortcodes, using flowplayer as fallback.
+ * HTML5 Audio and Video Framework Class 1.2.1
+ * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
  * This program is free software: you can redistribute it and/or modify
@@ -55,6 +55,7 @@ class html5player {
 
     private function defaultOption() {
         $this->option = array(
+                'xmlMode' => false,
                 'videoID' => false,
                 'beforeVideo' => '',
                 'afterVideo' => '',
@@ -135,8 +136,10 @@ class html5player {
         $json = str_replace('<br />','',$json);
         $json = json_decode($json, true);
         if(is_array($json)) {
-            if(!(isset($json["url"]))) {
-                return "";
+            if(!isset($json["url"])) {
+                return "ERROR: url not specified";
+            } elseif ($this->is_assoc($json["url"]) && !is_string($json["url"])) {
+                return "ERROR: url as object is not allowed";
             }
             if(!is_array($json["url"])) {
                 $array[0] = $json['url'];
@@ -152,7 +155,7 @@ class html5player {
                 $json["width"] = (int)$json["width"];
                 $json["height"] = (int)$json["height"];
             }
-            if(!isset($json["poster"])) {
+            if(!isset($json["poster"]) || is_array($json["poster"])) {
                 $json["poster"] = false;
             } elseif (!preg_match("#.(jpg|jpeg|png|gif)$#i", $json["poster"])) {
                 $json["poster"] = false;
@@ -162,20 +165,24 @@ class html5player {
                 $url = $this->urlsCheck($url);
                 $json["poster"] = $url[0];
             }
-            if(!isset($json["title"])) {
+            if(!isset($json["title"]) || is_array($json["title"])) {
                 $json["title"] = false;
             } else {
                 $json["title"] = htmlspecialchars($json["title"]);
             }
             if(!isset($json["attribute"])) {
                 $json["attribute"] = false;
-            } elseif(!is_array($json["attribute"])) {
+            } elseif(!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
             return $this->videoCodeGenerator("", "", $json);
         } else {
-            return $this->jsonError();
+            return $this->jsonError()." @ Video Tag";
         }
+    }
+
+    private function is_assoc($var) {
+        return is_array($var) && array_diff_key($var,array_keys(array_keys($var)));
     }
 
     public function jsonError() {
@@ -226,6 +233,7 @@ class html5player {
             $poster = $JSON["poster"];
             $title = $JSON["title"];
             $attribute = $JSON["attribute"];
+            unset($JSON);
         } else {
             $width = $videooption["width"];
             $height = $videooption["height"];
@@ -237,9 +245,10 @@ class html5player {
         foreach($videourls as $value) {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
-            if((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
+            if(((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
                     !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
-                    (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS())) {
+                    (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS()))
+                            && !$this->option['xmlMode']) {
                 $source = '';
             }
             $sources .= $source;
@@ -288,7 +297,8 @@ class html5player {
                 $htmlAtrribute[strtolower($key)] = $value;
             }
         }
-        
+
+        unset($attribute);
         // Unset banned Attribute Start
         unset($htmlAtrribute['id']);
         unset($htmlAtrribute['title']);
@@ -384,25 +394,27 @@ class html5player {
         $json = json_decode($json, true);
         if($json) {
             if(!isset($json["url"])) {
-                return "";
+                return "ERROR: url not specified";
+            } elseif ($this->is_assoc($json["url"]) && !is_string($json["url"])) {
+                return "ERROR: url as object is not allowed";
             }
             if(!is_array($json["url"])) {
                 $array[0] = $json['url'];
                 $json['url'] = $array;
             }
-            if(!isset($json["title"])) {
+            if(!isset($json["title"]) || is_array($json["title"])) {
                 $json["title"] = false;
             } else {
                 $json["title"] = htmlspecialchars($json["title"]);
             }
             if(!isset($json["attribute"])) {
                 $json["attribute"] = false;
-            } elseif(!is_array($json["attribute"])) {
+            } elseif(!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
             return $this->audioCodeGenerator("", $json);
         } else {
-            return $this->jsonError();
+            return $this->jsonError()." @ Audio Tag";
         }
     }
 
@@ -425,6 +437,7 @@ class html5player {
             $audiourls = $this->urlsCheck($JSON['url']);
             $title = $JSON['title'];
             $attribute = $JSON["attribute"];
+            unset($JSON);
         } else {
             $title = false;
             $attribute = false;
@@ -462,7 +475,7 @@ class html5player {
 
     private function videoType($url) {
         if(preg_match("#.ext.(mp4|m4v)$#i", $url)) {
-            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4 (Extended Baseline)</a> ';
+            $this->downloadLinks['closed'] .= '<a href="'.$url.'">MP4 (Extended)</a> ';
             return "type='video/mp4; codecs=\"avc1.58A01E, mp4a.40.2\"'";
         }
         if(preg_match("#.main.(mp4|m4v)$#i", $url)) {

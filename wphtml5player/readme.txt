@@ -5,34 +5,54 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 
-Quickcode for HTML5 video and audio, fallback to flowplayer on fail
+A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
 == Description ==
 
-A WordPress plugin that allows blogger to embed video and audio using the respective
-html 5 tags with Flowplayer as fallback, for example if a web browser doesn't render
-HTML 5 video or audio, it will use Flowplayer (Flash) for that web browsers.
+HTML5 Audio and Video Framework is designed to be a highly customisable plugin for
+wordpress that allows advanced users to add their own JavaScript Libraries, or other
+JavaScript Libraries such as VideoJS and JW Player for HTML5 within the Wordpress theme
+file `header.php` via [advanced options](http://code.google.com/p/html5videoplayer/wiki/AdvancedOptions).
+You may want to have a look at the [JavaScript Library page](http://code.google.com/p/html5videoplayer/wiki/JavaScriptLibraries)
+on the project wiki.
 
-The plugin is based on [Video for Everybody](http://camendesign.com/code/video_for_everybody) concept,
-except that this plugin takes full advantage of the PHP scripting language, while
-Video for Everybody is pure HTML. For example version 0.9.1 can detect the iPad or
-any iPhone below 4.0, if detected it will not include the poster attribute and if
-Opera Mobile/Mini is detected it will move the link outside the video and audio tag.
+The framework is designed to be compatible with mobile devices that use WebKit or
+Opera Mobile/Mini and XML feeds such as RSS, for example if that mobile device is
+detected or RSS feed are used the framework will not load any JavaScript and will
+use the Video for Everybody principle, if iOS or iPhoneOS is detected and below 4.0
+the framework will also cancel out all incompatible format from video source list
+but leave the download links behind, so it will only show the extensions `mp4` or
+`m4v` (.ext.mp4 or .main.mp4 for iPad with iOS 3.2 or above).
 
-= Instructions =
+The framework is also designed to be compatible with browsers that do not render
+HTML5 Audio or Video such as Internet Explorer 8 or below, because the framework
+will also include the fallback flash player, [FlowPlayer](http://flowplayer.org/)
+3.2 for both video and audio provided that you include either mp4 for video or mp3
+for audio within the syntax, [FlowPlayer](http://flowplayer.org/) 3.2 and HTML5 video
+have both things in common, that would be the overlay video control bar, making
+[FlowPlayer](http://flowplayer.org/) 3.2 the perfect choice and that why it got
+included with the framework.  Adobe has already announced support for webm will
+included into the Flash Player.
 
-The syntax is easy to remember, see [Syntax Page](http://code.google.com/p/html5videoplayer/wiki/Syntax)
+The framework use two kinds of syntax, the simple syntax which is limited to URL?s,
+poster, width and height, and the advanced syntax which uses [JSON](http://www.json.org/)
+which support all kinds of attributes for video and audio even if it not on the
+HTML5 specification, see [syntax page](http://code.google.com/p/html5videoplayer/wiki/Syntax)
+for details.
 
-See [Demostration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
-and [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) for details about the plugin.
+The framework currently support mp4(h.264,aac), ogg(theora,vorbis), mp3(audio only)
+and also webm (vp8,vorbis).
+
+Please read the [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) before
+asking questions; also look at [Demonstration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/).
 
 == Installation ==
 
 1. Upload the unzipped folder `wphtml5player` to your `plugins` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. And then follow the usage instructions on the Description page
+1. And then follow the usage instructions on the [syntax page](http://code.google.com/p/html5videoplayer/wiki/Syntax)
 
 == Frequently Asked Questions ==
 See http://code.google.com/p/html5videoplayer/wiki/FAQ
@@ -41,6 +61,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.2.1 =
+* Added hooks for Video For Everybody.
+* Added stronger contraints for JSON Advanced Syntax.
 
 = 1.2.0 =
 * Renamed from "HTML5 Player Plugin for Wordpress" to "HTML5 Audio and Video Framework 
