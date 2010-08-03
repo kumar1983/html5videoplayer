@@ -1,0 +1,61 @@
+# Translation of the WordPress plugin HTML5 Audio and Video Framework 1.2.2 by Christopher John Jackson.
+# Copyright (C) 2010 Christopher John Jackson
+# This file is distributed under the same license as the HTML5 Audio and Video Framework package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HTML5 Audio and Video Framework 1.2.2\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wphtml5player\n"
+"POT-Creation-Date: 2010-08-03 17:34+0000\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: wphtml5player.php:57
+msgid "No video playback capabilities, please download the video below"
+msgstr ""
+
+#: wphtml5player.php:58
+msgid "No audio playback capabilities, please download the audio below"
+msgstr ""
+
+#: wphtml5player.php:59
+msgid "<strong>Download Video:</strong>"
+msgstr ""
+
+#: wphtml5player.php:60
+msgid "<strong>Download Audio:</strong>"
+msgstr ""
+
+#: wphtml5player.php:61
+msgid "Closed Format:"
+msgstr ""
+
+#: wphtml5player.php:62
+msgid "Open Format:"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "HTML5 Audio and Video Framework"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://code.google.com/p/html5videoplayer/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "A Highly Customisable HTML5 Audio and Video Framework for Wordpress"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Christopher John Jackson"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://cj-jackson.com/"
+msgstr ""
