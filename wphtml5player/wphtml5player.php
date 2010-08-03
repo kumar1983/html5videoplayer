@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Audio and Video Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Audio and Video Framework for Wordpress
-Version: 1.2.1
+Version: 1.2.2
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Audio and Video Framework 1.2.1
+ * HTML5 Audio and Video Framework 1.2.2
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -49,22 +49,18 @@ function wphtml5player_call() {
 
 function wphtml5player_localise($scriptRoot) {
     global $wphtml5playerclass;
-    $lang = '';
-    if(WPLANG == '') {
-        $lang = 'default';
-    } else {
-        $lang = WPLANG;
-    }
 
-    $lang = str_replace("_", "-", $lang);
+    $domain = "wphtml5player";
+    load_plugin_textdomain($domain, null, $scriptRoot."/lang");
 
-    if(file_exists($scriptRoot.'/lang/'.$lang.'.php')) {
-        include_once $scriptRoot.'/lang/'.$lang.'.php';
-    } else {
-        include_once $scriptRoot.'/lang/default.php';
-    }
-
-    $lang = wphtml5lang();
+    $lang = array(
+            'noVideo' => __("No video playback capabilities, please download the video below", $domain),
+            'noAudio' => __("No audio playback capabilities, please download the audio below", $domain),
+            'downloadVideo' => __('<strong>Download Video:</strong>', $domain),
+            'downloadAudio' => __('<strong>Download Audio:</strong>', $domain),
+            'closedFormat' => __('Closed Format:', $domain),
+            'openFormat' => __('Open Format:', $domain)
+    );
 
     foreach($lang as $param => $value) {
         $wphtml5playerclass->setLanguage($param, $value);
@@ -109,7 +105,7 @@ function wphtml5player_XML() {
 function wphtml5player_setOptions($json) {
     global $wphtml5playerclass;
     $json = json_decode($json, true);
-    if(is_array($json)) {
+    if($wphtml5playerclass->is_assoc($json)) {
         unset($json['xmlMode']);
         foreach($json as $key => $value) {
             $wphtml5playerclass->setOption($key, $value);
@@ -124,7 +120,7 @@ add_action("html5player_options", "wphtml5player_setOptions",
 function wphtml5player_setFlowPlayerOptions($json) {
     global $wphtml5playerclass;
     $json = json_decode($json, true);
-    if(is_array($json)) {
+    if($wphtml5playerclass->is_assoc($json)) {
         unset($json["flashIsSetup"]);
         foreach($json as $key => $value) {
             $wphtml5playerclass->setFlowPlayerOption($key, $value);
@@ -139,7 +135,7 @@ add_action("html5player_flowplayer_options", "wphtml5player_setFlowPlayerOptions
 function wphtml5player_setVideoAttribute($json) {
     global $wphtml5playerclass;
     $json = json_decode($json, true);
-    if(is_array($json)) {
+    if($wphtml5playerclass->is_assoc($json)) {
         foreach($json as $key => $value) {
             $wphtml5playerclass->setVideoAttribute($key, $value);
         }
@@ -153,7 +149,7 @@ add_action("html5player_video_attribute", "wphtml5player_setVideoAttribute",
 function wphtml5player_setAudioAttribute($json) {
     global $wphtml5playerclass;
     $json = json_decode($json, true);
-    if(is_array($json)) {
+    if($wphtml5playerclass->is_assoc($json)) {
         foreach($json as $key => $value) {
             $wphtml5playerclass->setAudioAttribute($key, $value);
         }
