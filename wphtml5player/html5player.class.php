@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.2.2
+ * HTML5 Audio and Video Framework Class 1.2.3
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -131,11 +131,14 @@ class html5player {
     }
 
     public function videoreplaceJSON($data) {
-        $json = str_replace('&#8220;','"',$data[1]);
-        $json = str_replace('&#8221;','"',$json);
-        $json = str_replace('<br />','',$json);
-        $json = json_decode($json, true);
-        if($this->is_assoc($json)) {
+        $jsonTemp = str_replace('&#8220;','"',$data[1]);
+        $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
+        $jsonTemp = str_replace('<br />','',$jsonTemp);
+        $jsonTemp = json_decode($jsonTemp, true);
+        if($this->is_assoc($jsonTemp)) {
+            foreach($jsonTemp as $key => $value) {
+                $json[strtolower($key)] = $value;
+            }
             if(isset($json["src"])) {
                 $json["url"] = $json["src"];
                 unset($json["src"]);
@@ -392,11 +395,14 @@ class html5player {
     }
 
     public function audioreplaceJSON($data) {
-        $json = str_replace('&#8220;','"',$data[1]);
-        $json = str_replace('&#8221;','"',$json);
-        $json = str_replace('<br />','',$json);
-        $json = json_decode($json, true);
-        if($this->is_assoc($json)) {
+        $jsonTemp = str_replace('&#8220;','"',$data[1]);
+        $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
+        $jsonTemp = str_replace('<br />','',$jsonTemp);
+        $jsonTemp = json_decode($jsonTemp, true);
+        if($this->is_assoc($jsonTemp)) {
+            foreach($jsonTemp as $key => $value) {
+                $json[strtolower($key)] = $value;
+            }
             if(isset($json["src"])) {
                 $json["url"] = $json["src"];
                 unset($json["src"]);
