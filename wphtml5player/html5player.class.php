@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.2.4
+ * HTML5 Audio and Video Framework Class 1.2.5
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -207,7 +207,11 @@ class html5player {
                 JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
                 JSON_ERROR_SYNTAX => 'Syntax error',
         );
-        return "JSON ERROR: ".$json_errors[json_last_error()];
+        if(function_exists("json_last_error()")) {
+            return "JSON ERROR: ".$json_errors[json_last_error()];
+        } else {
+            return "UNKNOWN ERROR: probably syntax error.";
+        }
     }
 
     private function arrayToOrganisedArrays($matches) {
