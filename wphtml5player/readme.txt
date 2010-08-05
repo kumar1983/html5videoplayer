@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 
 A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
@@ -62,6 +62,11 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.2.4 =
+* Added experimental intergration support for [Autoembed Plugin for Wordpress](http://wordpress.org/extend/plugins/wpautoembed/)
+1.2.1 and above, allowing video sharing site such as YouTube to be used as fallback
+rather then just flowplayer.
 
 = 1.2.3 =
 * Fixed case-sensitive issue.

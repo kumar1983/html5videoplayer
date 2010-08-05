@@ -32,6 +32,10 @@ class flowplayer {
         $this->option['flashIsSetup'] = true;
     }
 
+    public function getOptions($param) {
+        return $this->option[$param];
+    }
+
     public function setOptions($param, $value) {
         $this->option[$param] = $value;
     }
@@ -119,7 +123,7 @@ class flowplayer {
             );
             $flashobject['params'] = array(
                     "movie" => $movie,
-                    "allowFullScreen" => "false",
+                    "allowfullscreen" => "false",
                     "flashvars" => $flashvars
             );
             if($this->option['videoClassName']) {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.2.3
+ * HTML5 Audio and Video Framework Class 1.2.4
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -86,13 +86,13 @@ class html5player {
 
     private function defaultHtmlAttribute() {
         $this->htmlAttribute = array(
-            'video' => array(
-                'controls' => null,
-                'preload' => "none"
-            ),
-            'audio' => array(
-                'controls' => null
-            )
+                'video' => array(
+                        'controls' => null,
+                        'preload' => "none"
+                ),
+                'audio' => array(
+                        'controls' => null
+                )
         );
     }
 
@@ -182,6 +182,14 @@ class html5player {
             } elseif(!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
+            if(isset($json["autoembed"])) {
+                if(!$this->is_assoc($json["autoembed"])) {
+                    $json["autoembed"] = false;
+                }
+            } else {
+                $json["autoembed"] = false;
+            }
+
             return $this->videoCodeGenerator(null, null, $json);
         } else {
             return $this->jsonError()." @ Video Tag";
@@ -240,6 +248,7 @@ class html5player {
             $poster = $JSON["poster"];
             $title = $JSON["title"];
             $attribute = $JSON["attribute"];
+            $autoembed = $JSON["autoembed"];
             unset($JSON);
         } else {
             $width = $videooption["width"];
@@ -247,15 +256,16 @@ class html5player {
             $poster = $videooption["poster"];
             $title = false;
             $attribute = false;
+            $autoembed = false;
         }
         $sources = '';
         foreach($videourls as $value) {
             $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
             if(((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
-                    !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
-                    (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS()))
-                            && !$this->option['xmlMode']) {
+                                    !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
+                            (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS()))
+                    && !$this->option['xmlMode']) {
                 $source = '';
             }
             $sources .= $source;
@@ -273,7 +283,8 @@ class html5player {
                 $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
-                $this->getFallback($this->getPosterForFallback($poster).$this->language['noVideo']."<br />".$links), self::HTML5_TAG, $footer, $outside,
+                $this->getFallback($this->getPosterForFallback($poster).$this->language['noVideo']."<br />".$links,
+                $autoembed, "video"), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterVideo']);
     }
 
@@ -304,7 +315,7 @@ class html5player {
             }
             unset($attribute);
         }
-        
+
         // Unset banned Attribute Start
         unset($htmlAtrribute['id']);
         unset($htmlAtrribute['title']);
@@ -313,7 +324,7 @@ class html5player {
         unset($htmlAtrribute['poster']);
         unset($htmlAtrribute['src']);
         // Unset banned Attrbute End
-        
+
         $htmlAttri = "";
         foreach($htmlAtrribute as $key => $value) {
             if($value == null) {
@@ -426,6 +437,13 @@ class html5player {
             } elseif(!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
+            if(isset($json["autoembed"])) {
+                if(!$this->is_assoc($json["autoembed"])) {
+                    $json["autoembed"] = false;
+                }
+            } else {
+                $json["autoembed"] = false;
+            }
             return $this->audioCodeGenerator(null, $json);
         } else {
             return $this->jsonError()." @ Audio Tag";
@@ -451,10 +469,12 @@ class html5player {
             $audiourls = $this->urlsCheck($JSON['url']);
             $title = $JSON['title'];
             $attribute = $JSON["attribute"];
+            $autoembed = $JSON["autoembed"];
             unset($JSON);
         } else {
             $title = false;
             $attribute = false;
+            $autoembed = false;
         }
         $source = '';
         foreach($audiourls as $value) {
@@ -473,16 +493,28 @@ class html5player {
                 $this->getTitle($title), $this->getHtmlAttribute($attribute, "audio"));
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
-                $header, $source, $this->getFallback($this->language['noAudio']."<br />".$links), self::HTML5_TAG, $footer, $outside,
+                $header, $source, $this->getFallback($this->language['noAudio']."<br />".$links, $autoembed, "audio"), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterAudio']);
     }
 
-    private function getFallback($fallback) {
-        if($this->flowplayer->getFlashIsSetup()) {
-            $this->flowplayer->setFallback($fallback);
-            return $this->flowplayer->getFlashObject();
+    private function getFallback($fallback, $autoembed, $type) {
+        if($autoembed && defined("AUTOEMBED_ACTIVATED!")) {
+            global $wpautoembed;
+            unset($autoembed["fallback"]);
+            $autoembed["fallback"] = $fallback;
+            unset($autoembed["class"]);
+            if($this->flowplayer->getOptions($type."ClassName")) {
+                $autoembed["attribute"]["class"] = $this->flowplayer->getOptions($type."ClassName");
+            }
+            $this->flowplayer->setOptions("flashIsSetup", false);
+            return $wpautoembed->aembedreplaceJSON(null, $autoembed);
         } else {
-            return $fallback;
+            if($this->flowplayer->getFlashIsSetup()) {
+                $this->flowplayer->setFallback($fallback);
+                return $this->flowplayer->getFlashObject();
+            } else {
+                return $fallback;
+            }
         }
     }
 
