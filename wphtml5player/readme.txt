@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.2.5
+Stable tag: 1.2.6
 
 A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
@@ -62,6 +62,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.2.6 =
+* Added further intergration support for Autoembed Plugin for Wordpress.
+* Framework deactivate if function "json_encode" or "json_decode" does not exists in PHP.
 
 = 1.2.5 =
 * Fixed Fatal Error caused by function "json_last_error" not existing on some servers
