@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.3.1
+ * HTML5 Audio and Video Framework Class 1.3.2
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -467,6 +467,7 @@ class html5player {
     public function urlsCheck($urls) {
         $arrayCount = 0;
         foreach($urls as $value) {
+            $value = preg_replace("# $#i", "", $value);
             if(!preg_match("#^(http|https)://#i", $value)) {
                 $data = $this->url['site']."/".$value;
                 $array[$arrayCount] = htmlspecialchars($data);

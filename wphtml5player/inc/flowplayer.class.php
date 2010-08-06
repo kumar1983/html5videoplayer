@@ -67,7 +67,7 @@ class flowplayer {
             }
             if(isset($jsonTemp["video"])) {
                 return $this->videoJSON($jsonTemp["video"]);
-            } elseif(isset($jsonTemp["video"])) {
+            } elseif(isset($jsonTemp["audio"])) {
                 return $this->audioJSON($jsonTemp["audio"]);
             } else {
                 return "video or audio is not set.";
