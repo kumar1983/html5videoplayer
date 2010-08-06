@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.2.6
+ * HTML5 Audio and Video Framework Class 1.3.0
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -45,12 +45,12 @@ class html5player {
         $this->downloadLinks['open'] = false;
         $this->downloadLinks['closed'] = false;
         require_once 'inc/flowplayer.class.php';
-        $this->flowplayer = new flowplayer();
+        $this->flowplayer = new flowplayer($this->url['script']);
         $this->defaultLanguage();
         $this->defaultOption();
         $this->defaultHtmlAttribute();
         $this->count = array("video" => 0, "audio" => 0);
-        $this->tag = array("video" => "video", "audio" => "audio");
+        $this->tag = array("video" => "video", "audio" => "audio", "flowplayer" => "flowplayer");
     }
 
     private function defaultOption() {
@@ -122,6 +122,10 @@ class html5player {
 
     public function setFlowPlayerOption($key, $value) {
         $this->flowplayer->setOptions($key, $value);
+    }
+
+    public function flowPlayerJSON($json) {
+        return $this->flowplayer->flowPlayerJSON($json);
     }
 
     public function videoreplace($data) {
@@ -211,7 +215,7 @@ class html5player {
                 JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
                 JSON_ERROR_SYNTAX => 'Syntax error',
         );
-        if(function_exists("json_last_error()")) {
+        if(function_exists("json_last_error")) {
             return "JSON ERROR: ".$json_errors[json_last_error()];
         } else {
             return "UNKNOWN ERROR: probably syntax error.";
@@ -268,7 +272,7 @@ class html5player {
         }
         $sources = '';
         foreach($videourls as $value) {
-            $this->flowplayer->videoCompatible($value, $width, $height, $poster, $this->url['script']);
+            $this->flowplayer->videoCompatible($value, $width, $height, $poster);
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
             if(((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
                                     !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||

@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Audio and Video Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Audio and Video Framework for Wordpress
-Version: 1.2.6
+Version: 1.3.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Audio and Video Framework 1.2.6
+ * HTML5 Audio and Video Framework 1.3.0
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -77,8 +77,10 @@ function wphtml5player_parse($content) {
     global $wphtml5playerclass;
     $video = $wphtml5playerclass->getTag("video");
     $audio = $wphtml5playerclass->getTag("audio");
+    $flowplayer = $wphtml5playerclass->getTag("flowplayer");
     $content = preg_replace("#<p(.*?)>\[#i","[",$content);
     $content = preg_replace("#\]</p>#i","]",$content);
+    $content = preg_replace_callback("#\[".$flowplayer."\](.+?)\[/".$flowplayer."\]#is", array(&$wphtml5playerclass,"flowPlayerJSON"), $content);
     $content = preg_replace_callback("#\[".$video."\](.+?)\[/".$video."\]#is", array(&$wphtml5playerclass,"videoreplaceJSON"), $content);
     $content = preg_replace_callback("#\[".$audio."\](.+?)\[/".$audio."\]#is", array(&$wphtml5playerclass,"audioreplaceJSON"), $content);
     $content = preg_replace_callback("#\[".$video.":(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
@@ -173,6 +175,9 @@ function wphtml5player_setTag() {
     }
     if(defined('WPHTML5_AUDIO_TAG')) {
         $wphtml5playerclass->setTag("audio", WPHTML5_AUDIO_TAG);
+    }
+    if(defined('WPHTML5_FLOWPLAYER_TAG')) {
+        $wphtml5playerclass->setTag("flowplayer", WPHTML5_FLOWPLAYER_TAG);
     }
 }
 
