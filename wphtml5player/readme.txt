@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 
 A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
@@ -62,6 +62,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed relative url issue with `[flowplayer]` tag.
+* A Few minor fixes.
 
 = 1.3.0 =
 * Added flowplayer syntax tag `[flowplayer]` uses html5 video or audio as fallback.

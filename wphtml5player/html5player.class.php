@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.3.0
+ * HTML5 Audio and Video Framework Class 1.3.1
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -147,6 +147,7 @@ class html5player {
             foreach($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
             }
+            unset($jsonTemp);
             if(isset($json["src"])) {
                 $json["url"] = $json["src"];
                 unset($json["src"]);
@@ -426,6 +427,7 @@ class html5player {
             foreach($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
             }
+            unset($jsonTemp);
             if(isset($json["src"])) {
                 $json["url"] = $json["src"];
                 unset($json["src"]);
@@ -462,7 +464,7 @@ class html5player {
         }
     }
 
-    private function urlsCheck($urls) {
+    public function urlsCheck($urls) {
         $arrayCount = 0;
         foreach($urls as $value) {
             if(!preg_match("#^(http|https)://#i", $value)) {

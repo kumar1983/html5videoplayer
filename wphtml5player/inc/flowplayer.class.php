@@ -96,6 +96,12 @@ class flowplayer {
         } else {
             return "ERROR: URL is not specified.";
         }
+        if($url) {
+            $temp[0] = $url;
+            $temp = $wphtml5playerclass->urlsCheck($temp);
+            $url = $temp[0];
+            unset($temp);
+        }
         if(!(isset($json["width"]) && isset($json["height"]))) {
             $width = false;
             $height = false;
@@ -120,8 +126,16 @@ class flowplayer {
         } else {
             $poster = $json["poster"];
         }
+        if($poster) {
+            $temp[0] = $poster;
+            $temp = $wphtml5playerclass->urlsCheck($temp);
+            $poster = $temp[0];
+            unset($temp);
+        }
         unset($json);
-        $this->fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
+        if($htmlvideo) {
+            $this->fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
+        }
         $this->videoCompatible($url, $width, $height, $poster, true);
         return $this->getFlashObject();
     }
@@ -145,6 +159,12 @@ class flowplayer {
         } else {
             return "ERROR: URL is not specified.";
         }
+        if($url) {
+            $temp[0] = $url;
+            $temp = $wphtml5playerclass->urlsCheck($temp);
+            $url = $temp[0];
+            unset($temp);
+        }
         if(!isset($json["htmlaudio"])) {
             $htmlaudio = false;
         } elseif(!$wphtml5playerclass->is_assoc($json["htmlaudio"])) {
@@ -153,7 +173,9 @@ class flowplayer {
             $htmlaudio = $json["htmlaudio"];
         }
         unset($json);
-        $this->fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+        if($htmlaudio) {
+            $this->fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+        }
         $this->audioCompatible($url, true);
         return $this->getFlashObject();
     }
