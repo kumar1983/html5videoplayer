@@ -74,112 +74,134 @@ class flowplayer {
 
     private function videoJSON($jsonTemp) {
         global $wphtml5playerclass;
-        $json = array();
-        foreach($jsonTemp as $key => $value) {
-            $json[strtolower($key)] = $value;
-        }
-        if(isset($json["src"])) {
-            $json["url"] = $json["src"];
-            unset($json["src"]);
-        }
-        if(isset($json["url"])) {
-            if(!is_string($json["url"])) {
-                return "ERROR: URL is not string.";
-            } else {
-                $url = $json["url"];
+        if($wphtml5playerclass->is_assoc($jsonTemp)) {
+            $json = array();
+            foreach($jsonTemp as $key => $value) {
+                $json[strtolower($key)] = $value;
             }
+            if(isset($json["src"])) {
+                $json["url"] = $json["src"];
+                unset($json["src"]);
+            }
+            if(isset($json["url"])) {
+                if(!is_string($json["url"])) {
+                    return "ERROR: URL is not string.";
+                } else {
+                    $url = $json["url"];
+                }
+            } else {
+                return "ERROR: URL is not specified.";
+            }
+            if($url) {
+                $temp[0] = $url;
+                $temp = $wphtml5playerclass->urlsCheck($temp);
+                $url = $temp[0];
+                unset($temp);
+            }
+            if(!(isset($json["width"]) && isset($json["height"]))) {
+                $width = false;
+                $height = false;
+            } elseif (!(is_numeric($json["width"]) && is_numeric($json["height"]))) {
+                $width = false;
+                $height = false;
+            } else {
+                $width = (int)$json["width"];
+                $height = (int)$json["height"];
+            }
+            if(!isset($json["htmlvideo"])) {
+                $htmlvideo = false;
+            } elseif(!$wphtml5playerclass->is_assoc($json["htmlvideo"])) {
+                $htmlvideo = false;
+            } else {
+                $htmlvideo = $json["htmlvideo"];
+            }
+            if(!isset($json["poster"]) || is_array($json["poster"])) {
+                $poster = false;
+            } elseif (!preg_match("#.(jpg|jpeg|png|gif)$#i", $json["poster"])) {
+                $poster = false;
+            } else {
+                $poster = $json["poster"];
+            }
+            if(!isset($json["plugins"])) {
+                $plugins = false;
+            } elseif(!$wphtml5playerclass->is_assoc($json["plugins"])) {
+                $plugins = false;
+            } else {
+                $plugins = $json["plugins"];
+            }
+            if($poster) {
+                $temp[0] = $poster;
+                $temp = $wphtml5playerclass->urlsCheck($temp);
+                $poster = $temp[0];
+                unset($temp);
+            }
+            unset($json);
+            if($htmlvideo) {
+                $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
+            } else {
+                $htmlvideo = array ("url" => $url, "poster" => $poster);
+                $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
+            }
+            $this->videoCompatible($url, $width, $height, $poster, true, $plugins);
+            return $this->getFlashObject($fallback);
         } else {
-            return "ERROR: URL is not specified.";
+            return "";
         }
-        if($url) {
-            $temp[0] = $url;
-            $temp = $wphtml5playerclass->urlsCheck($temp);
-            $url = $temp[0];
-            unset($temp);
-        }
-        if(!(isset($json["width"]) && isset($json["height"]))) {
-            $width = false;
-            $height = false;
-        } elseif (!(is_numeric($json["width"]) && is_numeric($json["height"]))) {
-            $width = false;
-            $height = false;
-        } else {
-            $width = (int)$json["width"];
-            $height = (int)$json["height"];
-        }
-        if(!isset($json["htmlvideo"])) {
-            $htmlvideo = false;
-        } elseif(!$wphtml5playerclass->is_assoc($json["htmlvideo"])) {
-            $htmlvideo = false;
-        } else {
-            $htmlvideo = $json["htmlvideo"];
-        }
-        if(!isset($json["poster"]) || is_array($json["poster"])) {
-            $poster = false;
-        } elseif (!preg_match("#.(jpg|jpeg|png|gif)$#i", $json["poster"])) {
-            $poster = false;
-        } else {
-            $poster = $json["poster"];
-        }
-        if($poster) {
-            $temp[0] = $poster;
-            $temp = $wphtml5playerclass->urlsCheck($temp);
-            $poster = $temp[0];
-            unset($temp);
-        }
-        unset($json);
-        if($htmlvideo) {
-            $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
-        } else {
-            $htmlvideo = array ("url" => $url, "poster" => $poster);
-            $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
-        }
-        $this->videoCompatible($url, $width, $height, $poster, true);
-        return $this->getFlashObject($fallback);
     }
 
     private function audioJSON($jsonTemp) {
         global $wphtml5playerclass;
-        $json = array();
-        foreach($jsonTemp as $key => $value) {
-            $json[strtolower($key)] = $value;
-        }
-        if(isset($json["src"])) {
-            $json["url"] = $json["src"];
-            unset($json["src"]);
-        }
-        if(isset($json["url"])) {
-            if(!is_string($json["url"])) {
-                return "ERROR: URL is not string.";
-            } else {
-                $url = $json["url"];
+        if($wphtml5playerclass->is_assoc($jsonTemp)) {
+            $json = array();
+            foreach($jsonTemp as $key => $value) {
+                $json[strtolower($key)] = $value;
             }
+            if(isset($json["src"])) {
+                $json["url"] = $json["src"];
+                unset($json["src"]);
+            }
+            if(isset($json["url"])) {
+                if(!is_string($json["url"])) {
+                    return "ERROR: URL is not string.";
+                } else {
+                    $url = $json["url"];
+                }
+            } else {
+                return "ERROR: URL is not specified.";
+            }
+            if($url) {
+                $temp[0] = $url;
+                $temp = $wphtml5playerclass->urlsCheck($temp);
+                $url = $temp[0];
+                unset($temp);
+            }
+            if(!isset($json["htmlaudio"])) {
+                $htmlaudio = false;
+            } elseif(!$wphtml5playerclass->is_assoc($json["htmlaudio"])) {
+                $htmlaudio = false;
+            } else {
+                $htmlaudio = $json["htmlaudio"];
+            }
+            if(!isset($json["plugins"])) {
+                $plugins = false;
+            } elseif(!$wphtml5playerclass->is_assoc($json["plugins"])) {
+                $plugins = false;
+            } else {
+                $plugins = $json["plugins"];
+            }
+            unset($json);
+            if($htmlaudio) {
+                $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+            } else {
+                $htmlaudio = array("url" => $url);
+                $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+                //print_r($htmlaudio);
+            }
+            $this->audioCompatible($url, true, $plugins);
+            return $this->getFlashObject($fallback);
         } else {
-            return "ERROR: URL is not specified.";
+            return "";
         }
-        if($url) {
-            $temp[0] = $url;
-            $temp = $wphtml5playerclass->urlsCheck($temp);
-            $url = $temp[0];
-            unset($temp);
-        }
-        if(!isset($json["htmlaudio"])) {
-            $htmlaudio = false;
-        } elseif(!$wphtml5playerclass->is_assoc($json["htmlaudio"])) {
-            $htmlaudio = false;
-        } else {
-            $htmlaudio = $json["htmlaudio"];
-        }
-        unset($json);
-        if($htmlaudio) {
-            $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
-        } else {
-            $htmlaudio = array("url" => $url);
-            $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
-            //print_r($htmlaudio);
-        }
-        $this->audioCompatible($url, true);
-        return $this->getFlashObject($fallback);
     }
 
     private function getSWFobject() {
@@ -213,7 +235,7 @@ class flowplayer {
         }
     }
 
-    public function videoCompatible($url, $width, $height, $poster, $tag = false) {
+    public function videoCompatible($url, $width, $height, $poster, $tag = false, $pluginConfig = false) {
         if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['videoFlowPlayerEnabled'] || $tag)) {
             if(!($width && $height)) {
@@ -246,8 +268,13 @@ class flowplayer {
                             "fullscreen" => false
                     ),
             );
+            $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig);
             $flashvars = 'config='.json_encode($flashvars);
-            $movie = $this->location."/inc/flowplayer.swf";
+            if(defined("FLOWPLAYER_URL")) {
+                $movie = FLOWPLAYER_URL;
+            } else {
+                $movie = $this->location."/inc/flowplayer.swf";
+            }
             $flashobject['attribs'] = array(
                     "type" => "application/x-shockwave-flash",
                     "data" => $movie,
@@ -257,7 +284,7 @@ class flowplayer {
             );
             $flashobject['params'] = array(
                     "movie" => $movie,
-                    "allowfullscreen" => "false",
+                    "allowfullscreen" => "true",
                     "flashvars" => $flashvars
             );
             if($this->option['videoClassNameForTag'] && $tag) {
@@ -269,7 +296,7 @@ class flowplayer {
         }
     }
 
-    public function audioCompatible($url, $tag = false) {
+    public function audioCompatible($url, $tag = false, $pluginConfig = false) {
         if(preg_match("#(mp3)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['audioFlowPlayerEnabled'] || $tag)) {
             $flashvars = array(
@@ -284,7 +311,6 @@ class flowplayer {
                             "autoPlay" => false,
                             "url" => $url
                     ),
-                    "playerId" => "audio",
                     "playlist" => array(
                             array(
                                     "autoPlay" => false,
@@ -292,8 +318,13 @@ class flowplayer {
                             )
                     )
             );
+            $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig);
             $flashvars = 'config='.json_encode($flashvars);
-            $movie = $this->location."/inc/flowplayer.swf";
+            if(defined("FLOWPLAYER_URL")) {
+                $movie = FLOWPLAYER_URL;
+            } else {
+                $movie = $this->location."/inc/flowplayer.swf";
+            }
             $flashobject['attribs'] = array(
                     "type" => "application/x-shockwave-flash",
                     "data" => $movie,
@@ -302,7 +333,7 @@ class flowplayer {
             );
             $flashobject['params'] = array(
                     "movie" => $movie,
-                    "allowfullscreen" => "false",
+                    "allowfullscreen" => "true",
                     "cachebusting" => "true",
                     "bgcolor" => "#000000",
                     "flashvars" => $flashvars
@@ -314,6 +345,40 @@ class flowplayer {
             }
             $this->setUpFlash($flashobject);
         }
+    }
+
+    private function flowPlayerConfig($flashvars, $pluginConfig) {
+        global $wphtml5playerclass;
+        if(defined("FLOWPLAYER_JSON")) {
+            $flowPlayerJSON = json_decode(FLOWPLAYER_JSON, true);
+            if(!$wphtml5playerclass->is_assoc($flowPlayerJSON)) {
+                $flowPlayerJSON = false;
+            } else {
+                unset($flowPlayerJSON["clip"]);
+                unset($flowPlayerJSON["playlist"]);
+                if(isset($flowPlayerJSON["key"])) {
+                    $flowPlayerJSON["key"] = preg_replace("# $#i", "", $flowPlayerJSON["key"]);
+                }
+            }
+        } else {
+            $flowPlayerJSON = false;
+        }
+        if($pluginConfig) {
+            if(!$flowPlayerJSON) {
+                $flowPlayerJSON = array();
+            }
+            foreach($pluginConfig as $key => $value) {
+                $flowPlayerJSON["plugins"][$key] = $value;
+            }
+            unset($pluginConfig);
+        }
+        if ($flowPlayerJSON) {
+            $temp = array_replace_recursive($flashvars, $flowPlayerJSON);
+            $flashvars = $temp;
+            unset($temp);
+            unset($flowPlayerJSON);
+        }
+        return $flashvars;
     }
 }
 

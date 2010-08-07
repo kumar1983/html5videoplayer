@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.3.3
+ * HTML5 Audio and Video Framework Class 1.4.0
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -205,7 +205,7 @@ class html5player {
     }
 
     public function is_assoc($var) {
-        return is_array($var) && array_diff_key($var,array_keys(array_keys($var)));
+        return is_array($var) && array_keys($var)!==range(0,sizeof($var)-1);
     }
 
     public function jsonError() {
