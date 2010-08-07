@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.3.2
+ * HTML5 Audio and Video Framework Class 1.3.3
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -158,8 +158,7 @@ class html5player {
                 return "ERROR: url/src as object is not allowed";
             }
             if(!is_array($json["url"])) {
-                $array[0] = $json['url'];
-                $json['url'] = $array;
+                $json['url'] = array($json["url"]);
             }
             if(!(isset($json["width"]) && isset($json["height"]))) {
                 $json["width"] = false;
@@ -192,7 +191,7 @@ class html5player {
                 $json["attribute"] = false;
             }
             if(isset($json["autoembed"])) {
-                if(!$this->is_assoc($json["autoembed"]) || !defined("AUTOEMBED_ACTIVATED!")) {
+                if(!$this->is_assoc($json["autoembed"]) || !defined("AUTOEMBED_ACTIVATED!") || $lock) {
                     $json["autoembed"] = false;
                 }
             } else {
@@ -273,7 +272,9 @@ class html5player {
         }
         $sources = '';
         foreach($videourls as $value) {
-            $this->flowplayer->videoCompatible($value, $width, $height, $poster);
+            if(!($lock || $autoembed)) {
+                $this->flowplayer->videoCompatible($value, $width, $height, $poster);
+            }
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
             if(((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
                                     !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
@@ -419,10 +420,14 @@ class html5player {
     }
 
     public function audioreplaceJSON($data, $array = false, $lock = false) {
-        $jsonTemp = str_replace('&#8220;','"',$data[1]);
-        $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
-        $jsonTemp = str_replace('<br />','',$jsonTemp);
-        $jsonTemp = json_decode($jsonTemp, true);
+        if($array) {
+            $jsonTemp = $array;
+        } else {
+            $jsonTemp = str_replace('&#8220;','"',$data[1]);
+            $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
+            $jsonTemp = str_replace('<br />','',$jsonTemp);
+            $jsonTemp = json_decode($jsonTemp, true);
+        }
         if($this->is_assoc($jsonTemp)) {
             foreach($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
@@ -438,8 +443,7 @@ class html5player {
                 return "ERROR: url as object is not allowed";
             }
             if(!is_array($json["url"])) {
-                $array[0] = $json['url'];
-                $json['url'] = $array;
+                $json['url'] = array($json['url']);
             }
             if(!isset($json["title"]) || is_array($json["title"])) {
                 $json["title"] = false;
@@ -452,7 +456,7 @@ class html5player {
                 $json["attribute"] = false;
             }
             if(isset($json["autoembed"])) {
-                if(!$this->is_assoc($json["autoembed"]) || !defined("AUTOEMBED_ACTIVATED!")) {
+                if(!$this->is_assoc($json["autoembed"]) || !defined("AUTOEMBED_ACTIVATED!") || $lock) {
                     $json["autoembed"] = false;
                 }
             } else {
@@ -493,7 +497,9 @@ class html5player {
         }
         $source = '';
         foreach($audiourls as $value) {
-            $this->flowplayer->audioCompatible($value, $this->url['script']);
+            if(!($lock || $autoembed)) {
+                $this->flowplayer->audioCompatible($value, $this->url['script']);
+            }
             $source .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }
         $links = $outside = "";
@@ -509,7 +515,7 @@ class html5player {
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
                 $header, $source, $this->getFallback($this->language['noAudio']."<br />".$links,
-                        $autoembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
+                $autoembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterAudio']);
     }
 
@@ -527,15 +533,14 @@ class html5player {
                 return $wpautoembed->aembedreplaceJSON(null, $autoembed);
             } else {
                 if($this->flowplayer->getFlashIsSetup()) {
-                    $this->flowplayer->setFallback($fallback);
-                    return $this->flowplayer->getFlashObject();
+                    return $this->flowplayer->getFlashObject($fallback);
                 } else {
                     return $fallback;
                 }
             }
         } else {
             $this->flowplayer->setOptions("flashIsSetup", false);
-            return "";
+            return $fallback;
         }
     }
 
@@ -583,6 +588,10 @@ class html5player {
         if(preg_match("#.(wav)$#i", $url)) {
             $this->downloadLinks['closed'] .= '<a href="'.$url.'">WAV</a> ';
             return 'type="audio/x-wav"';
+        }
+        if(preg_match("#.(webm)$#i",$url)) {
+            $this->downloadLinks['open'] .= '<a href="'.$url.'">WebM</a> ';
+            return 'type="audio/webm"';
         }
         return "";
     }

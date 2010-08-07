@@ -6,7 +6,6 @@ class flowplayer {
 
     private $object_attribs;
     private $object_params;
-    private $fallback;
     private $option;
     private $count;
     private $location;
@@ -46,10 +45,6 @@ class flowplayer {
 
     public function getFlashIsSetup() {
         return $this->option['flashIsSetup'];
-    }
-
-    public function setFallback($fallback) {
-        $this->fallback = $fallback;
     }
 
     public function flowPlayerJSON($json) {
@@ -134,10 +129,13 @@ class flowplayer {
         }
         unset($json);
         if($htmlvideo) {
-            $this->fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
+            $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
+        } else {
+            $htmlvideo = array ("url" => $url, "poster" => $poster);
+            $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
         }
         $this->videoCompatible($url, $width, $height, $poster, true);
-        return $this->getFlashObject();
+        return $this->getFlashObject($fallback);
     }
 
     private function audioJSON($jsonTemp) {
@@ -174,10 +172,14 @@ class flowplayer {
         }
         unset($json);
         if($htmlaudio) {
-            $this->fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+            $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+        } else {
+            $htmlaudio = array("url" => $url);
+            $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
+            //print_r($htmlaudio);
         }
         $this->audioCompatible($url, true);
-        return $this->getFlashObject();
+        return $this->getFlashObject($fallback);
     }
 
     private function getSWFobject() {
@@ -192,7 +194,7 @@ class flowplayer {
         }
     }
 
-    public function getFlashObject() {
+    public function getFlashObject($fallback = "") {
         if($this->option['flashIsSetup']) {
             $object_attribs = $object_params = '';
             $swfobject = $this->getSWFobject();
@@ -205,7 +207,7 @@ class flowplayer {
                 $object_params .= '<param name="' . $param . '" value=\'' . $value . '\' />';
             }
             $this->option['flashIsSetup'] = false;
-            return sprintf("%s<object %s> %s  %s</object>", $swfobject, $object_attribs, $object_params, $this->fallback);
+            return sprintf("%s<object %s> %s  %s</object>", $swfobject, $object_attribs, $object_params, $fallback);
         } else {
             return "";
         }
