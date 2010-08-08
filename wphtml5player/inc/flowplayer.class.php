@@ -50,6 +50,7 @@ class flowplayer {
     public function flowPlayerJSON($json) {
         $jsonTemp = str_replace('&#8220;','"',$json[1]);
         $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
+        $jsonTemp = str_replace('&#8243;','"',$jsonTemp);
         $jsonTemp = str_replace('<br />','',$jsonTemp);
         $jsonTemp = json_decode($jsonTemp, true);
         global $wphtml5playerclass;
@@ -64,6 +65,8 @@ class flowplayer {
                 return $this->videoJSON($jsonTemp["video"]);
             } elseif(isset($jsonTemp["audio"])) {
                 return $this->audioJSON($jsonTemp["audio"]);
+            } elseif(isset($jsonTemp["full"])) {
+                return $this->fullJSON($jsonTemp["full"]);
             } else {
                 return "video or audio is not set.";
             }
@@ -204,6 +207,60 @@ class flowplayer {
         }
     }
 
+    private function fullJSON($json) {
+        $fallback = "";
+        if(isset($json["htmlvideo"]) || isset($json["htmlaudio"])) {
+            global $wphtml5playerclass;
+        }
+        if(isset($json["htmlvideo"])) {
+            $fallback = $wphtml5playerclass->videoreplaceJSON(null, $json["htmlvideo"], true);
+        } elseif(isset($json["htmlaudio"])) {
+            $fallback = $wphtml5playerclass->audioreplaceJSON(null, $json["htmlaudio"], true);
+        }
+        if(!(isset($json["width"]) && isset($json["height"]))) {
+            $width = false;
+            $height = false;
+        } elseif (!(is_numeric($json["width"]) && is_numeric($json["height"]))) {
+            $width = false;
+            $height = false;
+        } else {
+            $width = (int)$json["width"];
+            $height = (int)$json["height"];
+        }
+        unset($json["htmlvideo"]);
+        unset($json["htmlaudio"]);
+        unset($json["width"]);
+        unset($json["height"]);
+        $flashvars = $this->flowPlayerConfig($json);
+        $flashvars = 'config='.json_encode($flashvars);
+        if(defined("FLOWPLAYER_URL")) {
+            $movie = FLOWPLAYER_URL;
+        } else {
+            $movie = $this->location."/inc/flowplayer.swf";
+        }
+        if(!($width && $height)) {
+            $width = 480;
+            $height = 320;
+        }
+        $flashobject['attribs'] = array(
+                "type" => "application/x-shockwave-flash",
+                "data" => $movie,
+                "width" => $width,
+                "height" => $height
+
+        );
+        $flashobject['params'] = array(
+                "movie" => $movie,
+                "allowfullscreen" => "true",
+                "flashvars" => $flashvars
+        );
+        if($this->option['videoClassNameForTag']) {
+            $flashobject['attribs']['class'] = $this->option['videoClassNameForTag'];
+        }
+        $this->setUpFlash($flashobject);
+        return $this->getFlashObject($fallback);
+    }
+
     private function getSWFobject() {
         if($this->option['swfobject']) {
             $this->object_attribs['id'] = self::THEID.$this->count;
@@ -297,7 +354,7 @@ class flowplayer {
     }
 
     public function audioCompatible($url, $tag = false, $pluginConfig = false) {
-        if(preg_match("#(mp3)$#i",$url) && !$this->option['flashIsSetup'] &&
+        if(preg_match("#(mp3|aac|m4a)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['audioFlowPlayerEnabled'] || $tag)) {
             $flashvars = array(
                     "plugins" => array(
@@ -347,7 +404,7 @@ class flowplayer {
         }
     }
 
-    private function flowPlayerConfig($flashvars, $pluginConfig) {
+    private function flowPlayerConfig($flashvars, $pluginConfig = false) {
         global $wphtml5playerclass;
         if(defined("FLOWPLAYER_JSON")) {
             $flowPlayerJSON = json_decode(FLOWPLAYER_JSON, true);

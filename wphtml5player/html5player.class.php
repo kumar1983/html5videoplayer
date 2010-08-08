@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.4.0
+ * HTML5 Audio and Video Framework Class 1.4.1
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -140,6 +140,7 @@ class html5player {
         } else {
             $jsonTemp = str_replace('&#8220;','"',$data[1]);
             $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
+            $jsonTemp = str_replace('&#8243;','"',$jsonTemp);
             $jsonTemp = str_replace('<br />','',$jsonTemp);
             $jsonTemp = json_decode($jsonTemp, true);
         }
@@ -425,6 +426,7 @@ class html5player {
         } else {
             $jsonTemp = str_replace('&#8220;','"',$data[1]);
             $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
+            $jsonTemp = str_replace('&#8243;','"',$jsonTemp);
             $jsonTemp = str_replace('<br />','',$jsonTemp);
             $jsonTemp = json_decode($jsonTemp, true);
         }
