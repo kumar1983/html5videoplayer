@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.4.1
+ * HTML5 Audio and Video Framework Class 1.4.2
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -138,10 +138,10 @@ class html5player {
         if($array) {
             $jsonTemp = $array;
         } else {
-            $jsonTemp = str_replace('&#8220;','"',$data[1]);
-            $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
-            $jsonTemp = str_replace('&#8243;','"',$jsonTemp);
-            $jsonTemp = str_replace('<br />','',$jsonTemp);
+            $jsonTemp = preg_replace('~&#(8220|8221|8243);~','"',$data[1]);
+            $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
+            $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
+            $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);
             $jsonTemp = json_decode($jsonTemp, true);
         }
         if($this->is_assoc($jsonTemp)) {
@@ -424,10 +424,10 @@ class html5player {
         if($array) {
             $jsonTemp = $array;
         } else {
-            $jsonTemp = str_replace('&#8220;','"',$data[1]);
-            $jsonTemp = str_replace('&#8221;','"',$jsonTemp);
-            $jsonTemp = str_replace('&#8243;','"',$jsonTemp);
-            $jsonTemp = str_replace('<br />','',$jsonTemp);
+            $jsonTemp = preg_replace('~&#(8220|8221|8243);~','"',$data[1]);
+            $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
+            $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
+            $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);
             $jsonTemp = json_decode($jsonTemp, true);
         }
         if($this->is_assoc($jsonTemp)) {
