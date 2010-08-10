@@ -506,7 +506,7 @@ class html5player {
         }
         $links = $outside = "";
         if($this->mobileCheck() || $this->option['audioLinkOutside']) {
-            $outside = $this->option['audioLinkOutsideBefore'].$this->linkGenerator($this->language['downloadVideo']." ").
+            $outside = $this->option['audioLinkOutsideBefore'].$this->linkGenerator($this->language['downloadAudio']." ").
                     $this->option['audioLinkOutsideAfter'];
         } else {
             $links = $this->linkGenerator($this->language['downloadAudio']." ");
