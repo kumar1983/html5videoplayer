@@ -430,12 +430,31 @@ class flowplayer {
             unset($pluginConfig);
         }
         if ($flowPlayerJSON) {
-            $temp = array_replace_recursive($flashvars, $flowPlayerJSON);
+            if(function_exists("array_replace_recursive")) {
+                $temp = array_replace_recursive($flashvars, $flowPlayerJSON);
+            } else {
+                $temp = $this->array_replace_recursive($flashvars, $flowPlayerJSON);
+            }
             $flashvars = $temp;
             unset($temp);
             unset($flowPlayerJSON);
         }
         return $flashvars;
+    }
+
+    private function array_replace_recursive() {
+        $arrays = func_get_args();
+        $original = array_shift($arrays);
+        foreach ($arrays as $array) {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $original[$key] = $this->array_replace_recursive($original[$key], $array[$key]);
+                } else {
+                    $original[$key] = $value; 
+                }
+            }
+        }
+        return $original;
     }
 }
 
