@@ -48,7 +48,7 @@ class flowplayer {
     }
 
     public function flowPlayerJSON($json) {
-        $jsonTemp = preg_replace('~&#(8220|8221|8243);~','"',$json[1]);
+        $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~','"',$json[1]);
         $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
         $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
         $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);

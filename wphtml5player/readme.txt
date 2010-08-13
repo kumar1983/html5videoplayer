@@ -1,11 +1,11 @@
-=== HTML5 Audio and Video Framework for Wordpress ===
+﻿=== HTML5 Audio and Video Framework for Wordpress ===
 Contributors: CJ_Jackson
 Author URI: http://cj-jackson.com/
 Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 
 A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
@@ -62,6 +62,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.4.4 =
+* Reencoded script from `ANSI` to `UTF-8`.
+* Escape left and right double quote and replaces them with normal double quote.
 
 = 1.4.3 =
 * Fixed Fatal Error caused by function "array_replace_recursive" not existing on
