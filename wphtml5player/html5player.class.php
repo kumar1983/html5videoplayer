@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class 1.4.4
+ * HTML5 Audio and Video Framework Class
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -387,10 +387,6 @@ class html5player {
     }
 
     private function getResolutionCode($width, $height) {
-        if(preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT']) &&
-                !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) {
-            return 'width="270"';
-        }
         if(!($width && $height)) {
             return "";
         }

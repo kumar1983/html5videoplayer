@@ -132,6 +132,11 @@ class flowplayer {
             } else {
                 $plugins = $json["plugins"];
             }
+            if(!isset($json["title"]) || is_array($json["title"])) {
+                $title = false;
+            } else {
+                $title = htmlspecialchars($json["title"]);
+            }
             if($poster) {
                 $temp[0] = $poster;
                 $temp = $wphtml5playerclass->urlsCheck($temp);
@@ -140,12 +145,32 @@ class flowplayer {
             }
             unset($json);
             if($htmlvideo) {
+                $temp = array();
+                foreach($htmlvideo as $key => $value) {
+                    $temp[strtolower($key)] = $value;
+                }
+                $htmlvideo = $temp;
+                unset($temp);
+                if(isset($htmlvideo["src"])) {
+                    //do nothing.
+                } elseif(!isset($htmlvideo["url"])) {
+                    $htmlvideo["url"] = $url;
+                }
+                if(!isset($htmlvideo["poster"]))
+                    $htmlvideo["poster"] = $poster;
+                if(!isset($htmlvideo["width"]))
+                    $htmlvideo["width"] = $width;
+                if(!isset($htmlvideo["height"]))
+                    $htmlvideo["height"] = $height;
+                if(!isset($htmlvideo["title"]))
+                    $htmlvideo["title"] = $title;
                 $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
             } else {
-                $htmlvideo = array ("url" => $url, "poster" => $poster);
+                $htmlvideo = array ("url" => $url, "poster" => $poster,
+                        "width" => $width, "height" => $height, "title" => $title);
                 $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
             }
-            $this->videoCompatible($url, $width, $height, $poster, true, $plugins);
+            $this->videoCompatible($url, $width, $height, $poster, true, $plugins, $title);
             return $this->getFlashObject($fallback);
         } else {
             return "";
@@ -192,15 +217,33 @@ class flowplayer {
             } else {
                 $plugins = $json["plugins"];
             }
+            if(!isset($json["title"]) || is_array($json["title"])) {
+                $title = false;
+            } else {
+                $title = htmlspecialchars($json["title"]);
+            }
             unset($json);
             if($htmlaudio) {
+                $temp = array();
+                foreach($htmlaudio as $key => $value) {
+                    $temp[strtolower($key)] = $value;
+                }
+                $htmlaudio = $temp;
+                unset($temp);
+                if(isset($htmlaudio["src"])) {
+                    //do nothing.
+                } elseif(!isset($htmlaudio["url"])) {
+                    $htmlaudio["url"] = $url;
+                }
+                if(!isset($htmlaudio["title"]))
+                    $htmlaudio["title"] = $title;
                 $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
             } else {
-                $htmlaudio = array("url" => $url);
+                $htmlaudio = array("url" => $url, "title" => $title);
                 $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
                 //print_r($htmlaudio);
             }
-            $this->audioCompatible($url, true, $plugins);
+            $this->audioCompatible($url, true, $plugins, $title);
             return $this->getFlashObject($fallback);
         } else {
             return "";
@@ -227,10 +270,16 @@ class flowplayer {
             $width = (int)$json["width"];
             $height = (int)$json["height"];
         }
+        if(!isset($json["title"]) || is_array($json["title"])) {
+            $title = false;
+        } else {
+            $title = htmlspecialchars($json["title"]);
+        }
         unset($json["htmlvideo"]);
         unset($json["htmlaudio"]);
         unset($json["width"]);
         unset($json["height"]);
+        unset($json["title"]);
         $flashvars = $this->flowPlayerConfig($json);
         $flashvars = 'config='.json_encode($flashvars);
         if(defined("FLOWPLAYER_URL")) {
@@ -256,6 +305,9 @@ class flowplayer {
         );
         if($this->option['videoClassNameForTag']) {
             $flashobject['attribs']['class'] = $this->option['videoClassNameForTag'];
+        }
+        if($title) {
+            $flashobject['attribs']['title'] = $title;
         }
         $this->setUpFlash($flashobject);
         return $this->getFlashObject($fallback);
@@ -292,7 +344,7 @@ class flowplayer {
         }
     }
 
-    public function videoCompatible($url, $width, $height, $poster, $tag = false, $pluginConfig = false) {
+    public function videoCompatible($url, $width, $height, $poster, $tag = false, $pluginConfig = false, $title = false) {
         if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['videoFlowPlayerEnabled'] || $tag)) {
             if(!($width && $height)) {
@@ -349,11 +401,14 @@ class flowplayer {
             } elseif($this->option['videoClassName'] && !$tag) {
                 $flashobject['attribs']['class'] = $this->option['videoClassName'];
             }
+            if($title) {
+                $flashobject['attribs']['title'] = $title;
+            }
             $this->setUpFlash($flashobject);
         }
     }
 
-    public function audioCompatible($url, $tag = false, $pluginConfig = false) {
+    public function audioCompatible($url, $tag = false, $pluginConfig = false, $title = false) {
         if(preg_match("#(mp3|aac|m4a)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['audioFlowPlayerEnabled'] || $tag)) {
             $flashvars = array(
@@ -399,6 +454,9 @@ class flowplayer {
                 $flashobject['attribs']['class'] = $this->option['audioClassNameForTag'];
             } elseif($this->option['audioClassName'] && !$tag) {
                 $flashobject['attribs']['class'] = $this->option['audioClassName'];
+            }
+            if($title) {
+                $flashobject['attribs']['title'] = $title;
             }
             $this->setUpFlash($flashobject);
         }
@@ -450,7 +508,7 @@ class flowplayer {
                 if (is_array($value)) {
                     $original[$key] = $this->array_replace_recursive($original[$key], $array[$key]);
                 } else {
-                    $original[$key] = $value; 
+                    $original[$key] = $value;
                 }
             }
         }
