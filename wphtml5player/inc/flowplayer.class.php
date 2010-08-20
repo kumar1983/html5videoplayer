@@ -482,19 +482,11 @@ class flowplayer {
             if(!$flowPlayerJSON) {
                 $flowPlayerJSON = array();
             }
-            foreach($pluginConfig as $key => $value) {
-                $flowPlayerJSON["plugins"][$key] = $value;
-            }
+            $flowPlayerJSON["plugins"] = $this->array_replace_recursive($flowPlayerJSON["plugins"], $pluginConfig);
             unset($pluginConfig);
         }
         if ($flowPlayerJSON) {
-            if(function_exists("array_replace_recursive")) {
-                $temp = array_replace_recursive($flashvars, $flowPlayerJSON);
-            } else {
-                $temp = $this->array_replace_recursive($flashvars, $flowPlayerJSON);
-            }
-            $flashvars = $temp;
-            unset($temp);
+            $flashvars = $this->array_replace_recursive($flashvars, $flowPlayerJSON);
             unset($flowPlayerJSON);
         }
         return $flashvars;
