@@ -414,7 +414,6 @@ class flowplayer {
             $flashvars = array(
                     "plugins" => array(
                             "controls" => array(
-                                    "fullscreen" => false,
                                     "height" => 30,
                                     "autoHide" => false
                             )
@@ -431,6 +430,9 @@ class flowplayer {
                     )
             );
             $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig);
+            unset($flashvars["play"]);
+            $flashvars["play"]["opacity"] = 0;
+            $flashvars["plugins"]["controls"]["fullscreen"] = false;
             $flashvars = 'config='.json_encode($flashvars);
             if(defined("FLOWPLAYER_URL")) {
                 $movie = FLOWPLAYER_URL;
@@ -440,12 +442,12 @@ class flowplayer {
             $flashobject['attribs'] = array(
                     "type" => "application/x-shockwave-flash",
                     "data" => $movie,
-                    "width" => "300",
+                    "width" => "400",
                     "height" => "30",
             );
             $flashobject['params'] = array(
                     "movie" => $movie,
-                    "allowfullscreen" => "true",
+                    "allowfullscreen" => "false",
                     "cachebusting" => "true",
                     "bgcolor" => "#000000",
                     "flashvars" => $flashvars
@@ -471,23 +473,17 @@ class flowplayer {
             } else {
                 unset($flowPlayerJSON["clip"]);
                 unset($flowPlayerJSON["playlist"]);
-                if(isset($flowPlayerJSON["key"])) {
-                    $flowPlayerJSON["key"] = preg_replace("# $#i", "", $flowPlayerJSON["key"]);
-                }
             }
         } else {
             $flowPlayerJSON = false;
         }
-        if($pluginConfig) {
-            if(!$flowPlayerJSON) {
-                $flowPlayerJSON = array();
-            }
-            $flowPlayerJSON["plugins"] = $this->array_replace_recursive($flowPlayerJSON["plugins"], $pluginConfig);
-            unset($pluginConfig);
-        }
         if ($flowPlayerJSON) {
             $flashvars = $this->array_replace_recursive($flashvars, $flowPlayerJSON);
             unset($flowPlayerJSON);
+        }
+        if($pluginConfig) {
+            $flashvars["plugins"] = $this->array_replace_recursive($flashvars["plugins"], $pluginConfig);
+            unset($pluginConfig);
         }
         return $flashvars;
     }
