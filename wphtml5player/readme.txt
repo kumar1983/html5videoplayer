@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 
 A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
@@ -62,6 +62,11 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.5.4 =
+* Fixed minor quirks with flowplayer, such as removing gradiant canvas from videos.
+* Change flowplayer background to black.
+* Change default scaling to fit rather then fill for flowplayer video.
 
 = 1.5.3 =
 * Hide play button in flowplayer (audio only), except for the one on the control bar.

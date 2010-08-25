@@ -301,6 +301,8 @@ class flowplayer {
         $flashobject['params'] = array(
                 "movie" => $movie,
                 "allowfullscreen" => "true",
+                "cachebusting" => "true",
+                "bgcolor" => "#000000",
                 "flashvars" => $flashvars
         );
         if($this->option['videoClassNameForTag']) {
@@ -360,7 +362,8 @@ class flowplayer {
                                 ),
                                 array(
                                         "url" => $url,
-                                        "autoPlay" => false
+                                        "autoPlay" => false,
+                                        "scaling" => "fit"
                                 )
                         )
                 );
@@ -368,15 +371,13 @@ class flowplayer {
                 $flashvars = array(
                         "clip" => array(
                                 "url" => $url,
-                                "autoPlay" => false
+                                "autoPlay" => false,
+                                "scaling" => "fit"
                         )
                 );
             }
-            $flashvars['plugins'] = array(
-                    "controls" => array(
-                            "fullscreen" => false
-                    ),
-            );
+            $flashvars['plugins']['controls']['fullscreen'] = false;
+            $flashvars['canvas']['backgroundGradient'] = "none";
             $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig);
             $flashvars = 'config='.json_encode($flashvars);
             if(defined("FLOWPLAYER_URL")) {
@@ -389,11 +390,12 @@ class flowplayer {
                     "data" => $movie,
                     "width" => $width,
                     "height" => $height
-
             );
             $flashobject['params'] = array(
                     "movie" => $movie,
                     "allowfullscreen" => "true",
+                    "cachebusting" => "true",
+                    "bgcolor" => "#000000",
                     "flashvars" => $flashvars
             );
             if($this->option['videoClassNameForTag'] && $tag) {
