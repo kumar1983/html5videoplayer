@@ -3,13 +3,13 @@
 Plugin Name: HTML5 Audio and Video Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Audio and Video Framework for Wordpress
-Version: 1.5.4
+Version: 1.6.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 */
 
 /**
- * HTML5 Audio and Video Framework 1.5.4
+ * HTML5 Audio and Video Framework 1.6.0
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  * Copyright (C) 2010, Christopher John Jackson
  *
@@ -138,6 +138,13 @@ function wphtml5player_setFlowPlayerOptions($json) {
     }
 }
 add_action("html5player_flowplayer_options", "wphtml5player_setFlowPlayerOptions",
+        10,1);
+
+function wphtml5player_setFlowPlayerConfig($json) {
+    global $wphtml5playerclass;
+    $wphtml5playerclass->setFlowplayerConfig($json);
+}
+add_action("html5player_flowplayer_config", "wphtml5player_setFlowPlayerConfig",
         10,1);
 
 function wphtml5player_setVideoAttribute($json) {

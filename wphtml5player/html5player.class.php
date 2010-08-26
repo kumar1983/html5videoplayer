@@ -124,7 +124,19 @@ class html5player {
         $this->flowplayer->setOptions($key, $value);
     }
 
+    public function setFlowplayerConfig($json) {
+        $jsonTemp = json_decode($json, true);
+        if($this->is_assoc($jsonTemp)) {
+            $this->flowplayer->setFlowplayerConfig($jsonTemp);
+        } else {
+            echo $this->jsonError();
+        }
+    }
+
     public function flowPlayerJSON($json) {
+        if(is_array($json)) {
+            $json = $this->cleanJSON($json[1]);
+        }
         return $this->flowplayer->flowPlayerJSON($json);
     }
 
@@ -134,14 +146,25 @@ class html5player {
         return $this->arrayToOrganisedArrays($data);
     }
 
+    private function cleanJSON($data) {
+        $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~','"',$data);
+        unset($data);
+        $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
+        $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
+        $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);
+        return $jsonTemp;
+    }
+
     public function videoreplaceJSON($data, $array = false, $lock = false) {
         if($array) {
             $jsonTemp = $array;
         } else {
-            $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~','"',$data[1]);
-            $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
-            $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
-            $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);
+            if(is_array($data)) {
+                $jsonTemp = $this->cleanJSON($data[1]);
+            } else {
+                $jsonTemp = $data;
+            }
+            unset($data);
             $jsonTemp = json_decode($jsonTemp, true);
         }
         if($this->is_assoc($jsonTemp)) {
@@ -274,7 +297,9 @@ class html5player {
         $sources = '';
         foreach($videourls as $value) {
             if(!($lock || $autoembed)) {
-                $this->flowplayer->videoCompatible($value, $width, $height, $poster);
+                $videoCompatible = array ("url" => $value, "poster" => $poster, "width" => $width, "height" => $height,
+                        "title" => $title, "plugins" => false);
+                $this->flowplayer->videoCompatible($videoCompatible);
             }
             $source ='<source src="'.$value.'" '.$this->videoType($value).' />';
             if(((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS() &&
@@ -420,10 +445,12 @@ class html5player {
         if($array) {
             $jsonTemp = $array;
         } else {
-            $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~','"',$data[1]);
-            $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
-            $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
-            $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);
+            if(is_array($data)) {
+                $jsonTemp = $this->cleanJSON($data[1]);
+            } else {
+                $jsonTemp = $data;
+            }
+            unset($data);
             $jsonTemp = json_decode($jsonTemp, true);
         }
         if($this->is_assoc($jsonTemp)) {
@@ -496,7 +523,8 @@ class html5player {
         $source = '';
         foreach($audiourls as $value) {
             if(!($lock || $autoembed)) {
-                $this->flowplayer->audioCompatible($value, $this->url['script']);
+                $audioCompatible = array("url" => $value, "title" => $title, "plugins" => false);
+                $this->flowplayer->audioCompatible($audioCompatible);
             }
             $source .='<source src="'.$value.'" '.$this->audioType($value).' />';
         }

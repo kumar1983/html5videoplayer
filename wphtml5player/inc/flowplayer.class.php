@@ -9,11 +9,13 @@ class flowplayer {
     private $option;
     private $count;
     private $location;
+    private $flowplayerConfig;
 
     public function __construct($location) {
         $this->location = $location;
         $this->defaultOption();
         $this->count = 1;
+        $this->flowplayerConfig = false;
     }
 
     private function defaultOption() {
@@ -27,6 +29,13 @@ class flowplayer {
                 'videoFlowPlayerEnabled' => true,
                 'audioFlowPlayerEnabled' => true
         );
+    }
+
+    public function setFlowplayerConfig($json) {
+        if(!$this->flowplayerConfig) {
+            $this->flowplayerConfig = array();
+        }
+        $this->flowplayerConfig = $this->array_replace_recursive($this->flowplayerConfig, $json);
     }
 
     public function setUpFlash($object) {
@@ -48,11 +57,7 @@ class flowplayer {
     }
 
     public function flowPlayerJSON($json) {
-        $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~','"',$json[1]);
-        $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
-        $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
-        $jsonTemp = preg_replace('#(.){1}(\n){1}(<(.*?)>){0,1}("){1}#i', '$1$3$5', $jsonTemp);
-        $jsonTemp = json_decode($jsonTemp, true);
+        $jsonTemp = json_decode($json, true);
         global $wphtml5playerclass;
         if($wphtml5playerclass->is_assoc($jsonTemp)) {
             $json = $jsonTemp;
@@ -170,7 +175,9 @@ class flowplayer {
                         "width" => $width, "height" => $height, "title" => $title);
                 $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
             }
-            $this->videoCompatible($url, $width, $height, $poster, true, $plugins, $title);
+            $array = array ("url" => $url, "poster" => $poster, "width" => $width, "height" => $height,
+                "title" => $title, "plugins" => $plugins);
+            $this->videoCompatible($array, true);
             return $this->getFlashObject($fallback);
         } else {
             return "";
@@ -243,7 +250,8 @@ class flowplayer {
                 $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
                 //print_r($htmlaudio);
             }
-            $this->audioCompatible($url, true, $plugins, $title);
+            $array = array("url" => $url, "title" => $title, "plugins" => $plugins);
+            $this->audioCompatible($array, true);
             return $this->getFlashObject($fallback);
         } else {
             return "";
@@ -346,7 +354,13 @@ class flowplayer {
         }
     }
 
-    public function videoCompatible($url, $width, $height, $poster, $tag = false, $pluginConfig = false, $title = false) {
+    public function videoCompatible($data, $tag = false) {
+        $url = $data["url"];
+        $width = $data["width"];
+        $height = $data["height"];
+        $poster = $data["poster"];
+        $pluginConfig = $data["plugins"];
+        $title = $data["title"];
         if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['videoFlowPlayerEnabled'] || $tag)) {
             if(!($width && $height)) {
@@ -410,7 +424,10 @@ class flowplayer {
         }
     }
 
-    public function audioCompatible($url, $tag = false, $pluginConfig = false, $title = false) {
+    public function audioCompatible($data, $tag = false) {
+        $url = $data['url'];
+        $pluginConfig = $data['plugins'];
+        $title = $data['title'];
         if(preg_match("#(mp3|aac|m4a)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['audioFlowPlayerEnabled'] || $tag)) {
             $flashvars = array(
@@ -479,7 +496,10 @@ class flowplayer {
         } else {
             $flowPlayerJSON = false;
         }
-        if ($flowPlayerJSON) {
+        if($this->flowplayerConfig){
+            $flashvars = $this->array_replace_recursive($flashvars, $this->flowplayerConfig);
+        }
+        if($flowPlayerJSON) {
             $flashvars = $this->array_replace_recursive($flashvars, $flowPlayerJSON);
             unset($flowPlayerJSON);
         }
