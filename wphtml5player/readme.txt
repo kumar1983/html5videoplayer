@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 
 A Highly Customisable HTML5 Audio and Video Framework for Wordpress
 
@@ -33,9 +33,10 @@ will also include the fallback flash player, [FlowPlayer](http://flowplayer.org/
 3.2 for both video and audio provided that you include either mp4 for video or mp3
 for audio within the syntax, [FlowPlayer](http://flowplayer.org/) 3.2 and HTML5 video
 have both things in common, that would be the overlay video control bar, making
-[FlowPlayer](http://flowplayer.org/) 3.2 the perfect choice and that why it got
-included with the framework.  Adobe has already announced support for webm will be
-included into the next version of Flash.
+[FlowPlayer](http://flowplayer.org/) 3.2 the perfect choice and sadly not included with
+the framework because FlowPlayer is under GPLv3 license which is not compatible with
+GPLv2 license, but the user can manually add flowplayer via 'wp-config.php'. Adobe has
+already announced support for webm which be included into the next version of Flash.
 
 The framework use two kinds of syntax, the simple syntax which is limited to URL's,
 poster, width and height, and the advanced syntax which uses [JSON](http://www.json.org/)
@@ -62,6 +63,11 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.6.1 =
+* Change of software license, now under New BSD License (GPLv2 & v3 compatible).
+* Removed Flowplayer, due to incompatiblity with GPLv2.  Can be added back in by
+configuration via wp-config.php.
 
 = 1.6.0 =
 * Added ability to configurate flowplayer from theme rather then just wp-config.
