@@ -39,11 +39,11 @@ class flowplayer {
     private $flowplayer;
     private $flowplayerConfig;
 
-    public function __construct() {
+    public function __construct($location) {
         if(defined("FLOWPLAYER_URL")) {
             $this->flowplayer = FLOWPLAYER_URL;
         } else {
-            $this->flowplayer = false;
+            $this->flowplayer = $location."/inc/flowplayer.swf";
         }
         $this->defaultOption();
         $this->count = 1;
