@@ -5,6 +5,9 @@ jQuery('video').each(function() {
 				var type = jQuery(this).attr('type');
 				try {
 					support = document.createElement('video').canPlayType(type);
+					if(support == "") {
+						support = false;
+					}
 				} catch (e) {
 					// Do nothing
 				}
@@ -25,6 +28,9 @@ jQuery('audio').each(function() {
 				var type = jQuery(this).attr('type');
 				try {
 					support = !!document.createElement('audio').canPlayType(type);
+					if(support == "") {
+						support = false;
+					}
 				} catch (e) {
 					// Do nothing
 				}
