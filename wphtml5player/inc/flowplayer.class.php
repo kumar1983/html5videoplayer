@@ -29,9 +29,6 @@
  */
 
 class flowplayer {
-
-    const THEID = "flowplayer-";
-
     private $object_attribs;
     private $object_params;
     private $option;
@@ -53,7 +50,6 @@ class flowplayer {
     private function defaultOption() {
         $this->option = array(
                 'flashIsSetup' => false,
-                'swfobject' => false,
                 'videoClassName' => false,
                 'audioClassName' => false,
                 'videoClassNameForTag' => false,
@@ -355,22 +351,9 @@ class flowplayer {
         return $this->getFlashObject($fallback);
     }
 
-    private function getSWFobject() {
-        if($this->option['swfobject']) {
-            $this->object_attribs['id'] = self::THEID.$this->count;
-            $swfobject = '<script type="text/javascript">'.
-                    'swfobject.registerObject("'.$this->object_attribs['id'].'", "9.0.115")</script>';
-            $this->count++;
-            return $swfobject;
-        } else {
-            return "";
-        }
-    }
-
     public function getFlashObject($fallback = "") {
         if($this->option['flashIsSetup']) {
             $object_attribs = $object_params = '';
-            $swfobject = $this->getSWFobject();
 
             foreach ($this->object_attribs as $param => $value) {
                 $object_attribs .= '  ' . $param . '="' . $value . '"';
@@ -380,7 +363,7 @@ class flowplayer {
                 $object_params .= '<param name="' . $param . '" value=\'' . $value . '\' />';
             }
             $this->option['flashIsSetup'] = false;
-            return sprintf("%s<object %s> %s  %s</object>", $swfobject, $object_attribs, $object_params, $fallback);
+            return sprintf("<object %s> %s  %s</object>", $object_attribs, $object_params, $fallback);
         } else {
             return "";
         }
