@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Video and Audio Framework Prevent Flash Lite.
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Only activated this if you don't like the idea of using flash on mobile devices.
-Version: 1.7.2
+Version: 1.7.3
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
