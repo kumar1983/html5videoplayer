@@ -19,7 +19,7 @@ jQuery('video').each(function() {
 			jQuery(this).remove();
 		}
 	}
-)
+);
 
 jQuery('audio').each(function() {
 		var support = false;
@@ -42,4 +42,4 @@ jQuery('audio').each(function() {
 			jQuery(this).remove();
 		}
 	}
-)
+);
