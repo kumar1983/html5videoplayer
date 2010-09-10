@@ -4,7 +4,7 @@ jQuery('video').each(function() {
 			if(support == false) {
 				var type = jQuery(this).attr('type');
 				try {
-					support = document.createElement('video').canPlayType(type);
+					support = !!document.createElement('video').canPlayType(type);
 					if(support == "") {
 						support = false;
 					}
