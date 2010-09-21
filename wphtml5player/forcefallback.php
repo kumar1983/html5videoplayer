@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: HTML5 Video and Audio Framework Force-Fallback to Flash.
+Plugin Name: HTML5 Multimedia Framework Force-Fallback to Flash.
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Only activated this if your intention is to only use one format or if you want force fallback.
-Version: 1.7.3
+Version: 1.8.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)

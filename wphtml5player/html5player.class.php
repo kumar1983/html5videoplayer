@@ -1,7 +1,7 @@
 <?php
 
 /**
- * HTML5 Audio and Video Framework Class
+ * HTML5 Multimedia Framework Class
  * A Highly Customisable HTML5 Audio and Video Framework for Wordpress
  *
  * Copyright (c) 2010, Christopher John Jackson
@@ -226,14 +226,18 @@ class html5player {
             } elseif(!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
-            if(isset($json["autoembed"])) {
-                if(!$this->is_assoc($json["autoembed"]) || !defined("AUTOEMBED_ACTIVATED!") || $lock) {
-                    $json["autoembed"] = false;
-                }
-            } else {
-                $json["autoembed"] = false;
-            }
 
+            if(isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
+                $temp = array(
+                        "url" => $json["oembed"],
+                        "width" => $json["width"],
+                        "height" => $json["height"]
+                );
+                $json["oembed"] = $temp;
+                unset($temp);
+            } else {
+                $json["oembed"] = false;
+            }
             return $this->videoCodeGenerator(null, null, $json, $lock);
         } else {
             return $this->jsonError()." @ Video Tag";
@@ -296,7 +300,7 @@ class html5player {
             $poster = $JSON["poster"];
             $title = $JSON["title"];
             $attribute = $JSON["attribute"];
-            $autoembed = $JSON["autoembed"];
+            $oembed = $JSON["oembed"];
             unset($JSON);
         } else {
             $width = $videooption["width"];
@@ -304,11 +308,11 @@ class html5player {
             $poster = $videooption["poster"];
             $title = false;
             $attribute = false;
-            $autoembed = false;
+            $oembed = false;
         }
         $sources = '';
         foreach($videourls as $value) {
-            if(!($lock || $autoembed)) {
+            if(!($lock || $oembed)) {
                 $videoCompatible = array ("url" => $value, "poster" => $poster, "width" => $width, "height" => $height,
                         "title" => $title, "plugins" => false);
                 $this->flowplayer->videoCompatible($videoCompatible);
@@ -336,7 +340,7 @@ class html5player {
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
                 $this->getFallback($this->getPosterForFallback($poster).$this->language['noVideo']."<br />".$links,
-                $autoembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
+                $oembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterVideo']);
     }
 
@@ -492,12 +496,16 @@ class html5player {
             } elseif(!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
-            if(isset($json["autoembed"])) {
-                if(!$this->is_assoc($json["autoembed"]) || !defined("AUTOEMBED_ACTIVATED!") || $lock) {
-                    $json["autoembed"] = false;
-                }
+            if(isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
+                $temp = array(
+                        "url" => $json["oembed"],
+                        "width" => $json["width"],
+                        "height" => $json["height"]
+                );
+                $json["oembed"] = $temp;
+                unset($temp);
             } else {
-                $json["autoembed"] = false;
+                $json["oembed"] = false;
             }
             return $this->audioCodeGenerator(null, $json, $lock);
         } else {
@@ -525,16 +533,16 @@ class html5player {
             $audiourls = $this->urlsCheck($JSON['url']);
             $title = $JSON['title'];
             $attribute = $JSON["attribute"];
-            $autoembed = $JSON["autoembed"];
+            $oembed = $JSON["oembed"];
             unset($JSON);
         } else {
             $title = false;
             $attribute = false;
-            $autoembed = false;
+            $oembed = false;
         }
         $source = '';
         foreach($audiourls as $value) {
-            if(!($lock || $autoembed)) {
+            if(!($lock || $oembed)) {
                 $audioCompatible = array("url" => $value, "title" => $title, "plugins" => false);
                 $this->flowplayer->audioCompatible($audioCompatible);
             }
@@ -553,22 +561,22 @@ class html5player {
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
                 $header, $source, $this->getFallback($this->language['noAudio']."<br />".$links,
-                $autoembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
+                $oembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterAudio']);
     }
 
-    private function getFallback($fallback, $autoembed, $type, $lock) {
+    private function getFallback($fallback, $oembed, $type, $lock) {
         if(!$lock) {
-            if($autoembed) {
-                global $wpautoembed;
-                unset($autoembed["fallback"]);
-                $autoembed["fallback"] = $fallback;
-                unset($autoembed["class"]);
-                if($this->flowplayer->getOptions($type."ClassName")) {
-                    $autoembed["attribute"]["class"] = $this->flowplayer->getOptions($type."ClassName");
+            if($oembed && class_exists('WP_Embed')) {
+                $url = $oembed['url'];
+                unset($oembed['url']);
+                if(!($oembed['width'] && $oembed['height'])) {
+                    unset($oembed['width']);
+                    unset($oembed['height']);
                 }
                 $this->flowplayer->setOptions("flashIsSetup", false);
-                return $wpautoembed->aembedreplaceJSON(null, $autoembed);
+                global $wp_embed;
+                return $wp_embed->shortcode($oembed, $url);
             } else {
                 if($this->flowplayer->getFlashIsSetup()) {
                     return $this->flowplayer->getFlashObject($fallback);

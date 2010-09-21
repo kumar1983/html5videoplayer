@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: HTML5 Audio and Video Framework
+Plugin Name: HTML5 Multimedia Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
-Description: A Highly Customisable HTML5 Audio and Video Framework for Wordpress
-Version: 1.7.3
+Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
+Version: 1.8.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)

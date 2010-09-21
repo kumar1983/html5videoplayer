@@ -1,17 +1,17 @@
-﻿=== HTML5 Audio and Video Framework for Wordpress ===
+﻿=== HTML5 Multimedia Framework for Wordpress ===
 Contributors: CJ_Jackson
 Author URI: http://cj-jackson.com/
 Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.7.3
+Stable tag: 1.8.0
 
-A Highly Customisable HTML5 Audio and Video Framework for Wordpress
+A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
 == Description ==
 
-HTML5 Audio and Video Framework is designed to be a highly customisable plugin for
+HTML5 Multimedia Framework is designed to be a highly customisable plugin for
 wordpress that allows advanced users to add their own JavaScript Libraries, or other
 JavaScript Libraries such as VideoJS and JW Player for HTML5 within the Wordpress theme
 file `header.php` via [advanced options](http://code.google.com/p/html5videoplayer/wiki/AdvancedOptions).
@@ -21,7 +21,7 @@ on the project wiki.
 The framework is designed to be compatible with mobile devices that use WebKit or
 Opera Mobile/Mini and XML feeds such as RSS, for example if that mobile device is
 detected or RSS feed are used the framework will not load any JavaScript and will
-use the [Video for Everybody](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
+use the [Video for Everybody](http://camendesign.com/code/video_for_everybody)
 principle, if iOS or iPhoneOS is detected and below 4.0 the framework will also
 cancel out all incompatible format from video source list but leave the download
 links behind, so it will only show the extensions `mp4` or `m4v` (`.ext.mp4` or
@@ -60,6 +60,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 1.8.0 =
+* Removed Autoembed intergration support.
+* Added support for wordpress oembed as fallback to html5.
 
 = 1.7.3 =
 * Minor fixes.
