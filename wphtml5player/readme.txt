@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 1.8.0
+Stable tag: 2.0.0
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -61,161 +61,18 @@ None
 
 == Changelog ==
 
+= 2.0.0 =
+* Enhanced support for Wordpress oEmbed.
+* Producers XHTML1.1/HTML5 complient code from oEmbed output
+thanks to [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net) for
+analysing and extracting attribute from oEmbed output. (Only works with flash object)
+* Renamed simple HTML DOM classes to prevent potential conflict with other
+Wordpress plugins.
+* Return oEmbed output if flash object is not detected.
+* Automatically add fallback to oEmbed therefore perseving iPhone support.
+(Only works with flash object).
+* Added JSON interface for Wordpress oEmbed.
+
 = 1.8.0 =
 * Removed Autoembed intergration support.
-* Added support for wordpress oembed as fallback to html5.
-
-= 1.7.3 =
-* Minor fixes.
-
-= 1.7.2 =
-* Removed feature, SWFObject as that can be done with jQuery quite easily.
-
-= 1.7.1 =
-* Fixed minor quirk with Force-Fallback Javascript.
-
-= 1.7.0 =
-* Update FlowPlayer to 1.2.4.
-* Added Force-Fallback plugin.
-* Added Prevent Flash Lite plugin.
-
-= 1.6.2 =
-* Added Flowplayer back in.
-
-= 1.6.1 =
-* Change of software license, now under New BSD License (GPLv2 & v3 compatible).
-
-= 1.6.0 =
-* Added ability to configurate flowplayer from theme rather then just wp-config.
-
-= 1.5.4 =
-* Fixed minor quirks with flowplayer, such as removing gradiant canvas from videos.
-* Change flowplayer background to black.
-* Change default scaling to fit rather then fill for flowplayer video.
-
-= 1.5.3 =
-* Hide play button in flowplayer (audio only), except for the one on the control bar.
-
-= 1.5.2 =
-* Made minor improvement.
-
-= 1.5.1 =
-* Updated Flowplayer to 3.2.3.
-
-= 1.5.0 =
-* Added title attribute support for flowplayer.
-* Added enhancement for html 5 video and audio fallback for flowplayer.
-
-= 1.4.4 =
-* Reencoded script from `ANSI` to `UTF-8`.
-* Escape left and right double quote and replaces them with normal double quote.
-
-= 1.4.3 =
-* Fixed Fatal Error caused by function "array_replace_recursive" not existing on
-anything below PHP 5.3.
-* Corrected download link title.
-
-= 1.4.2 =
-* Escape and removed html code that wordpress visual editor adds between advanced
-syntax.
-
-= 1.4.1 =
-* Added full control mode for `[flowplayer]` syntax.
-* Minor improvement.
-
-= 1.4.0 =
-* Added ability to change the location of flowplayer via `wp-config.php`.
-* Added ability to configurate flowplayer via `wp-config.php`.
-* Added ability to configurate flowplayer plugin via syntax.
-
-= 1.3.3 =
-* Improved efficiency of code.
-* Fixed fallback bug with htmlaudio.
-* Fixed repetative html 5 source list.
-
-= 1.3.2 =
-* Fixed bug with flowplayer `"audio":{}`.
-
-= 1.3.1 =
-* Fixed relative url issue with `[flowplayer]` tag.
-* A Few minor fixes.
-
-= 1.3.0 =
-* Added flowplayer syntax tag `[flowplayer]` uses html5 video or audio as fallback.
-
-= 1.2.6 =
-* Added further intergration support for Autoembed Plugin for Wordpress.
-* Framework deactivate if function "json_encode" or "json_decode" does not exists in PHP.
-
-= 1.2.5 =
-* Fixed Fatal Error caused by function "json_last_error" not existing on some servers
-
-= 1.2.4 =
-* Added experimental intergration support for [Autoembed Plugin for Wordpress](http://wordpress.org/extend/plugins/wpautoembed/)
-1.2.1 and above, allowing video sharing site such as YouTube to be used as fallback
-rather then just flowplayer.
-
-= 1.2.3 =
-* Fixed case-sensitive issue.
-
-= 1.2.2 =
-* Added localisation support.
-* A few minor fixes.
-
-= 1.2.1 =
-* Added hooks for Video For Everybody.
-* Added stronger contraints for JSON Advanced Syntax.
-
-= 1.2.0 =
-* Renamed from "HTML5 Player Plugin for Wordpress" to "HTML5 Audio and Video Framework 
-for Wordpress" because that what it is and it sound better.
-* Advanced options have been changed and replace with JSON Advanced Options and
-Wordpress hooks.  Older advanced options will no longer work.
-
-= 1.1.3 =
-* Improved iPad support.
-
-= 1.1.2 =
-* Escape special html characters form title, video and audio url, and poster url.
-* Output JSON error, if error is made or otherwise returns the html code.
-
-= 1.1.1 =
-* Fixed bug with advanced audio syntax, Sorry about that.
-
-= 1.1.0 =
-* Added robust advanced syntax using [JSON](http://www.json.org/)
-
-= 1.0.5 =
-* Added options to disable FlowPlayer for either video, audio or both. Useful for
-some JavaScript Libraries.
-
-= 1.0.4 =
-* Added support for H.264 Extended, Main and High Profile using special extentions
-(.ext.m4v, .main.m4v and .high.m4v) as proof of concept.
-* A few minor improvement.
-
-= 1.0.3 =
-* Added ability to force links outside the html video or audio tag.
-
-= 1.0.2 =
-* Added type safety to video attribute "poster", to prevent errors with FlowPlayer.
-
-= 1.0.1 =
-* Added ability to define class name for FlowPlayers object.
-
-= 1.0.0 =
-* Added more advanced options.
-
-= 0.9.4 =
-* Added ability to override default attributes of video or audio.
-
-= 0.9.3 =
-* Disabled SWFObject by default, as it was found to cause issues with some
-installation.
-* Added FAQ and Updated Description.
-
-= 0.9.2 =
-* Updated Plugin URI and Donate Link.
-
-= 0.9.1 =
-* Initial version.
+* Added support for Wordpress oembed as fallback to html5.
