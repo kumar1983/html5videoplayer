@@ -58,15 +58,20 @@ class oEmbedExt {
             $movie = "";
             $flashvars = "";
             $html = $wp_embed->shortcode($attr,$url);
-            if(preg_match('#<object #i',$html)) {
+            if(preg_match('#(<object|<embed) #i',$html)) {
                 $this->dom->load($html);
                 unset($html);
                 $validFlash = false;
                 $width = 480;
                 $height = 368;
+                $params = array();
                 foreach($this->dom->find('object') as $attribute) {
-                    $width = $attribute->width;
-                    $height = $attribute->height;
+                    if($attribute->width) {
+                        $width = $attribute->width;
+                    }
+                    if($attribute->height) {
+                        $height = $attribute->height;
+                    }
                     if($attribute->type == "application/x-shockwave-flash" ||
                             $attribute->classid == "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000") {
                         $validFlash = true;
@@ -76,15 +81,28 @@ class oEmbedExt {
                     foreach($this->dom->find('embed') as $embed) {
                         if($embed->type == "application/x-shockwave-flash") {
                             $validFlash = true;
+                            if(isset($embed->src)) {
+                                $params['movie'] = $embed->src;
+                            }
+                            if(isset($embed->flashvars)) {
+                                $params['flashvars'] = $embed->flashvars;
+                            }
+                            if(isset($embed->width)) {
+                                $width = $embed->width;
+                            }
+                            if(isset($embed->height)) {
+                                $height = $embed->height;
+                            }
                         }
                     }
                 }
                 if(!$validFlash) {
                     $this->htmlcode = $html;
                 } else {
-                    $params = array();
-                    foreach($this->dom->find('param') as $param) {
-                        $params[strtolower($param->name)] = $param->value;
+                    if(!isset($params['movie'])) {
+                        foreach($this->dom->find('param') as $param) {
+                            $params[strtolower($param->name)] = $param->value;
+                        }
                     }
                     if(isset($params['movie'])) {
                         $movie = $params['movie'];
