@@ -117,18 +117,6 @@ class oEmbedExt {
         } else {
             return "ERROR: URL is not specified.";
         }
-        if(isset($json["width"]) && isset($json["height"])) {
-            if(is_numeric($json["width"]) && is_numeric($json["height"])) {
-                $json["width"] = (int)$json["width"];
-                $json["height"] = (int)$json["height"];
-                $this->setWidth($json['width']);
-                $this->setHeight($json['height']);
-            } else {
-                $json["width"] = $json["height"] = false;
-            }
-        } else {
-            $json["width"] = $json["height"] = false;
-        }
 
         if(!isset($json["attribute"])) {
             $json["attribute"] = false;
@@ -143,6 +131,19 @@ class oEmbedExt {
         }
 
         $this->parseUrl($json["url"], $json["attribute"], $json["param"]);
+
+        if(isset($json["width"]) && isset($json["height"])) {
+            if(is_numeric($json["width"]) && is_numeric($json["height"])) {
+                $json["width"] = (int)$json["width"];
+                $json["height"] = (int)$json["height"];
+                $this->setWidth($json['width']);
+                $this->setHeight($json['height']);
+            } else {
+                $json["width"] = $json["height"] = false;
+            }
+        } else {
+            $json["width"] = $json["height"] = false;
+        }
 
         if(!isset($json["htmlvideo"])) {
             $json["htmlvideo"] = false;
