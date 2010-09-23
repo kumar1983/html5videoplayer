@@ -50,9 +50,10 @@ class oEmbedExt {
         $this->fallback = false;
         $this->user_object_attributes = array();
         $this->user_object_parameters = array();
+        $this->lock = false;
     }
 
-    public function parseUrl($url, $attri = false, $parameter = false) {
+    public function parseUrl($url, $attri = false, $parameter = false, $html = false) {
         $this->htmlcode = false;
         $this->fallback = false;
         if(class_exists('WP_Embed')) {
@@ -60,7 +61,11 @@ class oEmbedExt {
             $attr = array();
             $movie = "";
             $flashvars = "";
-            $html = $wp_embed->shortcode($attr,$url);
+            if(!$html) {
+                $html = $wp_embed->shortcode($attr,$url);
+            } else {
+                $this->fallback = '<a href="'.$url.'">'.$url.'</a>';
+            }
             if(preg_match('#^<iframe#i', $html)) {
                 $html = $this->antiIframe->checkIframe($html);
             }

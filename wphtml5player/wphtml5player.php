@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Multimedia Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-Version: 2.0.2
+Version: 2.1.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
@@ -49,6 +49,7 @@ add_action('rss2_head', 'wphtml5player_XML');
 add_action('rdf_header', 'wphtml5player_XML');
 add_filter('the_content', 'wphtml5player_parse');
 add_filter('the_excerpt', 'wphtml5player_excerpt');
+add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
 
 function wphtml5player_call() {
     global $wphtml5playerclass;
@@ -81,6 +82,11 @@ function wphtml5player_localise($scriptRoot) {
     }
 }
 
+function wphtml5player_oembed($html, $url) {
+    global $wphtml5playerclass;
+    return $wphtml5playerclass->oembedFilter($html, $url);
+}
+
 function wphtml5player_parse($content) {
     global $wphtml5playerclass;
     $video = $wphtml5playerclass->getTag("video");
@@ -89,12 +95,14 @@ function wphtml5player_parse($content) {
     $oembed = $wphtml5playerclass->getTag("oembed");
     $content = preg_replace("#<p(.*?)>\[#i","[",$content);
     $content = preg_replace("#\]</p>#i","]",$content);
+    remove_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
     $content = preg_replace_callback("#\[".$oembed."\](.+?)\[/".$oembed."\]#is", array(&$wphtml5playerclass,"oEmbedJSON"), $content);
     $content = preg_replace_callback("#\[".$flowplayer."\](.+?)\[/".$flowplayer."\]#is", array(&$wphtml5playerclass,"flowPlayerJSON"), $content);
     $content = preg_replace_callback("#\[".$video."\](.+?)\[/".$video."\]#is", array(&$wphtml5playerclass,"videoreplaceJSON"), $content);
     $content = preg_replace_callback("#\[".$audio."\](.+?)\[/".$audio."\]#is", array(&$wphtml5playerclass,"audioreplaceJSON"), $content);
     $content = preg_replace_callback("#\[".$video.":(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
     $content = preg_replace_callback("#\[".$audio.":(.+?)\]#i", array(&$wphtml5playerclass,"audioreplace"), $content);
+    add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
     return $content;
 }
 

@@ -14,6 +14,17 @@ class wphtml5_antiIframe {
                         'flash-src' => 'http://www.youtube.com/v/<%ID%>?fs=1'
                 ),
                 array(
+                        'iframe-src' => 'http://www.dailymotion.com/embed/video/(.{1,})$',
+                        'id-location' => 1,
+                        'flash-src' => 'http://www.dailymotion.com/swf/video/<%ID%>?additionalInfos=0'
+                ),
+                array(
+                        'iframe-src' => 'http://dotsub.com/media/(([0-9a-z]|-){1,})/e',
+                        'id-location' => 1,
+                        'flash-src' => 'http://dotsub.com/static/players/portalplayer.swf',
+                        'flash-vars' => 'type=flv&plugins=dotsub&debug=none&tid=UA-3684979-1&uuid=<%ID%>&lang=eng'
+                ),
+                array(
                         'iframe-src' => 'http://player.vimeo.com/video/([0-9]{1,})$',
                         'id-location' => 1,
                         'flash-src' => 'http://vimeo.com/moogaloop.swf?clip_id=<%ID%>&server=vimeo.com&show_title=1&show_byline=1&show_portrait=1&fullscreen=1&autoplay=0&loop=0'

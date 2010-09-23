@@ -156,14 +156,18 @@ class html5player {
         $this->oembed->setUserObjectParameter($expression, $assoc_array);
     }
 
-    public function oEmbedJSON($data) {
-        if(is_array($data)) {
-            $jsonTemp = $this->cleanJSON($data[1]);
+    public function oEmbedJSON($data, $array = false) {
+        if($array) {
+            $jsonTemp = $array;
         } else {
-            $jsonTemp = $data;
+            if(is_array($data)) {
+                $jsonTemp = $this->cleanJSON($data[1]);
+            } else {
+                $jsonTemp = $data;
+            }
+            unset($data);
+            $jsonTemp = json_decode($jsonTemp, true);
         }
-        unset($data);
-        $jsonTemp = json_decode($jsonTemp, true);
         if($this->is_assoc($jsonTemp)) {
             foreach($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
@@ -172,6 +176,11 @@ class html5player {
         } else {
             return $this->jsonError()." @ Video Tag";
         }
+    }
+
+    public function oembedFilter($html, $url) {
+        $this->oembed->parseUrl($url, false, false, $html);
+        return $this->oembed->getEmbedCode();
     }
 
     public function flowPlayerJSON($json) {
