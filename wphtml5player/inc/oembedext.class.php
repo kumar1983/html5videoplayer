@@ -37,12 +37,15 @@ class oEmbedExt {
     private $user_object_attributes;
     private $user_object_parameters;
     private $dom;
+    private $antiIframe;
     private $htmlcode;
     private $fallback;
 
     public function __construct() {
         include_once 'simple_html_dom.php';
+        include_once 'antiiframe.class.php';
         $this->dom = new wphtml5_simple_html_dom();
+        $this->antiIframe = new wphtml5_antiIframe();
         $this->htmlcode = false;
         $this->fallback = false;
         $this->user_object_attributes = array();
@@ -58,9 +61,11 @@ class oEmbedExt {
             $movie = "";
             $flashvars = "";
             $html = $wp_embed->shortcode($attr,$url);
+            if(preg_match('#^<iframe#i', $html)) {
+                $html = $this->antiIframe->checkIframe($html);
+            }
             if(preg_match('#(<object|<embed) #i',$html)) {
                 $this->dom->load($html);
-                unset($html);
                 $validFlash = false;
                 $width = 480;
                 $height = 368;
@@ -97,6 +102,7 @@ class oEmbedExt {
                     }
                 }
                 if(!$validFlash) {
+                    $this->dom->__destruct();
                     $this->htmlcode = $html;
                 } else {
                     if(!isset($params['movie'])) {
@@ -104,6 +110,7 @@ class oEmbedExt {
                             $params[strtolower($param->name)] = $param->value;
                         }
                     }
+                    $this->dom->__destruct();
                     if(isset($params['movie'])) {
                         $movie = $params['movie'];
                     }
