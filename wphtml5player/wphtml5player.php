@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Multimedia Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-Version: 2.1.0
+Version: 2.1.1
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
@@ -47,7 +47,6 @@ add_action('atom_head', 'wphtml5player_XML');
 add_action('rss_head', 'wphtml5player_XML');
 add_action('rss2_head', 'wphtml5player_XML');
 add_action('rdf_header', 'wphtml5player_XML');
-add_filter('the_content', 'wphtml5player_parse');
 add_filter('the_excerpt', 'wphtml5player_excerpt');
 add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
 
@@ -87,23 +86,26 @@ function wphtml5player_oembed($html, $url) {
     return $wphtml5playerclass->oembedFilter($html, $url);
 }
 
-function wphtml5player_parse($content) {
-    global $wphtml5playerclass;
-    $video = $wphtml5playerclass->getTag("video");
-    $audio = $wphtml5playerclass->getTag("audio");
-    $flowplayer = $wphtml5playerclass->getTag("flowplayer");
-    $oembed = $wphtml5playerclass->getTag("oembed");
-    $content = preg_replace("#<p(.*?)>\[#i","[",$content);
-    $content = preg_replace("#\]</p>#i","]",$content);
-    remove_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
-    $content = preg_replace_callback("#\[".$oembed."\](.+?)\[/".$oembed."\]#is", array(&$wphtml5playerclass,"oEmbedJSON"), $content);
-    $content = preg_replace_callback("#\[".$flowplayer."\](.+?)\[/".$flowplayer."\]#is", array(&$wphtml5playerclass,"flowPlayerJSON"), $content);
-    $content = preg_replace_callback("#\[".$video."\](.+?)\[/".$video."\]#is", array(&$wphtml5playerclass,"videoreplaceJSON"), $content);
-    $content = preg_replace_callback("#\[".$audio."\](.+?)\[/".$audio."\]#is", array(&$wphtml5playerclass,"audioreplaceJSON"), $content);
-    $content = preg_replace_callback("#\[".$video.":(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
-    $content = preg_replace_callback("#\[".$audio.":(.+?)\]#i", array(&$wphtml5playerclass,"audioreplace"), $content);
-    add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
-    return $content;
+if(!defined('EMBED_SHORTCODE_ONLY_MODE')) {
+    add_filter('the_content', 'wphtml5player_parse');
+    function wphtml5player_parse($content) {
+        global $wphtml5playerclass;
+        $video = $wphtml5playerclass->getTag("video");
+        $audio = $wphtml5playerclass->getTag("audio");
+        $flowplayer = $wphtml5playerclass->getTag("flowplayer");
+        $oembed = $wphtml5playerclass->getTag("oembed");
+        $content = preg_replace("#<p(.*?)>\[#i","[",$content);
+        $content = preg_replace("#\]</p>#i","]",$content);
+        remove_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
+        $content = preg_replace_callback("#\[".$oembed."\](.+?)\[/".$oembed."\]#is", array(&$wphtml5playerclass,"oEmbedJSON"), $content);
+        $content = preg_replace_callback("#\[".$flowplayer."\](.+?)\[/".$flowplayer."\]#is", array(&$wphtml5playerclass,"flowPlayerJSON"), $content);
+        $content = preg_replace_callback("#\[".$video."\](.+?)\[/".$video."\]#is", array(&$wphtml5playerclass,"videoreplaceJSON"), $content);
+        $content = preg_replace_callback("#\[".$audio."\](.+?)\[/".$audio."\]#is", array(&$wphtml5playerclass,"audioreplaceJSON"), $content);
+        $content = preg_replace_callback("#\[".$video.":(.+?)\]#i", array(&$wphtml5playerclass,"videoreplace"), $content);
+        $content = preg_replace_callback("#\[".$audio.":(.+?)\]#i", array(&$wphtml5playerclass,"audioreplace"), $content);
+        add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
+        return $content;
+    }
 }
 
 function wphtml5player_excerpt($content) {
@@ -220,6 +222,55 @@ function wphtml5player_setObjectParameter($json) {
 }
 add_action("html5player_oembed_object_param", "wphtml5player_setObjectParameter",
         10,1);
+
+$wphtml_host = $_SERVER['HTTP_HOST'];
+
+function wphtml5player_oembed_video_handler($matches, $attr, $url, $rawattr) {
+    global $wphtml5playerclass, $wphtml_host;
+    $json = $attr;
+    $json['url'] = $url;
+    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".jpg")) {
+        $json['poster'] = $matches[1].$wphtml_host."/".$matches[2].".jpg";
+    }
+    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".jpeg")) {
+        $json['poster'] = $matches[1].$wphtml_host."/".$matches[2].".jpeg";
+    }
+    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".gif")) {
+        $json['poster'] = $matches[1].$wphtml_host."/".$matches[2].".gif";
+    }
+    if(defined("USE_FLOWPLAYER_IN_WP_EMBED")) {
+        if(preg_match('#.(ogv|webm)$#i',$json['url'])) {
+            $code = $wphtml5playerclass->videoreplaceJSON(null, $json);
+        } else {
+            $flow['video'] = $json;
+            $code = $wphtml5playerclass->flowPlayerJSON(null, $flow);
+        }
+    } else {
+        $code = $wphtml5playerclass->videoreplaceJSON(null, $json);
+    }
+    return $code;
+}
+wp_embed_register_handler("wphtml5video", "#(http://|https://)".$wphtml_host."/(.{1,}?).(mp4|m4v|ogv|webm)#i", "wphtml5player_oembed_video_handler");
+
+function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
+    global $wphtml5playerclass, $wphtml_host;
+    $json = $attr;
+    $json['url'] = $url;
+    unset($json['width']);
+    unset($json['height']);
+    if(defined("USE_FLOWPLAYER_IN_WP_EMBED")) {
+        if(preg_match('#.(ogg|oga|wav)$#i',$json['url'])) {
+            $code = $wphtml5playerclass->audioreplaceJSON(null, $json);
+        } else {
+            $flow['audio'] = $json;
+            $code = $wphtml5playerclass->flowPlayerJSON(null, $flow);
+        }
+    } else {
+        $code = $wphtml5playerclass->audioreplaceJSON(null, $json);
+    }
+    return $code;
+}
+wp_embed_register_handler("wphtml5audio", "#(http://|https://)".$wphtml_host."/(.{1,}?).(m4a|ogg|oga|mp3|wav)#i", "wphtml5player_oembed_audio_handler");
 
 function wphtml5player_setTag() {
     global $wphtml5playerclass;

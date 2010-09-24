@@ -84,9 +84,13 @@ class flowplayer {
         return $this->option['flashIsSetup'];
     }
 
-    public function flowPlayerJSON($json) {
+    public function flowPlayerJSON($json, $array = false) {
         if($this->flowplayer) {
-            $jsonTemp = json_decode($json, true);
+            if($array) {
+                $jsonTemp = $array;
+            } else {
+                $jsonTemp = json_decode($json, true);
+            }
             global $wphtml5playerclass;
             if($wphtml5playerclass->is_assoc($jsonTemp)) {
                 $json = $jsonTemp;

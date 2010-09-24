@@ -183,11 +183,15 @@ class html5player {
         return $this->oembed->getEmbedCode();
     }
 
-    public function flowPlayerJSON($json) {
+    public function flowPlayerJSON($json, $array = false) {
+        if(!$array) {
         if(is_array($json)) {
             $json = $this->cleanJSON($json[1]);
         }
-        return $this->flowplayer->flowPlayerJSON($json);
+            return $this->flowplayer->flowPlayerJSON($json);
+        } else {
+            return $this->flowplayer->flowPlayerJSON(null, $array);
+        }
     }
 
     public function videoreplace($data) {
