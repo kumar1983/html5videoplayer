@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Multimedia Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-Version: 2.1.2
+Version: 2.1.3
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
@@ -47,8 +47,7 @@ add_action('atom_head', 'wphtml5player_XML');
 add_action('rss_head', 'wphtml5player_XML');
 add_action('rss2_head', 'wphtml5player_XML');
 add_action('rdf_header', 'wphtml5player_XML');
-add_filter('the_excerpt', 'wphtml5player_excerpt');
-add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
+add_filter('embed_oembed_html', 'wphtml5player_oembed', null, 2);
 
 function wphtml5player_call() {
     global $wphtml5playerclass;
@@ -94,8 +93,6 @@ if(!defined('EMBED_SHORTCODE_ONLY_MODE')) {
         $audio = $wphtml5playerclass->getTag("audio");
         $flowplayer = $wphtml5playerclass->getTag("flowplayer");
         $oembed = $wphtml5playerclass->getTag("oembed");
-        $content = preg_replace("#<p(.*?)>\[#i","[",$content);
-        $content = preg_replace("#\]</p>#i","]",$content);
         remove_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
         $content = preg_replace_callback("#\[".$oembed."\](.+?)\[/".$oembed."\]#is", array(&$wphtml5playerclass,"oEmbedJSON"), $content);
         $content = preg_replace_callback("#\[".$flowplayer."\](.+?)\[/".$flowplayer."\]#is", array(&$wphtml5playerclass,"flowPlayerJSON"), $content);
@@ -106,13 +103,6 @@ if(!defined('EMBED_SHORTCODE_ONLY_MODE')) {
         add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
         return $content;
     }
-}
-
-function wphtml5player_excerpt($content) {
-    global $wphtml5playerclass;
-    $content = preg_replace("#\[video:(.+?)\]#i", "", $content);
-    $content = preg_replace("#\[audio:(.+?)\]#i", "", $content);
-    return $content;
 }
 
 function wphtml5player_VfE() {
@@ -228,38 +218,42 @@ $wphtml_host = $_SERVER['HTTP_HOST'];
 function wphtml5player_oembed_video_handler($matches, $attr, $url, $rawattr) {
     global $wphtml5playerclass, $wphtml_host;
     $json = $attr;
-    $json['url'] = array($url);
+    if(defined("USE_FLOWPLAYER_IN_WP_EMBED") && preg_match("#^(.ext|.main|.high)(mp4|m4v)$#i", $matches[3].$matches[5])) {
+        // Do nothing
+    } else {
+        $json['url'] = array($url);
+    }
 
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".mp4") &&  !preg_match("#(mp4|m4v)#i", $matches[3])) {
+    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".m4v") &&  !preg_match("#^(mp4|m4v)$#i", $matches[3].$matches[5])) {
+        $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".m4v";
+    } elseif(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".mp4") &&  !preg_match("#^(mp4|m4v)$#i", $matches[3].$matches[5])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".mp4";
     }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".m4v") &&  !preg_match("#(mp4|m4v)#i", $matches[3])) {
-        $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".m4v";
-    }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".ogv") &&  !preg_match("#ogv#i", $matches[3])) {
+    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".ogv") &&  !preg_match("#ogv#i", $matches[5])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".ogv";
     }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".webm") &&  !preg_match("#webm#i", $matches[3])) {
+    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".webm") &&  !preg_match("#webm#i", $matches[5])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".webm";
     }
 
     if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".jpg")) {
         $json['poster'] = $matches[1].$wphtml_host."/".$matches[2].".jpg";
-    }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".jpeg") && !isset($json['poster'])) {
+    } elseif(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".jpeg")) {
         $json['poster'] = $matches[1].$wphtml_host."/".$matches[2].".jpeg";
-    }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".gif") && !isset($json['poster'])) {
+    } elseif(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".gif")) {
         $json['poster'] = $matches[1].$wphtml_host."/".$matches[2].".gif";
     }
-    
+
     if(defined("USE_FLOWPLAYER_IN_WP_EMBED")) {
-        if(preg_match('#.(ogv|webm)$#i',$url)) {
+        if(preg_match('#(ogv|webm)#i',$matches[5])) {
             $code = $wphtml5playerclass->videoreplaceJSON(null, $json);
         } else {
             $flow['video'] = $json;
             $flow['video']['htmlvideo']['url'] = $flow['video']['url'];
             $flow['video']['url'] = $url;
+            if(preg_match("#^(.ext|.main|.high)(mp4|m4v)$#i", $matches[3].$matches[5])) {
+                $flow['video']['plugins']['controls']['fullscreen'] = true;
+            }
             $code = $wphtml5playerclass->flowPlayerJSON(null, $flow);
         }
     } else {
@@ -267,7 +261,7 @@ function wphtml5player_oembed_video_handler($matches, $attr, $url, $rawattr) {
     }
     return $code;
 }
-wp_embed_register_handler("wphtml5video", "#(http://|https://)".$wphtml_host."/(.{1,}?).(mp4|m4v|ogv|webm)#i", "wphtml5player_oembed_video_handler");
+wp_embed_register_handler("wphtml5video", "#(http://|https://)".$wphtml_host."/(.{1,}?)((.ext|.main|.high){0,1}).(mp4|m4v|ogv|webm)#i", "wphtml5player_oembed_video_handler");
 
 function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
     global $wphtml5playerclass, $wphtml_host;
@@ -276,14 +270,12 @@ function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
 
     if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".m4a") &&  !preg_match("#(aac|m4a)#i", $matches[3])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".m4a";
-    }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".aac") &&  !preg_match("#(aac|m4a)#i", $matches[3])) {
+    } elseif(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".aac") &&  !preg_match("#(aac|m4a)#i", $matches[3])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".m4a";
     }
     if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".ogg") &&  !preg_match("#(ogg|oga)#i", $matches[3])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".ogg";
-    }
-    if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".oga") &&  !preg_match("#(ogg|oga)#i", $matches[3])) {
+    } elseif(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".oga") &&  !preg_match("#(ogg|oga)#i", $matches[3])) {
         $json['url'][] = $matches[1].$wphtml_host."/".$matches[2].".oga";
     }
     if(file_exists($_SERVER['DOCUMENT_ROOT']."/".$matches[2].".mp3") &&  $matches[3] != "mp3") {
@@ -293,7 +285,7 @@ function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
     unset($json['width']);
     unset($json['height']);
     if(defined("USE_FLOWPLAYER_IN_WP_EMBED")) {
-        if(preg_match('#.(ogg|oga|wav)$#i',$url)) {
+        if(preg_match('#(ogg|oga|wav)#i',$matches[3])) {
             $code = $wphtml5playerclass->audioreplaceJSON(null, $json);
         } else {
             $flow['audio'] = $json;

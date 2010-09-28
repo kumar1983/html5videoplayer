@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Multimedia Framework Force-Fallback to Flash.
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Only activated this if your intention is to only use one format or if you want force fallback.
-Version: 2.1.2
+Version: 2.1.3
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
@@ -36,15 +36,11 @@ License: New BSD License (GPLv2 and v3 Compatible)
 */
 
 add_action('init', 'wphtml5forcefallback_call');
-add_action('wp_footer', 'wphtml5forcefallback_footer');
 
 function wphtml5forcefallback_call() {
     wp_enqueue_script('jquery');
-}
-
-function wphtml5forcefallback_footer() {
     $scriptUrl = WP_PLUGIN_URL."/wphtml5player/inc";
-    echo "<script type='text/javascript' src='".$scriptUrl."/forcefallback.js'></script>\n";
+    wp_enqueue_script('forcefallback', $scriptUrl.'/forcefallback.js', null, null, true);
 }
 
 ?>

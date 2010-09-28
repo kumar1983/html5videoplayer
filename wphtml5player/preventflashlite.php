@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Multimedia Framework Prevent Flash Lite.
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: Only activated this if you don't like the idea of using flash on mobile devices.
-Version: 2.1.2
+Version: 2.1.3
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
@@ -36,15 +36,11 @@ License: New BSD License (GPLv2 and v3 Compatible)
 */
 
 add_action('init', 'wphtml5preventflashlite_call');
-add_action('wp_footer', 'wphtml5preventflashlite_footer');
 
 function wphtml5preventflashlite_call() {
     wp_enqueue_script('jquery');
-}
-
-function wphtml5preventflashlite_footer() {
     $scriptUrl = WP_PLUGIN_URL."/wphtml5player/inc";
-    echo "<script type='text/javascript' src='".$scriptUrl."/preventflashlite.js'></script>\n";
+    wp_enqueue_script('preventflashlite', $scriptUrl.'/preventflashlite.js', null, null, true);
 }
 
 ?>

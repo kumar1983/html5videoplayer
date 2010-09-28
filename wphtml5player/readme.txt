@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -39,7 +39,7 @@ The framework use two kinds of syntax, the simple syntax which is limited to URL
 poster, width and height, and the advanced syntax which uses [JSON](http://www.json.org/)
 which support all kinds of attributes for video and audio even if it not on the
 HTML5 specification, see [syntax page](http://code.google.com/p/html5videoplayer/wiki/Syntax)
-for details.
+for more details.
 
 The framework currently support mp4(h.264,aac), ogg(theora,vorbis), mp3(audio only)
 and also webm (vp8,vorbis).
@@ -60,6 +60,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 2.1.3 =
+* Added support for special extension in [embed] tag, such as .main.m4v.
+* Fixed a few minor problem in embed handler.
 
 = 2.1.2 =
 * Enhanced HTML5 video and audio support for Wordpress [embed] tag.

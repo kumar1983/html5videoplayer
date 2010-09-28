@@ -373,7 +373,7 @@ class html5player {
             $outside = $this->option['videoLinkOutsideBefore'].$this->linkGenerator($this->language['downloadVideo']." ").
                     $this->option['videoLinkOutsideAfter'];
         } else {
-            $links = $this->linkGenerator($this->language['downloadVideo']." ");
+            $links = "<p>".$this->linkGenerator($this->language['downloadVideo']."</p> ");
         }
         $header = sprintf("%s<video %s %s %s %s %s>", $this->option['beforeVideo'],
                 $this->getID($this->option['videoID'], "video"),
@@ -595,7 +595,7 @@ class html5player {
             $outside = $this->option['audioLinkOutsideBefore'].$this->linkGenerator($this->language['downloadAudio']." ").
                     $this->option['audioLinkOutsideAfter'];
         } else {
-            $links = $this->linkGenerator($this->language['downloadAudio']." ");
+            $links = "<p>".$this->linkGenerator($this->language['downloadAudio']."</p> ");
         };
         $header = sprintf("%s<audio %s %s %s>", $this->option['beforeAudio'],
                 $this->getID($this->option['audioID'], "audio"),
