@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -60,6 +60,9 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 2.1.4 =
+* Prevent Flash Lite script now runs server-side no JavaScript.
 
 = 2.1.3 =
 * Added support for special extension in [embed] tag, such as .main.m4v.

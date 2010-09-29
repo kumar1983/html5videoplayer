@@ -35,6 +35,7 @@ class flowplayer {
     private $count;
     private $flowplayer;
     private $flowplayerConfig;
+    private $jsonCommand;
 
     public function __construct($location) {
         if(defined("FLOWPLAYER_URL")) {
@@ -45,6 +46,20 @@ class flowplayer {
         $this->defaultOption();
         $this->count = 1;
         $this->flowplayerConfig = false;
+        $this->jsonCommand = array(
+                array(
+                        "name" => "video",
+                        "cmd" => "videoJSON"
+                ),
+                array(
+                        "name" => "audio",
+                        "cmd" => "audioJSON"
+                ),
+                array(
+                        "name" => "full",
+                        "cmd" => "fullJSON"
+                )
+        );
     }
 
     private function defaultOption() {
@@ -99,15 +114,12 @@ class flowplayer {
                 foreach($json as $key => $value) {
                     $jsonTemp[strtolower($key)] = $value;
                 }
-                if(isset($jsonTemp["video"])) {
-                    return $this->videoJSON($jsonTemp["video"]);
-                } elseif(isset($jsonTemp["audio"])) {
-                    return $this->audioJSON($jsonTemp["audio"]);
-                } elseif(isset($jsonTemp["full"])) {
-                    return $this->fullJSON($jsonTemp["full"]);
-                } else {
-                    return "video or audio is not set.";
+                foreach($this->jsonCommand as $value) {
+                    if(isset($jsonTemp[$value["name"]])) {
+                        return $this->$value["cmd"]($jsonTemp[$value["name"]]);
+                    }
                 }
+                return "video, audio or full mode is not set.";
             } else {
                 return $wphtml5playerclass->jsonError();
             }
@@ -211,6 +223,10 @@ class flowplayer {
                         "width" => $width, "height" => $height, "title" => $title);
                 $fallback = $wphtml5playerclass->videoreplaceJSON(null, $htmlvideo, true);
             }
+            if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+                    (defined('WPHTML5_PREVENT_FLASH_LITE') && !$wphtml5playerclass->getOption('xmlMode'))) {
+                return $fallback;
+            }
             $array = array ("url" => $url, "poster" => $poster, "width" => $width, "height" => $height,
                     "title" => $title, "plugins" => $plugins);
             $this->videoCompatible($array, true);
@@ -286,6 +302,10 @@ class flowplayer {
                 $fallback = $wphtml5playerclass->audioreplaceJSON(null, $htmlaudio, true);
                 //print_r($htmlaudio);
             }
+            if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+                    (defined('WPHTML5_PREVENT_FLASH_LITE') && !$wphtml5playerclass->getOption('xmlMode'))) {
+                return $fallback;
+            }
             $array = array("url" => $url, "title" => $title, "plugins" => $plugins);
             $this->audioCompatible($array, true);
             return $this->getFlashObject($fallback);
@@ -303,6 +323,12 @@ class flowplayer {
             $fallback = $wphtml5playerclass->videoreplaceJSON(null, $json["htmlvideo"], true);
         } elseif(isset($json["htmlaudio"])) {
             $fallback = $wphtml5playerclass->audioreplaceJSON(null, $json["htmlaudio"], true);
+        }
+        if(isset($json["htmlvideo"]) || isset($json["htmlaudio"])) {
+            if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+                    (defined('WPHTML5_PREVENT_FLASH_LITE') && !$wphtml5playerclass->getOption('xmlMode'))) {
+                return $fallback;
+            }
         }
         if(!(isset($json["width"]) && isset($json["height"]))) {
             $width = false;

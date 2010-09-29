@@ -127,6 +127,10 @@ class html5player {
         $this->option[$key] = $value;
     }
 
+    public function getOption($key) {
+        return $this->option[$key];
+    }
+
     public function setTag($key, $value) {
         $this->tag[$key] = $value;
     }
@@ -210,6 +214,10 @@ class html5player {
     }
 
     public function videoreplaceJSON($data, $array = false, $lock = false) {
+        if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+                (defined('WPHTML5_PREVENT_FLASH_LITE') && !$this->option['xmlMode'])) {
+            $lock = true;
+        }
         if($array) {
             $jsonTemp = $array;
         } else {
@@ -500,6 +508,10 @@ class html5player {
     }
 
     public function audioreplaceJSON($data, $array = false, $lock = false) {
+        if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+                (defined('WPHTML5_PREVENT_FLASH_LITE') && !$this->option['xmlMode'])) {
+            $lock = true;
+        }
         if($array) {
             $jsonTemp = $array;
         } else {
