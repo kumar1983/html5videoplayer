@@ -3,7 +3,7 @@
 Plugin Name: HTML5 Multimedia Framework
 Plugin URI: http://code.google.com/p/html5videoplayer/
 Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-Version: 2.1.4
+Version: 2.2.0
 Author: Christopher John Jackson
 Author URI: http://cj-jackson.com/
 License: New BSD License (GPLv2 and v3 Compatible)
@@ -261,7 +261,7 @@ function wphtml5player_oembed_video_handler($matches, $attr, $url, $rawattr) {
     }
     return $code;
 }
-wp_embed_register_handler("wphtml5video", "#(http://|https://)".$wphtml_host."/(.{1,}?)((.ext|.main|.high){0,1}).(mp4|m4v|ogv|webm)#i", "wphtml5player_oembed_video_handler");
+wp_embed_register_handler("wphtml5video", "#(http://|https://)".$wphtml_host."/(.{1,}?)((.ext|.main|.high){0,1}).(mp4|m4v|ogv|webm)$#i", "wphtml5player_oembed_video_handler");
 
 function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
     global $wphtml5playerclass, $wphtml_host;
@@ -298,7 +298,37 @@ function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
     }
     return $code;
 }
-wp_embed_register_handler("wphtml5audio", "#(http://|https://)".$wphtml_host."/(.{1,}?).(m4a|aac|ogg|oga|mp3|wav)#i", "wphtml5player_oembed_audio_handler");
+wp_embed_register_handler("wphtml5audio", "#(http://|https://)".$wphtml_host."/(.{1,}?).(m4a|aac|ogg|oga|mp3|wav)$#i", "wphtml5player_oembed_audio_handler");
+
+function wphtml5player_oembed_json_handler($matches, $attr, $url, $rawattr) {
+    global $wphtml5playerclass;
+    $baseUrl = substr($url, 0, -strlen(strrchr($url,"/")));
+    $json = @file_get_contents($url);
+    $json = str_replace('"/', '"'.$baseUrl.'/', $json);
+    $json = json_decode($json, true);
+    if($wphtml5playerclass->is_assoc($json)) {
+        foreach($json as $key => $value) {
+            $jsonTemp[strtolower($key)] = $value;
+        }
+        $data = "";
+        remove_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
+        if(isset($jsonTemp['video'])) {
+            $data = $wphtml5playerclass->videoreplaceJSON(null, $jsonTemp['video']);
+        } elseif(isset($jsonTemp['audio'])) {
+            $data = $wphtml5playerclass->audioreplaceJSON(null, $jsonTemp['audio']);
+        } elseif(isset($jsonTemp['flowplayer'])) {
+            $data = $wphtml5playerclass->flowPlayerJSON(null, $jsonTemp['flowplayer']);
+        } elseif(isset($jsonTemp['oembed'])) {
+            $data = $wphtml5playerclass->oEmbedJSON(null, $jsonTemp['oembed']);
+        }
+        add_filter('embed_oembed_html', 'wphtml5player_oembed', 10, 2);
+        return $data;
+    } else {
+        return $wphtml5playerclass->jsonError();
+    }
+}
+wp_embed_register_handler("wphtml5json", "#(http://|https://)".$wphtml_host."/(.{1,}?).h5.json$#i", "wphtml5player_oembed_json_handler");
+
 
 function wphtml5player_setTag() {
     global $wphtml5playerclass;

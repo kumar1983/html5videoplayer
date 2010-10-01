@@ -346,6 +346,7 @@ class oEmbedExt {
                     if(strtolower($key) == "append") {
                         if($this->is_assoc($data[$key])) {
                             foreach($data[$key] as $k => $v) {
+                                unset($allAttributes["append"][strtolower($k)]);
                                 $allAttributes["append"][strtolower($k)] = $v;
                             }
                         }
@@ -427,6 +428,7 @@ class oEmbedExt {
                     if(strtolower($key) == "append") {
                         if($this->is_assoc($data[$key])) {
                             foreach($data[$key] as $k => $v) {
+                                unset($allParameters["append"][strtolower($k)]);
                                 $allParameters["append"][strtolower($k)] = $v;
                             }
                         }
