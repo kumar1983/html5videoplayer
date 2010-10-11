@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -60,6 +60,12 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 2.2.1 =
+* Rewritten mime, codec and link generator into a new class.
+* Added json, webm, ogv, oga and m4v as wordpress upload mimes.
+* Fixed Firefox 3.5 bug with fallback script, some OS's such as CentOS still comes
+with that version.
 
 = 2.2.0 =
 * Added support for external json file (under .h5.json extension to avoid confusion).
