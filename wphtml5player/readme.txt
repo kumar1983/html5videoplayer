@@ -61,6 +61,9 @@ None
 
 == Changelog ==
 
+= 2.2.2 =
+* Added BuddyPress fix.
+
 = 2.2.1 =
 * Rewritten mime, codec and link generator into a new class.
 * Added json, webm, ogv, oga and m4v as wordpress upload mimes.
