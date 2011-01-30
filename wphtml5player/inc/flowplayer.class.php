@@ -75,6 +75,10 @@ class flowplayer {
         $this->flowplayerConfig = $this->array_replace_recursive($this->flowplayerConfig, $json);
     }
 
+    public function setFlowLocation($url) {
+        $this->flowplayer = $url;
+    }
+
     public function setUpFlash($object) {
         $this->object_attribs = $object['attribs'];
         $this->object_params = $object['params'];
@@ -430,6 +434,17 @@ class flowplayer {
                 );
             }
             $flashvars['plugins']['controls']['fullscreen'] = false;
+            if(defined('FLOWPLAYER_RANGE_REQUESTS')) {
+                $flashvars['plugins']['pseudo'] = array(
+                    'url' => 'flowplayer.pseudostreaming.swf',
+                    'rangeRequests' => true
+                );
+                if(isset($flashvars['playlist'])) {
+                    $flashvars['playlist'][1]['provider'] = 'pseudo';
+                } else {
+                    $flashvars['clip']['provider'] = 'pseudo';
+                }
+            }
             $flashvars['canvas']['backgroundGradient'] = "none";
             $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig);
             $flashvars = 'config='.json_encode($flashvars);

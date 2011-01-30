@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 2.2.3
+Stable tag: 3.0.0
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -60,6 +60,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.0.0 =
+* Added Admin Panel (Settings -> HTML5 Multimedia).
+* Added FlowPlayers' pseudostreaming plugin and range requests support (experimental and untested)
 
 = 2.2.3 =
 * MIT Licensed Release.

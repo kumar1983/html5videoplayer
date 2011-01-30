@@ -465,6 +465,10 @@ class html5player {
         return "";
     }
 
+    public function setFlowLocation($url) {
+        $this->flowplayer->setFlowLocation($url);
+    }
+
     private function buggyiOS($maxWebKitVersion = self::maxBuggyIOSWebkit) {
         if(preg_match('#(iPod|iPhone|iPad)#',$_SERVER['HTTP_USER_AGENT'])) {
             if(preg_match("#AppleWebKit/([0-9]+)(\.|\+|:space:)#", $_SERVER['HTTP_USER_AGENT'],
