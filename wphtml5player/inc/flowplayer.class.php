@@ -348,7 +348,7 @@ class flowplayer {
         unset($json["width"]);
         unset($json["height"]);
         unset($json["title"]);
-        $flashvars = $this->flowPlayerConfig($json);
+        $flashvars = $this->flowPlayerConfig($json, null, '_FULL');
         $flashvars = 'config='.json_encode($flashvars);
         $movie = $this->flowplayer;
         if(!($width && $height)) {
@@ -498,7 +498,7 @@ class flowplayer {
                             )
                     )
             );
-            $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig);
+            $flashvars = $this->flowPlayerConfig($flashvars, $pluginConfig, '_AUDIO');
             unset($flashvars["play"]);
             $flashvars["play"]["opacity"] = 0;
             $flashvars["plugins"]["controls"]["fullscreen"] = false;
@@ -529,10 +529,10 @@ class flowplayer {
         }
     }
 
-    private function flowPlayerConfig($flashvars, $pluginConfig = false) {
+    private function flowPlayerConfig($flashvars, $pluginConfig = false, $type = '') {
         global $wphtml5playerclass;
-        if(defined("FLOWPLAYER_JSON")) {
-            $flowPlayerJSON = json_decode(FLOWPLAYER_JSON, true);
+        if(defined("FLOWPLAYER_JSON".$type)) {
+            $flowPlayerJSON = json_decode(constant("FLOWPLAYER_JSON".$type), true);
             if(!$wphtml5playerclass->is_assoc($flowPlayerJSON)) {
                 $flowPlayerJSON = false;
             } else {

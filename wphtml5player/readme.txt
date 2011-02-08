@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -61,60 +61,17 @@ None
 
 == Changelog ==
 
+= 3.0.1 =
+* Prevent Flash Light and Force Fallback now works as options in admin panel,
+they no longer operate as a plugin.
+* Added Video for Everybody Compliant option in admin panel.
+* Added oEmbed Options in admin panel.
+* Flowplayer now has dedicated configuration for video, audio and full control, (
+What the point of using liverail plugin while playing audio file?).
+
 = 3.0.0 =
 * Added Admin Panel (Settings -> HTML5 Multimedia).
 * Added FlowPlayers' pseudostreaming plugin and range requests support (experimental and untested)
 
 = 2.2.3 =
 * MIT Licensed Release.
-
-= 2.2.2 =
-* Added BuddyPress fix.
-
-= 2.2.1 =
-* Rewritten mime, codec and link generator into a new class.
-* Added json, webm, ogv, oga and m4v as wordpress upload mimes.
-* Fixed Firefox 3.5 bug with fallback script, some OS's such as CentOS still comes
-with that version.
-
-= 2.2.0 =
-* Added support for external json file (under .h5.json extension to avoid confusion).
-
-= 2.1.4 =
-* Prevent Flash Lite script now runs server-side no JavaScript.
-
-= 2.1.3 =
-* Added support for special extension in [embed] tag, such as .main.m4v.
-* Fixed a few minor problem in embed handler.
-
-= 2.1.2 =
-* Enhanced HTML5 video and audio support for Wordpress [embed] tag.
-
-= 2.1.1 =
-* Added HTML5 video and audio support for Wordpress [embed] tag.
-
-= 2.1.0 =
-* Added filter for oembed, now works automatically and manually with Wordpress
-oEmbed.
-
-= 2.0.2 =
-* Added Anti-Iframe script, now works better with vimeo.com.
-
-= 2.0.1 =
-* Fixed minor overlooked code.
-
-= 2.0.0 =
-* Enhanced support for Wordpress oEmbed.
-* Producers XHTML1.1/HTML5 complient code from oEmbed output
-thanks to [PHP Simple HTML DOM Parser](http://simplehtmldom.sourceforge.net) for
-analysing and extracting attribute from oEmbed output. (Only works with flash object)
-* Renamed simple HTML DOM classes to prevent potential conflict with other
-Wordpress plugins.
-* Return oEmbed output if flash object is not detected.
-* Automatically add fallback to oEmbed therefore perseving iPhone support.
-(Only works with flash object).
-* Added JSON interface for Wordpress oEmbed.
-
-= 1.8.0 =
-* Removed Autoembed intergration support.
-* Added support for Wordpress oembed as fallback to html5.
