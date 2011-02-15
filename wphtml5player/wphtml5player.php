@@ -3,7 +3,7 @@
   Plugin Name: HTML5 Multimedia Framework
   Plugin URI: http://code.google.com/p/html5videoplayer/
   Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-  Version: 3.0.1
+  Version: 3.1.0
   Author: Christopher John Jackson
   Author URI: http://cj-jackson.com/
   License: MIT License
@@ -45,6 +45,7 @@ add_action('atom_head', 'wphtml5player_XML');
 add_action('rss_head', 'wphtml5player_XML');
 add_action('rss2_head', 'wphtml5player_XML');
 add_action('rdf_header', 'wphtml5player_XML');
+add_action('wp_footer', 'wphtml5player_mediaelement_footer');
 add_filter('embed_oembed_html', 'wphtml5player_oembed', null, 2);
 
 function wphtml5player_call() {
@@ -58,6 +59,22 @@ function wphtml5player_getAndSetAdminOptions() {
     global $wphtml5playerclass;
     if (get_option('html5framework_order') == '1') {
         define('USE_FLOWPLAYER_IN_WP_EMBED', 'true');
+    }
+
+    if (get_option('html5framework_mediaelement_directory') != '') {
+        $mediaelementlocation = get_option('html5framework_mediaelement_directory');
+    }
+
+    if (get_option('html5framework_order') == '2') {
+        $wphtml5playerclass->initMediaElement();
+        wp_enqueue_script('jquery');
+        if (!isset($mediaelementlocation)) {
+            $mediaelementlocation = WP_PLUGIN_URL . "/wphtml5player/mediaelement/";
+        } else {
+            $wphtml5playerclass->setMediaElementDir($mediaelementlocation);
+        }
+        wp_enqueue_script('mediaelement', $mediaelementlocation . 'mediaelement-and-player.min.js');
+        wp_enqueue_style('mediaelement', $mediaelementlocation . 'mediaelementplayer.min.css');
     }
 
     if (get_option('html5framework_flowplayer_location') != '') {
@@ -130,8 +147,37 @@ function wphtml5player_getAndSetAdminOptions() {
         wphtml5player_setObjectParameter('{' . get_option('html5framework_oembed_param') . '}');
     }
 
+    if (get_option('html5framework_mediaelement_plugin_script') != '') {
+        $json = json_decode('{'.get_option('html5framework_mediaelement_plugin_script').'}', true);
+        foreach($json as $key => $value) {
+            wp_enqueue_script('wphtml5_'.$key, $value);
+        }
+    }
+
     if (isset($flowplayer)) {
         wphtml5player_setFlowPlayerOptions(json_encode($flowplayer));
+    }
+}
+
+function wphtml5player_mediaelement_footer() {
+    if (get_option('html5framework_order') == '2') {
+        $videoOption = '';
+        $audioOption = '';
+
+        if (get_option("html5framework_mediaelement_video_config") != '') {
+            $videoOption = '{' . get_option("html5framework_mediaelement_video_config") . '}';
+            $videoOption = json_decode($videoOption, true);
+            $videoOption = json_encode($videoOption);
+        }
+
+        if (get_option("html5framework_mediaelement_audio_config") != '') {
+            $audioOption = '{' . get_option("html5framework_mediaelement_audio_config") . '}';
+            $audioOption = json_decode($audioOption, true);
+            $audioOption = json_encode($audioOption);
+        }
+
+        echo '<script type="text/javascript">jQuery(\'video\').mediaelementplayer('.$videoOption.');</script>';
+        echo '<script type="text/javascript">jQuery(\'audio\').mediaelementplayer('.$audioOption.');</script>';
     }
 }
 
@@ -157,6 +203,10 @@ function wphtml5player_activate() {
     add_option("html5framework_video_for_everybody", '');
     add_option("html5framework_oembed_attribute", '');
     add_option("html5framework_oembed_param", '');
+    add_option("html5framework_mediaelement_directory", '');
+    add_option("html5framework_mediaelement_plugin_script", '');
+    add_option("html5framework_mediaelement_video_config", '');
+    add_option("html5framework_mediaelement_audio_config", '');
 }
 
 function wphtml5player_oembed($html, $url) {
@@ -462,18 +512,22 @@ function wphtml5player_admin_option() {
             <input type="radio" name="html5framework_order" value="0" <?php
         if (get_option('html5framework_order') == '0') {
             echo 'checked="checked"';
-        }; ?> /> HTML5 first, Flowplayer as fallback. <input type="radio" name="html5framework_order" value="1" <?php
+        }; ?> /> HTML5 first, Flowplayer as fallback (Default).<br /> <input type="radio" name="html5framework_order" value="1" <?php
                    if (get_option('html5framework_order') == '1') {
                        echo 'checked="checked"';
                    };
-        ?> /> Flowplayer first, HTML5 as fallback.
+        ?> /> Flowplayer first, HTML5 as fallback.<br />  <input type="radio" name="html5framework_order" value="2" <?php
+                   if (get_option('html5framework_order') == '2') {
+                       echo 'checked="checked"';
+                   };
+        ?> /> <a href="http://mediaelementjs.com/" target="_blank">MediaElement.js</a> (Replaces Flowplayer as HTML fallback! 100% watermark free! =) )
         </p>
 
         <p><span>Prevent Flash Light (Only activated this if you don't like the idea of using flash on mobile devices):</span> <input type="checkbox" name="html5framework_prevent_flash_light" value="true" <?php if (get_option('html5framework_prevent_flash_light') == 'true') { echo 'checked="checked"'; }; ?> /></p>
 
         <p><span>Force Fallback (Only activated this if your intention is to only use one format or if you want force fallback):</span> <input type="checkbox" name="html5framework_force_fallback" value="true" <?php if (get_option('html5framework_force_fallback') == 'true') { echo 'checked="checked"'; }; ?> /></p>
 
-        <p><span><a href="http://camendesign.com/code/video_for_everybody">Video for Everybody Compliant:</a></span> <input type="checkbox" name="html5framework_video_for_everybody" value="true" <?php if (get_option('html5framework_video_for_everybody') == 'true') { echo 'checked="checked"'; }; ?> /></p>
+        <p><span><a href="http://camendesign.com/code/video_for_everybody" target="_blank">Video for Everybody Compliant:</a></span> <input type="checkbox" name="html5framework_video_for_everybody" value="true" <?php if (get_option('html5framework_video_for_everybody') == 'true') { echo 'checked="checked"'; }; ?> /></p>
 
         <h3>Flowplayer Options</h3>
         <p><span>Flowplayer File Location (Including filename of player, useful for commercial versions of flowplayer, Leave Blank to use GPLv3 version included with plugin):</span><br />
@@ -526,8 +580,25 @@ function wphtml5player_admin_option() {
             <textarea id="html5framework_oembed_param" name="html5framework_oembed_param" rows="5" cols="15" style="width: 99%; height: 15em" ><?php echo get_option('html5framework_oembed_param'); ?></textarea>
         </p>
 
+        <h3>MediaElement.js</h3>
+        <p><span>Location of MediaElement Directory (Include trailing '/', leave blank to use included MediaElement.js library):</span><br />
+            <input id="html5framework_mediaelement_directory" type="text" name="html5framework_mediaelement_directory" style="width: 99%;" value="<?php echo get_option('html5framework_mediaelement_directory'); ?>" />
+        </p>
+
+        <p><span>MediaElement.js Plugin Script (In <a href="http://www.json.org/" target="_blank">JSON</a>, no need to wrap with curly brackets '{}' , e.g "name":"http://location.to/plugin.js" ):</span><br />
+            <textarea id="html5framework_mediaelement_plugin_script" name="html5framework_mediaelement_plugin_script" rows="5" cols="15" style="width: 99%; height: 15em" ><?php echo get_option('html5framework_mediaelement_plugin_script'); ?></textarea>
+        </p>
+
+        <p><span>MediaElement.js <a href="http://mediaelementjs.com/#api" target="_blank">Video Config</a> (In <a href="http://www.json.org/" target="_blank">JSON</a>, no need to wrap with curly brackets '{}'):</span><br />
+            <textarea id="html5framework_mediaelement_video_config" name="html5framework_mediaelement_video_config" rows="5" cols="15" style="width: 99%; height: 15em" ><?php echo get_option('html5framework_mediaelement_video_config'); ?></textarea>
+        </p>
+
+        <p><span>MediaElement.js <a href="http://mediaelementjs.com/#api" target="_blank">Audio Config</a> (In <a href="http://www.json.org/" target="_blank">JSON</a>, no need to wrap with curly brackets '{}'):</span><br />
+            <textarea id="html5framework_mediaelement_audio_config" name="html5framework_mediaelement_audio_config" rows="5" cols="15" style="width: 99%; height: 15em" ><?php echo get_option('html5framework_mediaelement_audio_config'); ?></textarea>
+        </p>
+
         <input type="hidden" name="action" value="update" />
-        <input type="hidden" name="page_options" value="html5framework_flowplayer_location,html5framework_flowplayer_config,html5framework_flowplayer_videoClassName,html5framework_flowplayer_audioClassName,html5framework_flowplayer_videoEnable,html5framework_flowplayer_audioEnable,html5framework_order,html5framework_html5_config,html5framework_html5_videoAttribute,html5framework_html5_audioAttribute,html5framework_flowplayer_rangeRequests,html5framework_flowplayer_config_audio,html5framework_flowplayer_config_full,html5framework_prevent_flash_light,html5framework_force_fallback,html5framework_video_for_everybody,html5framework_oembed_attribute,html5framework_oembed_param" />
+        <input type="hidden" name="page_options" value="html5framework_flowplayer_location,html5framework_flowplayer_config,html5framework_flowplayer_videoClassName,html5framework_flowplayer_audioClassName,html5framework_flowplayer_videoEnable,html5framework_flowplayer_audioEnable,html5framework_order,html5framework_html5_config,html5framework_html5_videoAttribute,html5framework_html5_audioAttribute,html5framework_flowplayer_rangeRequests,html5framework_flowplayer_config_audio,html5framework_flowplayer_config_full,html5framework_prevent_flash_light,html5framework_force_fallback,html5framework_video_for_everybody,html5framework_oembed_attribute,html5framework_oembed_param,html5framework_mediaelement_directory,html5framework_mediaelement_plugin_script,html5framework_mediaelement_video_config,html5framework_mediaelement_audio_config" />
 
         <p class="submit">
             <input type="submit" class="button-primary" value="Save Changes" />
@@ -549,4 +620,3 @@ add_action('admin_menu', "wphtml5player_video_admin_init");
 function wphtml5player_video_admin_init() {
     add_options_page('HTML5 Multimedia Framework Options', 'HTML5 Multimedia', 8, 'html5multimedia', 'wphtml5player_admin_option');
 }
-?>

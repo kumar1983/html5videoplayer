@@ -48,8 +48,9 @@ class html5player {
     private $tag;
     private $oembed;
     private $linkGen;
+    private $mediaelement;
 
-    public function  __construct($url, $siteurl, $root) {
+    public function __construct($url, $siteurl, $root) {
         $this->url['script'] = $url;
         $this->url['site'] = $siteurl;
         $this->root = $root;
@@ -57,6 +58,7 @@ class html5player {
         require_once 'inc/oembedext.class.php';
         $this->flowplayer = new flowplayer($this->url['script']);
         $this->oembed = new oEmbedExt();
+        $this->mediaelement = false;
         $this->defaultLanguage();
         $this->defaultOption();
         $this->defaultHtmlAttribute();
@@ -67,44 +69,55 @@ class html5player {
 
     private function defaultOption() {
         $this->option = array(
-                'xmlMode' => false,
-                'videoID' => false,
-                'beforeVideo' => '',
-                'afterVideo' => '',
-                'videoScript' => false,
-                'audioID' => false,
-                'beforeAudio' => '',
-                'afterAudio' => '',
-                'audioScript' => false,
-                'videoLinkOutside' => false,
-                'audioLinkOutside' => false,
-                'videoLinkOutsideBefore' => '<p>',
-                'videoLinkOutsideAfter' => '</p>',
-                'audioLinkOutsideBefore' => '<p>',
-                'audioLinkOutsideAfter' => '</p>'
+            'xmlMode' => false,
+            'videoID' => false,
+            'beforeVideo' => '',
+            'afterVideo' => '',
+            'videoScript' => false,
+            'audioID' => false,
+            'beforeAudio' => '',
+            'afterAudio' => '',
+            'audioScript' => false,
+            'videoLinkOutside' => false,
+            'audioLinkOutside' => false,
+            'videoLinkOutsideBefore' => '<p>',
+            'videoLinkOutsideAfter' => '</p>',
+            'audioLinkOutsideBefore' => '<p>',
+            'audioLinkOutsideAfter' => '</p>'
         );
+    }
+
+    public function initMediaElement() {
+        require_once 'mediaelement/mediaelement.class.php';
+        $this->mediaelement = new mediaelement($this->url['script']);
+    }
+
+    public function setMediaElementDir($dir) {
+        if ($this->mediaelement) {
+            $this->mediaelement->setMediaElementDir($dir);
+        }
     }
 
     private function defaultLanguage() {
         $this->language = array(
-                'noVideo' => "No video playback capabilities, please download the video below",
-                'noAudio' => "No audio playback capabilities, please download the audio below",
-                'downloadVideo' => '<strong>Download Video:</strong>',
-                'downloadAudio' => '<strong>Download Audio:</strong>',
-                'closedFormat' => 'Closed Format:',
-                'openFormat' => 'Open Format:'
+            'noVideo' => "No video playback capabilities, please download the video below",
+            'noAudio' => "No audio playback capabilities, please download the audio below",
+            'downloadVideo' => '<strong>Download Video:</strong>',
+            'downloadAudio' => '<strong>Download Audio:</strong>',
+            'closedFormat' => 'Closed Format:',
+            'openFormat' => 'Open Format:'
         );
     }
 
     private function defaultHtmlAttribute() {
         $this->htmlAttribute = array(
-                'video' => array(
-                        'controls' => null,
-                        'preload' => "none"
-                ),
-                'audio' => array(
-                        'controls' => null
-                )
+            'video' => array(
+                'controls' => null,
+                'preload' => "none"
+            ),
+            'audio' => array(
+                'controls' => null
+            )
         );
     }
 
@@ -142,7 +155,7 @@ class html5player {
 
     public function setFlowplayerConfig($json) {
         $jsonTemp = json_decode($json, true);
-        if($this->is_assoc($jsonTemp)) {
+        if ($this->is_assoc($jsonTemp)) {
             $this->flowplayer->setFlowplayerConfig($jsonTemp);
         } else {
             echo $this->jsonError();
@@ -158,10 +171,10 @@ class html5player {
     }
 
     public function oEmbedJSON($data, $array = false) {
-        if($array) {
+        if ($array) {
             $jsonTemp = $array;
         } else {
-            if(is_array($data)) {
+            if (is_array($data)) {
                 $jsonTemp = $this->removeJSONNoise($data[1]);
             } else {
                 $jsonTemp = $data;
@@ -169,13 +182,13 @@ class html5player {
             unset($data);
             $jsonTemp = json_decode($jsonTemp, true);
         }
-        if($this->is_assoc($jsonTemp)) {
-            foreach($jsonTemp as $key => $value) {
+        if ($this->is_assoc($jsonTemp)) {
+            foreach ($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
             }
             return $this->oembed->oEmbedJSON($json);
         } else {
-            return $this->jsonError()." @ Video Tag";
+            return $this->jsonError() . " @ Video Tag";
         }
     }
 
@@ -185,10 +198,10 @@ class html5player {
     }
 
     public function flowPlayerJSON($json, $array = false) {
-        if(!$array) {
-        if(is_array($json)) {
-            $json = $this->removeJSONNoise($json[1]);
-        }
+        if (!$array) {
+            if (is_array($json)) {
+                $json = $this->removeJSONNoise($json[1]);
+            }
             return $this->flowplayer->flowPlayerJSON($json);
         } else {
             return $this->flowplayer->flowPlayerJSON(null, $array);
@@ -197,12 +210,12 @@ class html5player {
 
     public function videoreplace($data) {
         $data = $data[1];
-        $data = explode(" ",$data);
+        $data = explode(" ", $data);
         return $this->arrayToOrganisedArrays($data);
     }
 
     private function removeJSONNoise($data) {
-        $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~','"',$data);
+        $jsonTemp = preg_replace('~(&#(8220|8221|8243);|“|”)~', '"', $data);
         unset($data);
         $jsonTemp = preg_replace('#((,){0,1}<(.*?)>){0,}(("){1}(.){0,}(<(.*?)>){1,}(.){0,}("){1}){0,}#i', '$2$4', $jsonTemp);
         $jsonTemp = preg_replace('#("|}|]){1}(,){0,1}(<(.*?)>){0,}("|}|]){1}#i', '$1$2$5', $jsonTemp);
@@ -211,14 +224,14 @@ class html5player {
     }
 
     public function videoreplaceJSON($data, $array = false, $lock = false) {
-        if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+        if (preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
                 (defined('WPHTML5_PREVENT_FLASH_LITE') && !$this->option['xmlMode'])) {
             $lock = true;
         }
-        if($array) {
+        if ($array) {
             $jsonTemp = $array;
         } else {
-            if(is_array($data)) {
+            if (is_array($data)) {
                 $jsonTemp = $this->removeJSONNoise($data[1]);
             } else {
                 $jsonTemp = $data;
@@ -226,59 +239,59 @@ class html5player {
             unset($data);
             $jsonTemp = json_decode($jsonTemp, true);
         }
-        if($this->is_assoc($jsonTemp)) {
-            foreach($jsonTemp as $key => $value) {
+        if ($this->is_assoc($jsonTemp)) {
+            foreach ($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
             }
             unset($jsonTemp);
-            if(isset($json["src"])) {
+            if (isset($json["src"])) {
                 $json["url"] = $json["src"];
                 unset($json["src"]);
             }
-            if(!isset($json["url"])) {
+            if (!isset($json["url"])) {
                 return "ERROR: url/src not specified";
             } elseif ($this->is_assoc($json["url"]) && !is_string($json["url"])) {
                 return "ERROR: url/src as object is not allowed";
             }
-            if(!is_array($json["url"])) {
+            if (!is_array($json["url"])) {
                 $json['url'] = array($json["url"]);
             }
-            if(!(isset($json["width"]) && isset($json["height"]))) {
+            if (!(isset($json["width"]) && isset($json["height"]))) {
                 $json["width"] = false;
                 $json["height"] = false;
             } elseif (!(is_numeric($json["width"]) && is_numeric($json["height"]))) {
                 $json["width"] = false;
                 $json["height"] = false;
             } else {
-                $json["width"] = (int)$json["width"];
-                $json["height"] = (int)$json["height"];
+                $json["width"] = (int) $json["width"];
+                $json["height"] = (int) $json["height"];
             }
-            if(!isset($json["poster"]) || is_array($json["poster"])) {
+            if (!isset($json["poster"]) || is_array($json["poster"])) {
                 $json["poster"] = false;
             } elseif (!preg_match("#.(jpg|jpeg|png|gif)$#i", $json["poster"])) {
                 $json["poster"] = false;
             }
-            if($json["poster"]) {
+            if ($json["poster"]) {
                 $url[0] = $json["poster"];
                 $url = $this->urlsCheck($url);
                 $json["poster"] = $url[0];
             }
-            if(!isset($json["title"]) || is_array($json["title"])) {
+            if (!isset($json["title"]) || is_array($json["title"])) {
                 $json["title"] = false;
             } else {
                 $json["title"] = htmlspecialchars($json["title"]);
             }
-            if(!isset($json["attribute"])) {
+            if (!isset($json["attribute"])) {
                 $json["attribute"] = false;
-            } elseif(!$this->is_assoc($json["attribute"])) {
+            } elseif (!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
 
-            if(isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
+            if (isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
                 $temp = array(
-                        "url" => $json["oembed"],
-                        "width" => $json["width"],
-                        "height" => $json["height"]
+                    "url" => $json["oembed"],
+                    "width" => $json["width"],
+                    "height" => $json["height"]
                 );
                 $json["oembed"] = $temp;
                 unset($temp);
@@ -287,23 +300,23 @@ class html5player {
             }
             return $this->videoCodeGenerator(null, null, $json, $lock);
         } else {
-            return $this->jsonError()." @ Video Tag";
+            return $this->jsonError() . " @ Video Tag";
         }
     }
 
     public function is_assoc($var) {
-        return is_array($var) && array_keys($var)!==range(0,sizeof($var)-1);
+        return is_array($var) && array_keys($var) !== range(0, sizeof($var) - 1);
     }
 
     public function jsonError() {
         $json_errors = array(
-                JSON_ERROR_NONE => 'No error has occurred',
-                JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
-                JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
-                JSON_ERROR_SYNTAX => 'Syntax error',
+            JSON_ERROR_NONE => 'No error has occurred',
+            JSON_ERROR_DEPTH => 'The maximum stack depth has been exceeded',
+            JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
+            JSON_ERROR_SYNTAX => 'Syntax error',
         );
-        if(function_exists("json_last_error")) {
-            return "JSON ERROR: ".$json_errors[json_last_error()];
+        if (function_exists("json_last_error")) {
+            return "JSON ERROR: " . $json_errors[json_last_error()];
         } else {
             return "UNKNOWN ERROR: probably syntax error.";
         }
@@ -317,8 +330,8 @@ class html5player {
 
         $videooption["poster"] = false;
         //Check for poster url.
-        if(isset($matches[$ifScore]) && !is_numeric($matches[$ifScore])) {
-            if(preg_match("#.(jpg|jpeg|png|gif)$#i", $matches[$ifScore])) {
+        if (isset($matches[$ifScore]) && !is_numeric($matches[$ifScore])) {
+            if (preg_match("#.(jpg|jpeg|png|gif)$#i", $matches[$ifScore])) {
                 $url[0] = $matches[$ifScore];
                 $url = $this->urlsCheck($url);
                 $videooption["poster"] = $url[0];
@@ -329,18 +342,18 @@ class html5player {
         $videooption["width"] = false;
         $videooption["height"] = false;
         //Check for resolution
-        if(isset($matches[$ifScore]) && isset($matches[$ifScore+1])) {
-            if(is_numeric($matches[$ifScore]) && is_numeric($matches[$ifScore+1])) {
-                $videooption["width"] = (int)$matches[$ifScore];
-                $videooption["height"] = (int)$matches[$ifScore+1];
-                $ifScore+2;
+        if (isset($matches[$ifScore]) && isset($matches[$ifScore + 1])) {
+            if (is_numeric($matches[$ifScore]) && is_numeric($matches[$ifScore + 1])) {
+                $videooption["width"] = (int) $matches[$ifScore];
+                $videooption["height"] = (int) $matches[$ifScore + 1];
+                $ifScore + 2;
             }
         }
         return $this->videoCodeGenerator($videourls, $videooption);
     }
 
     private function videoCodeGenerator($videourls, $videooption, $JSON = false, $lock = false) {
-        if($JSON) {
+        if ($JSON) {
             $videourls = $this->urlsCheck($JSON["url"]);
             $width = $JSON["width"];
             $height = $JSON["height"];
@@ -357,57 +370,63 @@ class html5player {
             $attribute = false;
             $oembed = false;
         }
-        if(!isset($this->linkGen)) {
+        if (!isset($this->linkGen)) {
             $this->linkGen = new TypeAndLinkGenclass($this->language['downloadAudio'],
-                $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat']);
+                            $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat']);
         }
         $sources = '';
-        foreach($videourls as $value) {
-            if(!($lock || $oembed)) {
-                $videoCompatible = array ("url" => $value, "poster" => $poster, "width" => $width, "height" => $height,
+        foreach ($videourls as $value) {
+            if (!($lock || $oembed)) {
+                if ($this->mediaelement) {
+                    $videoCompatible = array("url" => $value, "poster" => $poster, "width" => $width, "height" => $height,
+                        "title" => $title);
+                    $this->mediaelement->videoCompatible($videoCompatible);
+                } else {
+                    $videoCompatible = array("url" => $value, "poster" => $poster, "width" => $width, "height" => $height,
                         "title" => $title, "plugins" => false);
-                $this->flowplayer->videoCompatible($videoCompatible);
+                    $this->flowplayer->videoCompatible($videoCompatible);
+                }
             }
-            $source ='<source src="'.$value.'" '.$this->linkGen->getVideoType($value).' />';
-            if(((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS(self::maxBuggyIOSWebkitAlt) &&
-                                    !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT'])) ||
-                            (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS(self::maxBuggyIOSWebkitAlt)))
+            $source = '<source src="' . $value . '" ' . $this->linkGen->getVideoType($value) . ' />';
+            if (((preg_match("#.(ext|main).(mp4|m4v)$#i", $value) && $this->buggyiOS(self::maxBuggyIOSWebkitAlt) &&
+                    !preg_match('#iPad#', $_SERVER['HTTP_USER_AGENT'])) ||
+                    (preg_match("#.(ogv|ogg|webm|high\.(mp4|m4v))$#i", $value) && $this->buggyiOS(self::maxBuggyIOSWebkitAlt)))
                     && !$this->option['xmlMode']) {
                 $source = '';
             }
             $sources .= $source;
         }
         $links = $outside = "";
-        if($this->mobileCheck() || $this->option['videoLinkOutside']) {
-            $outside = $this->option['videoLinkOutsideBefore'].$this->linkGen->getVideoLinks().
+        if ($this->mobileCheck() || $this->option['videoLinkOutside']) {
+            $outside = $this->option['videoLinkOutsideBefore'] . $this->linkGen->getVideoLinks() .
                     $this->option['videoLinkOutsideAfter'];
         } else {
             $links = $this->linkGen->getVideoLinks();
         }
         $header = sprintf("%s<video %s %s %s %s %s>", $this->option['beforeVideo'],
-                $this->getID($this->option['videoID'], "video"),
-                $this->getPoster($poster), $this->getResolutionCode($width, $height),
-                $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
+                        $this->getID($this->option['videoID'], "video"),
+                        $this->getPoster($poster), $this->getResolutionCode($width, $height),
+                        $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
-                $this->getFallback($this->getPosterForFallback($poster).$this->language['noVideo']."<br />".$links,
-                $oembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
+                $this->getFallback($this->getPosterForFallback($poster) . $this->language['noVideo'] . "<br />" . $links,
+                        $oembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterVideo']);
     }
 
     private function getID($name, $type) {
-        if($name) {
+        if ($name) {
             $this->count[$type]++;
-            return 'id="'.$name.'-'.$this->count[$type].'"';
+            return 'id="' . $name . '-' . $this->count[$type] . '"';
         } else {
             return "";
         }
     }
 
     private function getJavaScriptCall($script, $type) {
-        if($script && $this->option[$type.'ID']) {
-            $output = sprintf($script, $this->option[$type.'ID'].'-'.$this->count[$type]);
-            return sprintf("<script type='text/javascript'>%s</script>",$output);
+        if ($script && $this->option[$type . 'ID']) {
+            $output = sprintf($script, $this->option[$type . 'ID'] . '-' . $this->count[$type]);
+            return sprintf("<script type='text/javascript'>%s</script>", $output);
         } else {
             return "";
         }
@@ -415,8 +434,8 @@ class html5player {
 
     private function getHtmlAttribute($attribute, $type) {
         $htmlAtrribute = $this->htmlAttribute[$type];
-        if($attribute) {
-            foreach($attribute as $key => $value) {
+        if ($attribute) {
+            foreach ($attribute as $key => $value) {
                 unset($htmlAtrribute[strtolower($key)]);
                 $htmlAtrribute[strtolower($key)] = $value;
             }
@@ -433,34 +452,34 @@ class html5player {
         // Unset banned Attrbute End
 
         $htmlAttri = "";
-        foreach($htmlAtrribute as $key => $value) {
-            if($value == null) {
-                $htmlAttri .= $key." ";
+        foreach ($htmlAtrribute as $key => $value) {
+            if ($value == null) {
+                $htmlAttri .= $key . " ";
             } else {
-                $htmlAttri .= $key.'="'.htmlspecialchars($value).'" ';
+                $htmlAttri .= $key . '="' . htmlspecialchars($value) . '" ';
             }
         }
         return $htmlAttri;
     }
 
     private function getPosterForFallback($poster) {
-        if($poster) {
-            return '<img src="'.$poster.'" /><br />';
+        if ($poster) {
+            return '<img src="' . $poster . '" /><br />';
         } else {
             return "";
         }
     }
 
     private function getPoster($poster) {
-        if(!$poster || $this->buggyiOS()) {
+        if (!$poster || $this->buggyiOS()) {
             return "";
         }
-        return 'poster="'.$poster.'"';
+        return 'poster="' . $poster . '"';
     }
 
     private function getTitle($title) {
-        if($title) {
-            return 'title="'.$title.'"';
+        if ($title) {
+            return 'title="' . $title . '"';
         }
         return "";
     }
@@ -470,11 +489,11 @@ class html5player {
     }
 
     private function buggyiOS($maxWebKitVersion = self::maxBuggyIOSWebkit) {
-        if(preg_match('#(iPod|iPhone|iPad)#',$_SERVER['HTTP_USER_AGENT'])) {
-            if(preg_match("#AppleWebKit/([0-9]+)(\.|\+|:space:)#", $_SERVER['HTTP_USER_AGENT'],
-            $matches)) {
-                $WebKitVersion = (int)$matches[1];
-                if($WebKitVersion >= self::minBuggyIOSWebkit && $WebKitVersion < $maxWebKitVersion) {
+        if (preg_match('#(iPod|iPhone|iPad)#', $_SERVER['HTTP_USER_AGENT'])) {
+            if (preg_match("#AppleWebKit/([0-9]+)(\.|\+|:space:)#", $_SERVER['HTTP_USER_AGENT'],
+                            $matches)) {
+                $WebKitVersion = (int) $matches[1];
+                if ($WebKitVersion >= self::minBuggyIOSWebkit && $WebKitVersion < $maxWebKitVersion) {
                     return true;
                 }
             }
@@ -483,10 +502,10 @@ class html5player {
     }
 
     private function getResolutionCode($width, $height) {
-        if(!($width && $height)) {
+        if (!($width && $height)) {
             return "";
         }
-        return 'width="'.$width.'" height="'.$height.'"';
+        return 'width="' . $width . '" height="' . $height . '"';
     }
 
     public function audioreplace($data) {
@@ -497,14 +516,14 @@ class html5player {
     }
 
     public function audioreplaceJSON($data, $array = false, $lock = false) {
-        if(preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
+        if (preg_match("#(webOS|SymbianOS|Nokia|Android)#i", $_SERVER['HTTP_USER_AGENT']) &&
                 (defined('WPHTML5_PREVENT_FLASH_LITE') && !$this->option['xmlMode'])) {
             $lock = true;
         }
-        if($array) {
+        if ($array) {
             $jsonTemp = $array;
         } else {
-            if(is_array($data)) {
+            if (is_array($data)) {
                 $jsonTemp = $this->removeJSONNoise($data[1]);
             } else {
                 $jsonTemp = $data;
@@ -512,38 +531,38 @@ class html5player {
             unset($data);
             $jsonTemp = json_decode($jsonTemp, true);
         }
-        if($this->is_assoc($jsonTemp)) {
-            foreach($jsonTemp as $key => $value) {
+        if ($this->is_assoc($jsonTemp)) {
+            foreach ($jsonTemp as $key => $value) {
                 $json[strtolower($key)] = $value;
             }
             unset($jsonTemp);
-            if(isset($json["src"])) {
+            if (isset($json["src"])) {
                 $json["url"] = $json["src"];
                 unset($json["src"]);
             }
-            if(!isset($json["url"])) {
+            if (!isset($json["url"])) {
                 return "ERROR: url not specified";
             } elseif ($this->is_assoc($json["url"]) && !is_string($json["url"])) {
                 return "ERROR: url as object is not allowed";
             }
-            if(!is_array($json["url"])) {
+            if (!is_array($json["url"])) {
                 $json['url'] = array($json['url']);
             }
-            if(!isset($json["title"]) || is_array($json["title"])) {
+            if (!isset($json["title"]) || is_array($json["title"])) {
                 $json["title"] = false;
             } else {
                 $json["title"] = htmlspecialchars($json["title"]);
             }
-            if(!isset($json["attribute"])) {
+            if (!isset($json["attribute"])) {
                 $json["attribute"] = false;
-            } elseif(!$this->is_assoc($json["attribute"])) {
+            } elseif (!$this->is_assoc($json["attribute"])) {
                 $json["attribute"] = false;
             }
-            if(isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
+            if (isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
                 $temp = array(
-                        "url" => $json["oembed"],
-                        "width" => $json["width"],
-                        "height" => $json["height"]
+                    "url" => $json["oembed"],
+                    "width" => $json["width"],
+                    "height" => $json["height"]
                 );
                 $json["oembed"] = $temp;
                 unset($temp);
@@ -552,16 +571,16 @@ class html5player {
             }
             return $this->audioCodeGenerator(null, $json, $lock);
         } else {
-            return $this->jsonError()." @ Audio Tag";
+            return $this->jsonError() . " @ Audio Tag";
         }
     }
 
     public function urlsCheck($urls) {
         $arrayCount = 0;
-        foreach($urls as $value) {
+        foreach ($urls as $value) {
             $value = preg_replace("# $#i", "", $value);
-            if(!preg_match("#^(http|https)://#i", $value)) {
-                $data = $this->url['site']."/".$value;
+            if (!preg_match("#^(http|https)://#i", $value)) {
+                $data = $this->url['site'] . "/" . $value;
                 $array[$arrayCount] = htmlspecialchars($data);
             } else {
                 $array[$arrayCount] = htmlspecialchars($value);
@@ -572,7 +591,7 @@ class html5player {
     }
 
     private function audioCodeGenerator($audiourls, $JSON = false, $lock = false) {
-        if($JSON) {
+        if ($JSON) {
             $audiourls = $this->urlsCheck($JSON['url']);
             $title = $JSON['title'];
             $attribute = $JSON["attribute"];
@@ -583,69 +602,88 @@ class html5player {
             $attribute = false;
             $oembed = false;
         }
-        if(!isset($this->linkGen)) {
+        if (!isset($this->linkGen)) {
             $this->linkGen = new TypeAndLinkGenclass($this->language['downloadAudio'],
-                $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat']);
+                            $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat']);
         }
         $source = '';
-        foreach($audiourls as $value) {
-            if(!($lock || $oembed)) {
-                $audioCompatible = array("url" => $value, "title" => $title, "plugins" => false);
-                $this->flowplayer->audioCompatible($audioCompatible);
+        foreach ($audiourls as $value) {
+            if (!($lock || $oembed)) {
+                if($this->mediaelement) {
+                    $audioCompatible = array("url" => $value, "title" => $title);
+                    $this->mediaelement->audioCompatible($audioCompatible);
+                } else {
+                    $audioCompatible = array("url" => $value, "title" => $title, "plugins" => false);
+                    $this->flowplayer->audioCompatible($audioCompatible);
+                }
             }
-            $source .='<source src="'.$value.'" '.$this->linkGen->getAudioType($value).' />';
+            $source .='<source src="' . $value . '" ' . $this->linkGen->getAudioType($value) . ' />';
         }
         $links = $outside = "";
-        if($this->mobileCheck() || $this->option['audioLinkOutside']) {
-            $outside = $this->option['audioLinkOutsideBefore'].$this->linkGen->getAudioLinks().
+        if ($this->mobileCheck() || $this->option['audioLinkOutside']) {
+            $outside = $this->option['audioLinkOutsideBefore'] . $this->linkGen->getAudioLinks() .
                     $this->option['audioLinkOutsideAfter'];
         } else {
             $links = $this->linkGen->getAudioLinks();
         };
         $header = sprintf("%s<audio %s %s %s>", $this->option['beforeAudio'],
-                $this->getID($this->option['audioID'], "audio"),
-                $this->getTitle($title), $this->getHtmlAttribute($attribute, "audio"));
+                        $this->getID($this->option['audioID'], "audio"),
+                        $this->getTitle($title), $this->getHtmlAttribute($attribute, "audio"));
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
-                $header, $source, $this->getFallback($this->language['noAudio']."<br />".$links,
-                $oembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
+                $header, $source, $this->getFallback($this->language['noAudio'] . "<br />" . $links,
+                        $oembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterAudio']);
     }
 
     private function getFallback($fallback, $oembed, $type, $lock) {
-        if(!$lock) {
-            if($oembed && class_exists('WP_Embed')) {
+        if (!$lock) {
+            if ($oembed && class_exists('WP_Embed')) {
                 $url = $oembed['url'];
                 $this->oembed->parseUrl($url);
                 unset($oembed['url']);
-                if(($oembed['width'] && $oembed['height'])) {
+                if (($oembed['width'] && $oembed['height'])) {
                     $this->oembed->setWidth($oembed['width']);
                     $this->oembed->setHeight($oembed['height']);
                 }
                 $this->flowplayer->setOptions("flashIsSetup", false);
+                if($this->mediaelement) {
+                    $this->mediaelement->setOptions("flashIsSetup", false);
+                }
                 $this->oembed->setFallback($fallback);
                 return $this->oembed->getEmbedCode();
             } else {
-                if($this->flowplayer->getFlashIsSetup()) {
-                    return $this->flowplayer->getFlashObject($fallback);
+                if($this->mediaelement) {
+                    if ($this->mediaelement->getFlashIsSetup()) {
+                        return $this->mediaelement->getFlashObject($fallback);
+                    } else {
+                        return $fallback;
+                    }
                 } else {
-                    return $fallback;
+                    if ($this->flowplayer->getFlashIsSetup()) {
+                        return $this->flowplayer->getFlashObject($fallback);
+                    } else {
+                        return $fallback;
+                    }
                 }
             }
         } else {
             $this->flowplayer->setOptions("flashIsSetup", false);
+            if ($this->mediaelement) {
+                $this->mediaelement->setOptions("flashIsSetup", false);
+            }
             return $fallback;
         }
     }
 
     private function mobileCheck() {
-        if(preg_match("#(Opera Mini|Opera Mobi)#",$_SERVER['HTTP_USER_AGENT']) ||
-                (preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#',$_SERVER['HTTP_USER_AGENT']) &&
-                        !preg_match('#iPad#',$_SERVER['HTTP_USER_AGENT']))) {
+        if (preg_match("#(Opera Mini|Opera Mobi)#", $_SERVER['HTTP_USER_AGENT']) ||
+                (preg_match('#((webOS|SymbianOS|Nokia)+?AppleWebKit|AppleWebKit(.*?)Mobile)#', $_SERVER['HTTP_USER_AGENT']) &&
+                !preg_match('#iPad#', $_SERVER['HTTP_USER_AGENT']))) {
             return true;
         } else {
             return false;
         }
     }
+
 }
-?>

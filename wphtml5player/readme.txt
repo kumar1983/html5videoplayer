@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.0
-Stable tag: 3.0.1
+Stable tag: 3.1.0
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -60,6 +60,9 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.1.0 =
+* Added support for mediaelement.js
 
 = 3.0.1 =
 * Prevent Flash Light and Force Fallback now works as options in admin panel,

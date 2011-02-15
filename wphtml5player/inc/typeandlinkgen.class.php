@@ -188,4 +188,3 @@ class TypeAndLinkGenclass {
         return $this->getLinks(self::audio);
     }
 }
-?>

@@ -90,4 +90,3 @@ class wphtml5_antiIframe {
         return sprintf("<embed %s ></embed>", $embedAttribute);
     }
 }
-?>

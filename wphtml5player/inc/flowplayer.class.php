@@ -393,7 +393,7 @@ class flowplayer {
             $this->option['flashIsSetup'] = false;
             return sprintf("<object %s> %s  %s</object>", $object_attribs, $object_params, $fallback);
         } else {
-            return "";
+            return $fallback;
         }
     }
 
@@ -404,7 +404,7 @@ class flowplayer {
         $poster = $data["poster"];
         $pluginConfig = $data["plugins"];
         $title = $data["title"];
-        if(preg_match("#(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup'] &&
+        if(preg_match("#\.(mp4|m4v)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['videoFlowPlayerEnabled'] || $tag) && $this->flowplayer) {
             if(!($width && $height)) {
                 $width = 480;
@@ -478,7 +478,7 @@ class flowplayer {
         $url = $data['url'];
         $pluginConfig = $data['plugins'];
         $title = $data['title'];
-        if(preg_match("#(mp3|aac|m4a)$#i",$url) && !$this->option['flashIsSetup'] &&
+        if(preg_match("#\.(mp3|aac|m4a)$#i",$url) && !$this->option['flashIsSetup'] &&
                 ($this->option['audioFlowPlayerEnabled'] || $tag) && $this->flowplayer) {
             $flashvars = array(
                     "plugins" => array(
@@ -571,5 +571,3 @@ class flowplayer {
         return $original;
     }
 }
-
-?>
