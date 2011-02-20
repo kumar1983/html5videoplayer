@@ -4,8 +4,8 @@ Author URI: http://cj-jackson.com/
 Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
-Tested up to: 3.0
-Stable tag: 3.1.0
+Tested up to: 3.1
+Stable tag: 3.2.0
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -60,6 +60,17 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.2.0 =
+* Added support for Windows Media Video (wmv) and Audio (wma), and Flash Video (flv),
+but only works when MediaElement.js is enabled.
+* Added support for external URL via embed tag, auto-detection with poster and
+other video files (except wmv, wma and flv) only works with internal URL.
+* Added attribute to embed tag, for video: poster, mp4, ogv, webm, wmv and flv, and for audio:
+aac, ogg, mp3 and wma.  Work with both external and internal URL.
+* Added support for chapters and subtitles for video only via the embed attribute, subtitle,
+slang, chapter and clang.  Only works with MediaElement.js at present as no browser
+support track element, yet.
 
 = 3.1.0 =
 * Added support for mediaelement.js

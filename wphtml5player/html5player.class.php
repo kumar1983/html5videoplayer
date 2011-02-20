@@ -256,6 +256,13 @@ class html5player {
             if (!is_array($json["url"])) {
                 $json['url'] = array($json["url"]);
             }
+
+            if(!isset($json["track"])) {
+                $json["track"] = false;
+            } elseif (!is_array($json["track"])) {
+                $json["track"] = false;
+            }
+
             if (!(isset($json["width"]) && isset($json["height"]))) {
                 $json["width"] = false;
                 $json["height"] = false;
@@ -361,6 +368,7 @@ class html5player {
             $title = $JSON["title"];
             $attribute = $JSON["attribute"];
             $oembed = $JSON["oembed"];
+            $track = $JSON["track"];
             unset($JSON);
         } else {
             $width = $videooption["width"];
@@ -369,10 +377,12 @@ class html5player {
             $title = false;
             $attribute = false;
             $oembed = false;
+            $track = false;
         }
         if (!isset($this->linkGen)) {
             $this->linkGen = new TypeAndLinkGenclass($this->language['downloadAudio'],
-                            $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat']);
+                    $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat'],
+                    $this->meEnabled());
         }
         $sources = '';
         foreach ($videourls as $value) {
@@ -408,10 +418,30 @@ class html5player {
                         $this->getPoster($poster), $this->getResolutionCode($width, $height),
                         $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
         $footer = "</video>";
-        return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources,
+        return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources.$this->tracks($track),
                 $this->getFallback($this->getPosterForFallback($poster) . $this->language['noVideo'] . "<br />" . $links,
                         $oembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterVideo']);
+    }
+
+    private function tracks($track) {
+        try {
+            if ($track) {
+                foreach ($track as $kind => $arrays) {
+                    foreach ($arrays as $data) {
+                        foreach ($data as $attr => $src) {
+                            $attribute[] = $attr . '="' . $src . '"';
+                        }
+                        $string .= '<track kind="' . $kind . '" ' . implode(" ", $attribute) . ' /> ';
+                    }
+                }
+                return $string;
+            } else {
+                return "";
+            }
+        } catch (Exception $e) {
+            return "";
+        }
     }
 
     private function getID($name, $type) {
@@ -604,7 +634,8 @@ class html5player {
         }
         if (!isset($this->linkGen)) {
             $this->linkGen = new TypeAndLinkGenclass($this->language['downloadAudio'],
-                            $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat']);
+                    $this->language['downloadVideo'], $this->language['openFormat'], $this->language['closedFormat'],
+                    $this->meEnabled());
         }
         $source = '';
         foreach ($audiourls as $value) {
@@ -686,4 +717,11 @@ class html5player {
         }
     }
 
+    private function meEnabled() {
+        if($this->mediaelement) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

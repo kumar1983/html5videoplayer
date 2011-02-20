@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2011 by Christopher John Jackson
  *
@@ -21,6 +22,7 @@
  * THE SOFTWARE.
  */
 class TypeAndLinkGenclass {
+
     private $typeList;
     private $links;
     private $message;
@@ -29,7 +31,7 @@ class TypeAndLinkGenclass {
     const video = 'video';
     const audio = 'audio';
 
-    public function __construct($audioDownload, $videoDownload, $open, $closed) {
+    public function __construct($audioDownload, $videoDownload, $open, $closed, $ME_enabled) {
         $this->message = array(
             self::video => array(
                 'download' => $videoDownload,
@@ -46,86 +48,118 @@ class TypeAndLinkGenclass {
         $this->typeList = array(
             self::video => array(
                 array(
-                    'name'  => 'MP4 (Extended)',
-                    'exp'   => "#.ext.(mp4|m4v)$#i",
-                    'mime'  => 'video/mp4',
+                    'name' => 'MP4 (Extended)',
+                    'exp' => "#.ext.(mp4|m4v)$#i",
+                    'mime' => 'video/mp4',
                     'codec' => 'avc1.58A01E, mp4a.40.2',
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'MP4 (Main)',
-                    'exp'   => "#.main.(mp4|m4v)$#i",
-                    'mime'  => 'video/mp4',
+                    'name' => 'MP4 (Main)',
+                    'exp' => "#.main.(mp4|m4v)$#i",
+                    'mime' => 'video/mp4',
                     'codec' => 'avc1.4D401E, mp4a.40.2',
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'MP4 (High)',
-                    'exp'   => "#.high.(mp4|m4v)$#i",
-                    'mime'  => 'video/mp4',
+                    'name' => 'MP4 (High)',
+                    'exp' => "#.high.(mp4|m4v)$#i",
+                    'mime' => 'video/mp4',
                     'codec' => 'avc1.64001E, mp4a.40.2',
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'MP4',
-                    'exp'   => "#.(mp4|m4v)$#i",
-                    'mime'  => 'video/mp4',
+                    'name' => 'MP4',
+                    'exp' => "#.(mp4|m4v)$#i",
+                    'mime' => 'video/mp4',
                     'codec' => 'avc1.42E01E, mp4a.40.2',
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'OGG',
-                    'exp'   => "#.(ogg|ogv)$#i",
-                    'mime'  => 'video/ogg',
+                    'name' => 'OGG',
+                    'exp' => "#.(ogg|ogv)$#i",
+                    'mime' => 'video/ogg',
                     'codec' => 'theora, vorbis',
-                    'open'  => true
+                    'open' => true
                 ),
                 array(
-                    'name'  => 'WebM',
-                    'exp'   => "#.(webm)$#i",
-                    'mime'  => 'video/webm',
+                    'name' => 'WebM',
+                    'exp' => "#.(webm)$#i",
+                    'mime' => 'video/webm',
                     'codec' => 'vp8, vorbis',
-                    'open'  => true
+                    'open' => true
                 )
             ),
             self::audio => array(
                 array(
-                    'name'  => 'OGG',
-                    'exp'   => "#.(ogg|oga)$#i",
-                    'mime'  => 'audio/ogg',
+                    'name' => 'OGG',
+                    'exp' => "#.(ogg|oga)$#i",
+                    'mime' => 'audio/ogg',
                     'codec' => false,
-                    'open'  => true
+                    'open' => true
                 ),
                 array(
-                    'name'  => 'AAC',
-                    'exp'   => "#.(mp4|m4a|aac)$#i",
-                    'mime'  => 'audio/aac',
+                    'name' => 'AAC',
+                    'exp' => "#.(mp4|m4a|aac)$#i",
+                    'mime' => 'audio/aac',
                     'codec' => false,
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'MP3',
-                    'exp'   => "#.(mp3)$#i",
-                    'mime'  => 'audio/mpeg',
+                    'name' => 'MP3',
+                    'exp' => "#.(mp3)$#i",
+                    'mime' => 'audio/mpeg',
                     'codec' => false,
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'WAV',
-                    'exp'   => "#.(wav)$#i",
-                    'mime'  => 'audio/x-wav',
+                    'name' => 'WAV',
+                    'exp' => "#.(wav)$#i",
+                    'mime' => 'audio/x-wav',
                     'codec' => false,
-                    'open'  => false
+                    'open' => false
                 ),
                 array(
-                    'name'  => 'WebM',
-                    'exp'   => "#.(webm)$#i",
-                    'mime'  => 'audio/webm',
+                    'name' => 'WebM',
+                    'exp' => "#.(webm)$#i",
+                    'mime' => 'audio/webm',
                     'codec' => false,
-                    'open'  => true
+                    'open' => true
                 ),
             )
         );
+
+        if ($ME_enabled) {
+            $typeAltList = array(
+                self::video => array(
+                    array(
+                        'name' => 'FLV',
+                        'exp' => "#.(flv|f4v)$#i",
+                        'mime' => 'video/x-flv',
+                        'codec' => false,
+                        'open' => false
+                    ),
+                    array(
+                        'name' => 'WMV',
+                        'exp' => "#.(wmv)$#i",
+                        'mime' => 'video/x-ms-wmv',
+                        'codec' => false,
+                        'open' => true
+                    )
+                ),
+                self::audio => array(
+                    array(
+                        'name' => 'WMA',
+                        'exp' => "#.(wma)$#i",
+                        'mime' => 'audio/x-ms-wma',
+                        'codec' => false,
+                        'open' => true
+                    )
+                )
+            );
+
+            $this->typeList = $this->array_replace_recursive($this->typeList, $typeAltList);
+        }
 
         $this->resetLinksAndCount();
     }
@@ -140,24 +174,24 @@ class TypeAndLinkGenclass {
     }
 
     private function getType($type, $url) {
-        foreach($this->typeList[$type] as $key) {
-            if(preg_match($key['exp'], $url)) {
-                if($key['open']) {
+        foreach ($this->typeList[$type] as $key) {
+            if (preg_match($key['exp'], $url)) {
+                if ($key['open']) {
                     $this->count['open']++;
-                    if($this->count['open'] == 1) {
+                    if ($this->count['open'] == 1) {
                         $this->links['open'][] = $this->message[$type]['open'];
                     }
-                    $this->links['open'][] = '<a href="'.$url.'">'.$key['name'].'</a>';
+                    $this->links['open'][] = '<a href="' . $url . '">' . $key['name'] . '</a>';
                 } else {
                     $this->count['closed']++;
-                    if($this->count['closed'] == 1) {
+                    if ($this->count['closed'] == 1) {
                         $this->links['closed'][] = $this->message[$type]['closed'];
                     }
-                    $this->links['closed'][] = '<a href="'.$url.'">'.$key['name'].'</a>';
+                    $this->links['closed'][] = '<a href="' . $url . '">' . $key['name'] . '</a>';
                 }
                 $codec = "";
-                if($key['codec']) {
-                    $codec = '; codecs="'.$key['codec'].'"';
+                if ($key['codec']) {
+                    $codec = '; codecs="' . $key['codec'] . '"';
                 }
                 return sprintf("type='%s%s'", $key['mime'], $codec);
             }
@@ -174,8 +208,8 @@ class TypeAndLinkGenclass {
     }
 
     private function getLinks($type) {
-        $links = $this->message[$type]['download'].' '.implode(' ',$this->links['closed']).
-                ' '.implode(' ',$this->links['open']);
+        $links = $this->message[$type]['download'] . ' ' . implode(' ', $this->links['closed']) .
+                ' ' . implode(' ', $this->links['open']);
         $this->resetLinksAndCount();
         return $links;
     }
@@ -187,4 +221,20 @@ class TypeAndLinkGenclass {
     public function getAudioLinks() {
         return $this->getLinks(self::audio);
     }
+
+    private function array_replace_recursive() {
+        $arrays = func_get_args();
+        $original = array_shift($arrays);
+        foreach ($arrays as $array) {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $original[$key] = $this->array_replace_recursive($original[$key], $array[$key]);
+                } else {
+                    $original[$key] = $value;
+                }
+            }
+        }
+        return $original;
+    }
+
 }
