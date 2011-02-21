@@ -428,11 +428,15 @@ class html5player {
         try {
             if ($track) {
                 foreach ($track as $kind => $arrays) {
+                    if($this->is_assoc($arrays)) {
+                        $arrays = array($arrays);
+                    }
                     foreach ($arrays as $data) {
                         foreach ($data as $attr => $src) {
                             $attribute[] = $attr . '="' . $src . '"';
                         }
                         $string .= '<track kind="' . $kind . '" ' . implode(" ", $attribute) . ' /> ';
+                        unset($attribute);
                     }
                 }
                 return $string;

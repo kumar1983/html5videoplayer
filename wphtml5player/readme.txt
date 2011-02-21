@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.1
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -60,6 +60,9 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.2.2 =
+* Fixed serious <track> bug, forgot to unset $attribute in foreach loop.
 
 = 3.2.1 =
 * Fixed minor bug.
