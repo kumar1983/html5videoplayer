@@ -15,7 +15,8 @@ HTML5 Multimedia Framework is designed to be a highly customisable plugin for
 wordpress that comes with [MediaElement.js](http://mediaelementjs.com/).
 
 The framework currently support mp4(h.264,aac), ogg(theora,vorbis), mp3(audio only)
-and also webm (vp8,vorbis).
+and also webm (vp8,vorbis).  It can also support wmv, flv and wma while MediaElement.js
+is enabled.
 
 Please read the [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) before
 asking questions; also look at [Demonstration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/).
