@@ -535,6 +535,13 @@ class flowplayer {
             $flowPlayerJSON = json_decode(constant("FLOWPLAYER_JSON".$type), true);
             if(!$wphtml5playerclass->is_assoc($flowPlayerJSON)) {
                 $flowPlayerJSON = false;
+                if($type == "_AUDIO") {
+                    echo $wphtml5playerclass->jsonError() . " @ Flowplayer Configuration for Audio";
+                } elseif($type == "_FULL") {
+                    echo $wphtml5playerclass->jsonError() . " @ Flowplayer Configuration for Full Control Mode";
+                } else {
+                    echo $wphtml5playerclass->jsonError() . " @ Flowplayer Configuration for Video";
+                }
             } else {
                 unset($flowPlayerJSON["clip"]);
                 unset($flowPlayerJSON["playlist"]);

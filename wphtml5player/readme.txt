@@ -5,41 +5,14 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.1
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
 == Description ==
 
 HTML5 Multimedia Framework is designed to be a highly customisable plugin for
-wordpress that allows advanced users to add their own JavaScript Libraries, or other
-JavaScript Libraries such as VideoJS and JW Player for HTML5 within the Wordpress theme
-file `header.php` via [advanced options](http://code.google.com/p/html5videoplayer/wiki/AdvancedOptions).
-You may want to have a look at the [JavaScript Library page](http://code.google.com/p/html5videoplayer/wiki/JavaScriptLibraries)
-on the project wiki.
-
-The framework is designed to be compatible with mobile devices that use WebKit or
-Opera Mobile/Mini and XML feeds such as RSS, for example if that mobile device is
-detected or RSS feed are used the framework will not load any JavaScript and will
-use the [Video for Everybody](http://camendesign.com/code/video_for_everybody)
-principle, if iOS or iPhoneOS is detected and below 4.0 the framework will also
-cancel out all incompatible format from video source list but leave the download
-links behind, so it will only show the extensions `mp4` or `m4v` (`.ext.mp4` or
-`.main.mp4` for iPad with iOS 3.2 or above).
-
-The framework is also designed to be compatible with browsers that do not render
-HTML5 Audio or Video such as Internet Explorer 8 or below, because the framework
-will also include the fallback flash player, [FlowPlayer](http://flowplayer.org/)
-3.2 for both video and audio provided that you include either mp4 for video or mp3
-for audio within the syntax, [FlowPlayer](http://flowplayer.org/) 3.2 and HTML5 video
-have both things in common, that would be the overlay video control bar, making
-[FlowPlayer](http://flowplayer.org/) 3.2 the perfect choice.
-
-The framework use two kinds of syntax, the simple syntax which is limited to URL's,
-poster, width and height, and the advanced syntax which uses [JSON](http://www.json.org/)
-which support all kinds of attributes for video and audio even if it not on the
-HTML5 specification, see [syntax page](http://code.google.com/p/html5videoplayer/wiki/Syntax)
-for more details.
+wordpress that comes with [MediaElement.js](http://mediaelementjs.com/).
 
 The framework currently support mp4(h.264,aac), ogg(theora,vorbis), mp3(audio only)
 and also webm (vp8,vorbis).
@@ -60,6 +33,13 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.2.3 =
+* Prevent errors caused by human error.
+* MediaElement.js is now the default method.
+* Flowplayer will no longer be updated, always include 3.2.5.
+* Updated MediaElement.js to 2.1.0
+* Added "enable" and "disable" attribute for MediaElement.js features.
 
 = 3.2.2 =
 * Fixed serious <track> bug, forgot to unset $attribute in foreach loop.

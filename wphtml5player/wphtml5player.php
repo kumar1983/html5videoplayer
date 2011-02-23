@@ -3,7 +3,7 @@
   Plugin Name: HTML5 Multimedia Framework
   Plugin URI: http://code.google.com/p/html5videoplayer/
   Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-  Version: 3.2.2
+  Version: 3.2.3
   Author: Christopher John Jackson
   Author URI: http://cj-jackson.com/
   License: MIT License
@@ -78,6 +78,14 @@ function wphtml5player_getAndSetAdminOptions() {
         }
         wp_enqueue_script('mediaelement', $mediaelementlocation . 'mediaelement-and-player.min.js');
         wp_enqueue_style('mediaelement', $mediaelementlocation . 'mediaelementplayer.min.css');
+
+        $id = array(
+            'videoID' => 'h5video',
+            'audioID' => 'h5audio'
+        );
+        $id = json_encode($id);
+        wphtml5player_setOptions($id);
+        unset($id);
 
         $videoExt[] = 'flv|f4v|wmv';
         $audioExt[] = 'wma';
@@ -163,10 +171,22 @@ function wphtml5player_getAndSetAdminOptions() {
     }
 
     if (get_option('html5framework_mediaelement_plugin_script') != '') {
-        $json = json_decode('{'.get_option('html5framework_mediaelement_plugin_script').'}', true);
-        foreach($json as $key => $value) {
-            wp_enqueue_script('wphtml5_'.$key, $value);
+        $json = json_decode('{' . get_option('html5framework_mediaelement_plugin_script') . '}', true);
+        if ($wphtml5playerclass->is_assoc($json)) {
+            foreach ($json as $key => $value) {
+                wp_enqueue_script('wphtml5_' . $key, $value);
+            }
+        } else {
+            echo $wphtml5playerclass->jsonError() . ' @ MediaElement.js Plugin Script';
         }
+    }
+
+    if (get_option("html5framework_mediaelement_video_config") != '') {
+        define("HTML5FRAMEWORK_ME_CONFIG_VIDEO", '{'.get_option("html5framework_mediaelement_video_config").'}');
+    }
+
+    if (get_option("html5framework_mediaelement_audio_config") != '') {
+        define("HTML5FRAMEWORK_ME_CONFIG_AUDIO", '{'.get_option("html5framework_mediaelement_audio_config").'}');
     }
 
     if (isset($flowplayer)) {
@@ -175,20 +195,31 @@ function wphtml5player_getAndSetAdminOptions() {
 }
 
 function wphtml5player_mediaelement_footer() {
+    global $wphtml5playerclass;
     if (get_option('html5framework_order') == '2') {
         $videoOption = '';
         $audioOption = '';
 
-        if (get_option("html5framework_mediaelement_video_config") != '') {
-            $videoOption = '{' . get_option("html5framework_mediaelement_video_config") . '}';
+        if (defined("HTML5FRAMEWORK_ME_CONFIG_VIDEO")) {
+            $videoOption = HTML5FRAMEWORK_ME_CONFIG_VIDEO;
             $videoOption = json_decode($videoOption, true);
-            $videoOption = json_encode($videoOption);
+            if ($wphtml5playerclass->is_assoc($videoOption)) {
+                $videoOption = json_encode($videoOption);
+            } else {
+                $videoOption = '';
+                echo $wphtml5playerclass->jsonError() . ' @ MediaElement.js Video Config';
+            }
         }
 
-        if (get_option("html5framework_mediaelement_audio_config") != '') {
-            $audioOption = '{' . get_option("html5framework_mediaelement_audio_config") . '}';
+        if (defined("HTML5FRAMEWORK_ME_CONFIG_AUDIO")) {
+            $audioOption = HTML5FRAMEWORK_ME_CONFIG_AUDIO;
             $audioOption = json_decode($audioOption, true);
-            $audioOption = json_encode($audioOption);
+            if ($wphtml5playerclass->is_assoc($audioOption)) {
+                $audioOption = json_encode($audioOption);
+            } else {
+                $audioOption = '';
+                echo $wphtml5playerclass->jsonError() . ' @ MediaElement.js Audio Config';
+            }
         }
 
         echo '<script type="text/javascript">jQuery(\'video\').mediaelementplayer('.$videoOption.');</script>';
@@ -200,7 +231,7 @@ register_activation_hook(__FILE__, 'wphtml5player_activate');
 
 function wphtml5player_activate() {
     // Set default
-    add_option('html5framework_order', '0');
+    add_option('html5framework_order', '2');
     add_option('html5framework_flowplayer_videoEnable', 'true');
     add_option('html5framework_flowplayer_audioEnable', 'true');
     add_option('html5framework_flowplayer_location', '');
@@ -317,7 +348,7 @@ function wphtml5player_setVideoAttribute($json) {
             $wphtml5playerclass->setVideoAttribute($key, $value);
         }
     } else {
-        echo $wphtml5playerclass->jsonError() . " @ Video Attribute";
+        echo $wphtml5playerclass->jsonError() . " @ HTML5 Video Attribute";
     }
 }
 
@@ -332,7 +363,7 @@ function wphtml5player_setAudioAttribute($json) {
             $wphtml5playerclass->setAudioAttribute($key, $value);
         }
     } else {
-        echo $wphtml5playerclass->jsonError() . " @ Audio Attribute";
+        echo $wphtml5playerclass->jsonError() . " @ HTML5 Audio Attribute";
     }
 }
 
@@ -347,7 +378,7 @@ function wphtml5player_setObjectAttribute($json) {
             $wphtml5playerclass->setUserObjectAttribute($key, $value);
         }
     } else {
-        echo $wphtml5playerclass->jsonError() . " @ Attribute";
+        echo $wphtml5playerclass->jsonError() . " @ oEmbed JSON Attribute Options";
     }
 }
 
@@ -362,7 +393,7 @@ function wphtml5player_setObjectParameter($json) {
             $wphtml5playerclass->setUserObjectParameter($key, $value);
         }
     } else {
-        echo $wphtml5playerclass->jsonError() . " @ Param";
+        echo $wphtml5playerclass->jsonError() . " @ oEmbed JSON Param Options";
     }
 }
 
@@ -403,58 +434,7 @@ function wphtml5player_oembed_video_handler($matches, $attr, $url, $rawattr) {
         $json['url'][] = $matches[1] . $wphtml_host . "/" . $matches[2] . ".webm";
     }
 
-    if (get_option('html5framework_order') == '2') {
-        if (isset($json['wmv'])) {
-            $json['url'][] = $json['wmv'];
-            unset($json['wmv']);
-        }
-
-        if (isset($json['flv'])) {
-            $json['url'][] = $json['flv'];
-            unset($json['flv']);
-        }
-    } else {
-        unset($json['wmv']);
-        unset($json['flv']);
-    }
-
-    if(isset($json['subtitle'])) {
-        $subtitle = $json['subtitle'];
-    }
-
-    if(isset($json['slang'])) {
-        $slang = $json['slang'];
-    } elseif(get_option("html5framework_default_subtitle_lang") != '') {
-        $slang = get_option("html5framework_default_subtitle_lang");
-    } else {
-        $slang = 'en';
-    }
-
-    if(isset($json['chapter'])) {
-        $chapter = $json['chapter'];
-    }
-
-    if(isset($json['clang'])) {
-        $clang = $json['clang'];
-    } elseif(get_option("html5framework_default_chapter_lang") != '') {
-        $clang = get_option("html5framework_default_chapter_lang");
-    } else {
-        $clang = 'en';
-    }
-
-    if(isset($subtitle)) {
-        $json['track']['subtitles'][] = array(
-            'src' => $subtitle,
-            'srclang' => $slang
-        );
-    }
-
-    if(isset($chapter)) {
-        $json['track']['chapters'][] = array(
-            'src' => $chapter,
-            'srclang' => $clang
-        );
-    }
+    $json = wphtml5player_oembed_video_handler_repeats($json);
 
     if(!isset($json['poster'])) {
         if (file_exists($_SERVER['DOCUMENT_ROOT'] . "/" . $matches[2] . ".jpg")) {
@@ -504,58 +484,7 @@ function wphtml5player_oembed_video_handler_external($matches, $attr, $url, $raw
         unset($json['webm']);
     }
 
-    if (get_option('html5framework_order') == '2') {
-        if (isset($json['wmv'])) {
-            $json['url'][] = $json['wmv'];
-            unset($json['wmv']);
-        }
-
-        if (isset($json['flv'])) {
-            $json['url'][] = $json['flv'];
-            unset($json['flv']);
-        }
-    } else {
-        unset($json['wmv']);
-        unset($json['flv']);
-    }
-
-    if(isset($json['subtitle'])) {
-        $subtitle = $json['subtitle'];
-    }
-
-    if(isset($json['slang'])) {
-        $slang = $json['slang'];
-    } elseif(get_option("html5framework_default_subtitle_lang") != '') {
-        $slang = get_option("html5framework_default_subtitle_lang");
-    } else {
-        $slang = 'en';
-    }
-
-    if(isset($json['chapter'])) {
-        $chapter = $json['chapter'];
-    }
-
-    if(isset($json['clang'])) {
-        $clang = $json['clang'];
-    } elseif(get_option("html5framework_default_chapter_lang") != '') {
-        $clang = get_option("html5framework_default_chapter_lang");
-    } else {
-        $clang = 'en';
-    }
-
-    if(isset($subtitle)) {
-        $json['track']['subtitles'][] = array(
-            'src' => $subtitle,
-            'srclang' => $slang
-        );
-    }
-
-    if(isset($chapter)) {
-        $json['track']['chapters'][] = array(
-            'src' => $chapter,
-            'srclang' => $clang
-        );
-    }
+    $json = wphtml5player_oembed_video_handler_repeats($json);
 
     if (defined("USE_FLOWPLAYER_IN_WP_EMBED")) {
         if (preg_match('#(ogv|webm)#i', $matches[5])) {
@@ -573,6 +502,81 @@ function wphtml5player_oembed_video_handler_external($matches, $attr, $url, $raw
         $code = $wphtml5playerclass->videoreplaceJSON(null, $json);
     }
     return $code;
+}
+
+function wphtml5player_oembed_video_handler_repeats($json) {
+    if (get_option('html5framework_order') == '2') {
+        if (isset($json['wmv'])) {
+            $json['url'][] = $json['wmv'];
+            unset($json['wmv']);
+        }
+
+        if (isset($json['flv'])) {
+            $json['url'][] = $json['flv'];
+            unset($json['flv']);
+        }
+    } else {
+        unset($json['wmv']);
+        unset($json['flv']);
+    }
+
+    if (isset($json['subtitle'])) {
+        $subtitle = $json['subtitle'];
+    }
+
+    if (isset($json['slang'])) {
+        $slang = $json['slang'];
+    } elseif (get_option("html5framework_default_subtitle_lang") != '') {
+        $slang = get_option("html5framework_default_subtitle_lang");
+    } else {
+        $slang = 'en';
+    }
+
+    if (isset($json['chapter'])) {
+        $chapter = $json['chapter'];
+    }
+
+    if (isset($json['clang'])) {
+        $clang = $json['clang'];
+    } elseif (get_option("html5framework_default_chapter_lang") != '') {
+        $clang = get_option("html5framework_default_chapter_lang");
+    } else {
+        $clang = 'en';
+    }
+
+    if (isset($subtitle)) {
+        $json['track']['subtitles'][] = array(
+            'src' => $subtitle,
+            'srclang' => $slang
+        );
+    }
+
+    if (isset($chapter)) {
+        $json['track']['chapters'][] = array(
+            'src' => $chapter,
+            'srclang' => $clang
+        );
+    }
+
+    if (get_option('html5framework_order') == '2') {
+        if (isset($json["enable"])) {
+            $enables = explode(",", $json["enable"]);
+            foreach ($enables as $enable) {
+                $json["mediaelement"]["features"][] = $enable;
+            }
+        }
+
+        if (isset($json["disable"])) {
+            $disables = explode(",", $json["disable"]);
+            foreach ($disables as $disable) {
+                $json["mediaelement"]["disabledfeatures"][] = $disable;
+            }
+        }
+    }
+    unset($json["enable"]);
+    unset($json["disable"]);
+
+    return $json;
 }
 
 function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
@@ -605,14 +609,7 @@ function wphtml5player_oembed_audio_handler($matches, $attr, $url, $rawattr) {
         $json['url'][] = $matches[1] . $wphtml_host . "/" . $matches[2] . ".mp3";
     }
 
-    if (get_option('html5framework_order') == '2') {
-        if(isset($json['wma'])) {
-            $json['url'][] = $json['wma'];
-            unset($json['wma']);
-        }
-    } else {
-        unset($json['wma']);
-    }
+    $json = wphtml5player_oembed_audio_handler_repeats($json);
 
     unset($json['width']);
     unset($json['height']);
@@ -651,14 +648,7 @@ function wphtml5player_oembed_audio_handler_external($matches, $attr, $url, $raw
         unset($json['mp3']);
     }
 
-    if (get_option('html5framework_order') == '2') {
-        if(isset($json['wma'])) {
-            $json['url'][] = $json['wma'];
-            unset($json['wma']);
-        }
-    } else {
-        unset($json['wma']);
-    }
+    $json = wphtml5player_oembed_audio_handler_repeats($json);
 
     unset($json['width']);
     unset($json['height']);
@@ -675,6 +665,37 @@ function wphtml5player_oembed_audio_handler_external($matches, $attr, $url, $raw
         $code = $wphtml5playerclass->audioreplaceJSON(null, $json);
     }
     return $code;
+}
+
+function wphtml5player_oembed_audio_handler_repeats($json) {
+    if (get_option('html5framework_order') == '2') {
+        if(isset($json['wma'])) {
+            $json['url'][] = $json['wma'];
+            unset($json['wma']);
+        }
+    } else {
+        unset($json['wma']);
+    }
+
+    if (get_option('html5framework_order') == '2') {
+        if (isset($json["enable"])) {
+            $enables = explode(",", $json["enable"]);
+            foreach ($enables as $enable) {
+                $json["mediaelement"]["features"][] = $enable;
+            }
+        }
+
+        if (isset($json["disable"])) {
+            $disables = explode(",", $json["disable"]);
+            foreach ($disables as $disable) {
+                $json["mediaelement"]["disabledfeatures"][] = $disable;
+            }
+        }
+    }
+    unset($json["enable"]);
+    unset($json["disable"]);
+
+    return $json;
 }
 
 function wphtml5player_oembed_json_handler($matches, $attr, $url, $rawattr) {
@@ -748,7 +769,7 @@ function wphtml5player_admin_option() {
             <input type="radio" name="html5framework_order" value="0" <?php
         if (get_option('html5framework_order') == '0') {
             echo 'checked="checked"';
-        }; ?> /> HTML5 first, Flowplayer as fallback (Default).<br /> <input type="radio" name="html5framework_order" value="1" <?php
+        }; ?> /> HTML5 first, Flowplayer as fallback.<br /> <input type="radio" name="html5framework_order" value="1" <?php
                    if (get_option('html5framework_order') == '1') {
                        echo 'checked="checked"';
                    };
@@ -756,7 +777,7 @@ function wphtml5player_admin_option() {
                    if (get_option('html5framework_order') == '2') {
                        echo 'checked="checked"';
                    };
-        ?> /> <a href="http://mediaelementjs.com/" target="_blank">MediaElement.js</a> (Replaces Flowplayer as HTML fallback! 100% watermark free! =) )
+        ?> /> <a href="http://mediaelementjs.com/" target="_blank">MediaElement.js</a> (Default, Replaces Flowplayer as HTML fallback! 100% watermark free! =) )
         </p>
 
         <p><span>Prevent Flash Light (Only activated this if you don't like the idea of using flash on mobile devices):</span> <input type="checkbox" name="html5framework_prevent_flash_light" value="true" <?php if (get_option('html5framework_prevent_flash_light') == 'true') { echo 'checked="checked"'; }; ?> /></p>

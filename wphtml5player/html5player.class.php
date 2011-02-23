@@ -294,6 +294,12 @@ class html5player {
                 $json["attribute"] = false;
             }
 
+            if (!isset($json["mediaelement"])) {
+                $json["mediaelement"] = false;
+            } elseif (!$this->is_assoc($json["mediaelement"])) {
+                $json["mediaelement"] = false;
+            }
+
             if (isset($json["oembed"]) && !$this->is_assoc($json["oembed"]) && !$lock) {
                 $temp = array(
                     "url" => $json["oembed"],
@@ -369,6 +375,7 @@ class html5player {
             $attribute = $JSON["attribute"];
             $oembed = $JSON["oembed"];
             $track = $JSON["track"];
+            $mediaelement = $JSON["mediaelement"];
             unset($JSON);
         } else {
             $width = $videooption["width"];
@@ -378,6 +385,7 @@ class html5player {
             $attribute = false;
             $oembed = false;
             $track = false;
+            $mediaelement = false;
         }
         if (!isset($this->linkGen)) {
             $this->linkGen = new TypeAndLinkGenclass($this->language['downloadAudio'],
@@ -413,15 +421,21 @@ class html5player {
         } else {
             $links = $this->linkGen->getVideoLinks();
         }
+        $id = $this->getID($this->option['videoID'], "video");
+        if($id != '') {
+            $idAlt = 'id="'.$id.'"';
+        } else {
+            $idAlt = '';
+        }
         $header = sprintf("%s<video %s %s %s %s %s>", $this->option['beforeVideo'],
-                        $this->getID($this->option['videoID'], "video"),
+                        $idAlt,
                         $this->getPoster($poster), $this->getResolutionCode($width, $height),
                         $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources.$this->tracks($track),
                 $this->getFallback($this->getPosterForFallback($poster) . $this->language['noVideo'] . "<br />" . $links,
                         $oembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
-                $this->option['afterVideo']);
+                $this->option['afterVideo'].$this->mediaElementConfig($id, $mediaelement, 'VIDEO'));
     }
 
     private function tracks($track) {
@@ -451,7 +465,7 @@ class html5player {
     private function getID($name, $type) {
         if ($name) {
             $this->count[$type]++;
-            return 'id="' . $name . '-' . $this->count[$type] . '"';
+            return $name . '-' . $this->count[$type];
         } else {
             return "";
         }
@@ -603,6 +617,13 @@ class html5player {
             } else {
                 $json["oembed"] = false;
             }
+
+            if (!isset($json["mediaelement"])) {
+                $json["mediaelement"] = false;
+            } elseif (!$this->is_assoc($json["mediaelement"])) {
+                $json["mediaelement"] = false;
+            }
+
             return $this->audioCodeGenerator(null, $json, $lock);
         } else {
             return $this->jsonError() . " @ Audio Tag";
@@ -630,11 +651,13 @@ class html5player {
             $title = $JSON['title'];
             $attribute = $JSON["attribute"];
             $oembed = $JSON["oembed"];
+            $mediaelement = $JSON["mediaelement"];
             unset($JSON);
         } else {
             $title = false;
             $attribute = false;
             $oembed = false;
+            $mediaelement = false;
         }
         if (!isset($this->linkGen)) {
             $this->linkGen = new TypeAndLinkGenclass($this->language['downloadAudio'],
@@ -661,14 +684,20 @@ class html5player {
         } else {
             $links = $this->linkGen->getAudioLinks();
         };
+        $id = $this->getID($this->option['audioID'], "audio");
+        if($id != '') {
+            $idAlt = 'id="'.$id.'"';
+        } else {
+            $idAlt = '';
+        }
         $header = sprintf("%s<audio %s %s %s>", $this->option['beforeAudio'],
-                        $this->getID($this->option['audioID'], "audio"),
+                        $idAlt,
                         $this->getTitle($title), $this->getHtmlAttribute($attribute, "audio"));
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
                 $header, $source, $this->getFallback($this->language['noAudio'] . "<br />" . $links,
                         $oembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
-                $this->option['afterAudio']);
+                $this->option['afterAudio'].$this->mediaElementConfig($id, $mediaelement, 'AUDIO'));
     }
 
     private function getFallback($fallback, $oembed, $type, $lock) {
@@ -727,5 +756,47 @@ class html5player {
         } else {
             return false;
         }
+    }
+
+    private function mediaElementConfig($id, $config, $type) {
+        if(!$config && $this->meEnabled()) {
+            return "";
+        }
+
+        if(defined("HTML5FRAMEWORK_ME_CONFIG_".$type)) {
+            $temp = constant("HTML5FRAMEWORK_ME_CONFIG_".$type);
+            $temp = json_decode($temp, true);
+            if (!isset($temp["features"])) {
+                $temp["features"] = array(
+                    'playpause',
+                    'progress',
+                    'current',
+                    'duration',
+                    'tracks',
+                    'volume',
+                    'fullscreen'
+                );
+            }
+            if($this->is_assoc($temp)) {
+                $config = array_merge_recursive($temp, $config);
+            }
+            unset($temp);
+            if(isset($config["disabledfeatures"])) {
+                $kills = array();
+                foreach($config["disabledfeatures"] as $disabledFeature) {
+                    foreach($config["features"] as $key => $feature) {
+                        if($feature == $disabledFeature) {
+                            $kills[] = $key;
+                            break;
+                        }
+                    }
+                }
+                foreach($kills as $kill) {
+                    unset($config["features"][$kill]);
+                }
+            }
+            unset($config["disabledfeatures"]);
+        }
+        return '<script type="text/javascript">jQuery(\'#'.$id.'\').mediaelementplayer('.json_encode($config).');</script>';
     }
 }
