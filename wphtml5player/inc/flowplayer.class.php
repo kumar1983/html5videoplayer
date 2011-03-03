@@ -367,6 +367,7 @@ class flowplayer {
                 "allowfullscreen" => "true",
                 "cachebusting" => "true",
                 "bgcolor" => "#000000",
+                'wmode' => 'transparent',
                 "flashvars" => $flashvars
         );
         if($this->option['videoClassNameForTag']) {
@@ -460,6 +461,7 @@ class flowplayer {
                     "allowfullscreen" => "true",
                     "cachebusting" => "true",
                     "bgcolor" => "#000000",
+                    'wmode' => 'transparent',
                     "flashvars" => $flashvars
             );
             if($this->option['videoClassNameForTag'] && $tag) {
@@ -515,6 +517,7 @@ class flowplayer {
                     "allowfullscreen" => "false",
                     "cachebusting" => "true",
                     "bgcolor" => "#000000",
+                    'wmode' => 'transparent',
                     "flashvars" => $flashvars
             );
             if($this->option['audioClassNameForTag'] && $tag) {

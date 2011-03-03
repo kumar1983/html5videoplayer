@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.1
-Stable tag: 3.2.3
+Stable tag: 3.2.4
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -19,7 +19,8 @@ and also webm (vp8,vorbis).  It can also support wmv, flv and wma while MediaEle
 is enabled.
 
 Please read the [FAQ](http://code.google.com/p/html5videoplayer/wiki/FAQ) before
-asking questions; also look at [Demonstration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/).
+asking questions; also look at [Demonstration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/)
+for instructions.
 
 == Installation ==
 
@@ -34,6 +35,11 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.2.4 =
+* Modified mediaelement-and-player.min.js to prevent mod_security from triggering with flash.
+* Using modified version of flashmediaelement.swf for improved fullscreen support.
+* Added 'wmode="transparent"' to all object to prevent overlapping of css and html.
 
 = 3.2.3 =
 * Prevent errors caused by human error.

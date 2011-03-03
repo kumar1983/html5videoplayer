@@ -110,6 +110,7 @@ class mediaelement {
                 "allowfullscreen" => "false",
                 "cachebusting" => "true",
                 "bgcolor" => "#000000",
+                'wmode' => 'transparent',
                 "flashvars" => 'controls=true&file='.$url
             );
             if ($title) {

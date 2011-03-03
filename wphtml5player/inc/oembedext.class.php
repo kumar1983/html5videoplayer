@@ -294,6 +294,7 @@ class oEmbedExt {
                 'pluginspage' => 'http://www.macromedia.com/go/getflashplayer',
                 'autoplay' => 'false',
                 'autostart' => 'false',
+                'wmode' => 'transparent',
                 'flashvars' => $flashvars,
         );
 
