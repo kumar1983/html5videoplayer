@@ -3,7 +3,7 @@
   Plugin Name: HTML5 Multimedia Framework
   Plugin URI: http://code.google.com/p/html5videoplayer/
   Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-  Version: 3.2.5
+  Version: 3.2.6
   Author: Christopher John Jackson
   Author URI: http://cj-jackson.com/
   License: MIT License
@@ -884,5 +884,5 @@ add_action('admin_menu', "wphtml5player_video_admin_init");
  * Add options page.
  */
 function wphtml5player_video_admin_init() {
-    add_options_page('HTML5 Multimedia Framework Options', 'HTML5 Multimedia', 8, 'html5multimedia', 'wphtml5player_admin_option');
+    add_options_page('HTML5 Multimedia Framework Options', 'HTML5 Multimedia', 'manage_options', 'html5multimedia', 'wphtml5player_admin_option');
 }

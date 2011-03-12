@@ -441,6 +441,7 @@ class html5player {
     private function tracks($track) {
         try {
             if ($track) {
+                $string = '';
                 foreach ($track as $kind => $arrays) {
                     if($this->is_assoc($arrays)) {
                         $arrays = array($arrays);
@@ -759,7 +760,7 @@ class html5player {
     }
 
     private function mediaElementConfig($id, $config, $type) {
-        if(!$config && $this->meEnabled()) {
+        if(!$config || !$this->meEnabled()) {
             return "";
         }
 

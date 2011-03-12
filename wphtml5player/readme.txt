@@ -5,7 +5,7 @@ Donate link: http://cj-jackson.com/donate/
 Tags: audio, html5, quickcode, video, flowplayer
 Requires at least: 2.6
 Tested up to: 3.1
-Stable tag: 3.2.5
+Stable tag: 3.2.6
 
 A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
@@ -27,6 +27,7 @@ for instructions.
 1. Upload the unzipped folder `wphtml5player` to your `plugins` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. And then follow the usage instructions on the [syntax page](http://code.google.com/p/html5videoplayer/wiki/Syntax)
+or [demonstration](http://cj-jackson.com/projects/autoembed-and-html-5-player-plugin-demo/).
 
 == Frequently Asked Questions ==
 See http://code.google.com/p/html5videoplayer/wiki/FAQ
@@ -35,6 +36,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.2.6 =
+* Fixed two minor error that are only noticed in Wordpress's Debug mode, author
+did not realise that debug mode (in test blog) was turned off while in development.
 
 = 3.2.5 =
 * Updated mediaelementjs to 2.1.1.
