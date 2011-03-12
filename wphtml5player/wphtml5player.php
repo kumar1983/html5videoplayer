@@ -3,7 +3,7 @@
   Plugin Name: HTML5 Multimedia Framework
   Plugin URI: http://code.google.com/p/html5videoplayer/
   Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-  Version: 3.2.6
+  Version: 3.2.7
   Author: Christopher John Jackson
   Author URI: http://cj-jackson.com/
   License: MIT License
@@ -864,8 +864,8 @@ function wphtml5player_admin_option() {
         </p>
 
         <input type="hidden" name="action" value="update" />
-        <input type="hidden" name="page_options" value="html5framework_flowplayer_location,html5framework_flowplayer_config,html5framework_flowplayer_videoClassName,html5framework_flowplayer_audioClassName,html5framework_flowplayer_videoEnable,html5framework_flowplayer_audioEnable,html5framework_order,html5framework_html5_config,html5framework_html5_videoAttribute,html5framework_html5_audioAttribute,html5framework_flowplayer_rangeRequests,html5framework_flowplayer_config_audio,html5framework_flowplayer_config_full,html5framework_prevent_flash_light,html5framework_force_fallback,html5framework_video_for_everybody,html5framework_oembed_attribute,html5framework_oembed_param,html5framework_mediaelement_directory,html5framework_mediaelement_plugin_script,html5framework_mediaelement_video_config,html5framework_mediaelement_audio_config,html5framework_default_subtitle_lang,html5framework_default_chapter_lang" />
-
+        <?php settings_fields('html5multimedia'); ?>
+        
         <p class="submit">
             <input type="submit" class="button-primary" value="Save Changes" />
         </p>
@@ -884,5 +884,36 @@ add_action('admin_menu', "wphtml5player_video_admin_init");
  * Add options page.
  */
 function wphtml5player_video_admin_init() {
+
+    $fields = array(
+                'html5framework_flowplayer_location',
+                'html5framework_flowplayer_config',
+                'html5framework_flowplayer_videoClassName',
+                'html5framework_flowplayer_audioClassNam',
+                'html5framework_flowplayer_videoEnable',
+                'html5framework_flowplayer_audioEnable',
+                'html5framework_order,html5framework_html5_config',
+                'html5framework_html5_videoAttribute',
+                'html5framework_html5_audioAttribute',
+                'html5framework_flowplayer_rangeRequests',
+                'html5framework_flowplayer_config_audio',
+                'html5framework_flowplayer_config_full',
+                'html5framework_prevent_flash_light',
+                'html5framework_force_fallback',
+                'html5framework_video_for_everybody',
+                'html5framework_oembed_attribute',
+                'html5framework_oembed_param',
+                'html5framework_mediaelement_directory',
+                'html5framework_mediaelement_plugin_script',
+                'html5framework_mediaelement_video_config',
+                'html5framework_mediaelement_audio_config',
+                'html5framework_default_subtitle_lang',
+                'html5framework_default_chapter_lang',
+            );
+
+    foreach($fields as $value) {
+        register_setting('html5multimedia', $value);
+    }
+
     add_options_page('HTML5 Multimedia Framework Options', 'HTML5 Multimedia', 'manage_options', 'html5multimedia', 'wphtml5player_admin_option');
 }
