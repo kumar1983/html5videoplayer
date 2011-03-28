@@ -3,7 +3,7 @@
   Plugin Name: HTML5 Multimedia Framework
   Plugin URI: http://code.google.com/p/html5videoplayer/
   Description: A Highly Customisable HTML5 Multimedia Framework for Wordpress
-  Version: 3.2.7
+  Version: 3.2.8
   Author: Christopher John Jackson
   Author URI: http://cj-jackson.com/
   License: MIT License
@@ -191,6 +191,14 @@ function wphtml5player_getAndSetAdminOptions() {
 
     if (isset($flowplayer)) {
         wphtml5player_setFlowPlayerOptions(json_encode($flowplayer));
+    }
+
+    if (get_option('html5framework_disable_download_links') == 'true') {
+        $options['downloadLinkDisabled'] = true;
+    }
+
+    if (isset($options)) {
+        wphtml5player_setOptions(json_encode($options));
     }
 }
 
@@ -762,8 +770,6 @@ function wphtml5player_admin_option() {
         <h2>HTML5 Multimedia Framework Options</h2>
 
         <form method="post" action="options.php">
-        <?php wp_nonce_field('update-options'); ?>
-
         <h3>General Options</h3>
         <p><span>In which order? (applies to [embed] tag only)</span><br />
             <input type="radio" name="html5framework_order" value="0" <?php
@@ -785,6 +791,8 @@ function wphtml5player_admin_option() {
         <p><span>Force Fallback (Only activated this if your intention is to only use one format or if you want force fallback):</span> <input type="checkbox" name="html5framework_force_fallback" value="true" <?php if (get_option('html5framework_force_fallback') == 'true') { echo 'checked="checked"'; }; ?> /></p>
 
         <p><span><a href="http://camendesign.com/code/video_for_everybody" target="_blank">Video for Everybody Compliant:</a></span> <input type="checkbox" name="html5framework_video_for_everybody" value="true" <?php if (get_option('html5framework_video_for_everybody') == 'true') { echo 'checked="checked"'; }; ?> /></p>
+
+        <p><span>Disable Download Links:</span> <input type="checkbox" name="html5framework_disable_download_links" value="true" <?php if (get_option('html5framework_disable_download_links') == 'true') { echo 'checked="checked"'; }; ?> /></p>
 
         <p><span>Default Subtitle Language (Applies only to embed tag, in two letters):</span><br />
             <input id="html5framework_default_subtitle_lang" type="text" name="html5framework_default_subtitle_lang" style="width: 99%;" value="<?php echo get_option('html5framework_default_subtitle_lang'); ?>" />
@@ -909,6 +917,7 @@ function wphtml5player_video_admin_init() {
                 'html5framework_mediaelement_audio_config',
                 'html5framework_default_subtitle_lang',
                 'html5framework_default_chapter_lang',
+                'html5framework_disable_download_links'
             );
 
     foreach($fields as $value) {

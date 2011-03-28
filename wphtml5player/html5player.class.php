@@ -83,7 +83,8 @@ class html5player {
             'videoLinkOutsideBefore' => '<p>',
             'videoLinkOutsideAfter' => '</p>',
             'audioLinkOutsideBefore' => '<p>',
-            'audioLinkOutsideAfter' => '</p>'
+            'audioLinkOutsideAfter' => '</p>',
+            'downloadLinkDisabled' => false
         );
     }
 
@@ -415,11 +416,16 @@ class html5player {
             $sources .= $source;
         }
         $links = $outside = "";
+        $novideo = $this->language['noVideo'] . "<br />";
         if ($this->mobileCheck() || $this->option['videoLinkOutside']) {
             $outside = $this->option['videoLinkOutsideBefore'] . $this->linkGen->getVideoLinks() .
                     $this->option['videoLinkOutsideAfter'];
         } else {
             $links = $this->linkGen->getVideoLinks();
+        }
+        if($this->option['downloadLinkDisabled']) {
+            $novideo = "";
+            $links = $outside = "";
         }
         $id = $this->getID($this->option['videoID'], "video");
         if($id != '') {
@@ -433,7 +439,7 @@ class html5player {
                         $this->getTitle($title), $this->getHtmlAttribute($attribute, "video"));
         $footer = "</video>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['videoScript'], "video"), $header, $sources.$this->tracks($track),
-                $this->getFallback($this->getPosterForFallback($poster) . $this->language['noVideo'] . "<br />" . $links,
+                $this->getFallback($this->getPosterForFallback($poster) . $novideo . $links,
                         $oembed, "video", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterVideo'].$this->mediaElementConfig($id, $mediaelement, 'VIDEO'));
     }
@@ -679,12 +685,17 @@ class html5player {
             $source .='<source src="' . $value . '" ' . $this->linkGen->getAudioType($value) . ' />';
         }
         $links = $outside = "";
+        $noaudio = $this->language['noAudio'] . "<br />";
         if ($this->mobileCheck() || $this->option['audioLinkOutside']) {
             $outside = $this->option['audioLinkOutsideBefore'] . $this->linkGen->getAudioLinks() .
                     $this->option['audioLinkOutsideAfter'];
         } else {
             $links = $this->linkGen->getAudioLinks();
-        };
+        }
+        if($this->option['downloadLinkDisabled']) {
+            $noaudio = "";
+            $links = $outside = "";
+        }
         $id = $this->getID($this->option['audioID'], "audio");
         if($id != '') {
             $idAlt = 'id="'.$id.'"';
@@ -696,7 +707,7 @@ class html5player {
                         $this->getTitle($title), $this->getHtmlAttribute($attribute, "audio"));
         $footer = "</audio>";
         return sprintf('%s %s %s %s %s %s %s %s', $this->getJavaScriptCall($this->option['audioScript'], "audio"),
-                $header, $source, $this->getFallback($this->language['noAudio'] . "<br />" . $links,
+                $header, $source, $this->getFallback($noaudio . $links,
                         $oembed, "audio", $lock), self::HTML5_TAG, $footer, $outside,
                 $this->option['afterAudio'].$this->mediaElementConfig($id, $mediaelement, 'AUDIO'));
     }
