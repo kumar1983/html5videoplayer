@@ -85,7 +85,7 @@ class mediaelement {
                 "allowfullscreen" => "true",
                 "cachebusting" => "true",
                 "bgcolor" => "#000000",
-                "flashvars" => 'controls=true&poster='.$poster.'&file='.$url
+                "flashvars" => htmlspecialchars('controls=true&poster='.$poster.'&file='.$url)
             );
             if ($title) {
                 $flashobject['attribs']['title'] = $title;
@@ -111,7 +111,7 @@ class mediaelement {
                 "cachebusting" => "true",
                 "bgcolor" => "#000000",
                 'wmode' => 'transparent',
-                "flashvars" => 'controls=true&file='.$url
+                "flashvars" => htmlspecialchars('controls=true&file='.$url)
             );
             if ($title) {
                 $flashobject['attribs']['title'] = $title;
