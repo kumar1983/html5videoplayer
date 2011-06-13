@@ -11,6 +11,10 @@ A Highly Customisable HTML5 Multimedia Framework for Wordpress
 
 == Description ==
 
+This plugin is now deprecated, no longer supported and has been replaced with,
+HTML5 AV Manager which is avaliable at
+[http://wordpress.org/extend/plugins/html5avmanager/](http://wordpress.org/extend/plugins/html5avmanager/)
+
 HTML5 Multimedia Framework is designed to be a highly customisable plugin for
 wordpress that comes with [MediaElement.js](http://mediaelementjs.com/).
 
@@ -36,6 +40,10 @@ See http://code.google.com/p/html5videoplayer/wiki/FAQ
 None
 
 == Changelog ==
+
+= 3.2.11 =
+* Final release, as in last release.
+* Fixed "In which order".
 
 = 3.2.10 =
 * Updated to mediaelement.js 2.1.5
