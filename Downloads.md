@@ -1,0 +1,1 @@
+All stable downloads are now kept at [Wordpress.org Plugin Directory](http://wordpress.org/extend/plugins/wphtml5player/).
